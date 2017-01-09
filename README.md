@@ -1,9 +1,6 @@
-# Atomist 'travis-rug-type'
+# Atomist 'github-commands'
 
-[![Build Status](https://travis-ci.org/atomist-rugs/travis-rug-type.svg?branch=master)](https://travis-ci.org/atomist-rugs/travis-rug-type)
-[![Slack Status](https://join.atomist.com/badge.svg)](https://join.atomist.com)
-
-Rug extension type for Travis CI.
+Rug commands for GitHub.
 
 ## Developing
 
