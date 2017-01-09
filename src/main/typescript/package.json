@@ -1,0 +1,27 @@
+{
+  "name": "@atomist/travis",
+  "version": "${project.version}",
+  "description": "TypeScript model for Atomist Travis Type",
+  "keywords": [
+    "Atomist",
+    "Rug",
+    "Travis"
+  ],
+  "author": "Atomist, Inc",
+  "license": "Apache-2.0",
+  "atomist" : {
+    "group": "com.atomist",
+    "artifact": "travis-rug-type"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/atomist-rugs/travis-rug-type.git"
+  },
+  "bugs": {
+    "url": "https://github.com/atomist-rugs/travis-rug-type/issues"
+  },
+  "homepage": "https://github.com/atomist-rugs/travis-rug-type#readme",
+  "dependencies": {
+    "@atomist/rug": "${rug.version}"
+  }
+}
