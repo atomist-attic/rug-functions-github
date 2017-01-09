@@ -3,7 +3,7 @@ package com.atomist.rug.commands.github
 import com.atomist.rug.spi.Command
 import com.atomist.rug.kind.service.ServicesMutableView
 import com.atomist.source.SimpleCloudRepoId
-import com.atomist.source.github.domain.EditIssue
+import com.atomist.source.github.domain.{EditIssue, PullRequestMerge}
 import com.atomist.source.github.{GitHubServices, GitHubServicesImpl}
 
 class GitHubCommands extends Command[ServicesMutableView] {
@@ -30,6 +30,21 @@ class GitHubOperation() {
 
     try {
       githubservices.editIssue(repoId, issue)
+      GitHubStatus(true)
+    }
+    catch {
+      case e: Exception => GitHubStatus(false)
+    }
+  } 
+
+  def mergePullRequest(number: Integer, owner: String, repo: String, token: String): GitHubStatus = {
+    val githubservices: GitHubServices = new GitHubServicesImpl(token)
+
+    val repoId = new SimpleCloudRepoId(owner, repo)
+    val pr = githubservices.getPullRequest(repoId, number)
+
+    try {
+      githubservices.mergePullRequest(repoId, new PullRequestMerge(number, pr.head.sha))
       GitHubStatus(true)
     }
     catch {
