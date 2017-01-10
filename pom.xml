@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.atomist</groupId>
     <artifactId>github-commands</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>0.1.1</version>
     <packaging>jar</packaging>
     <name>github-commands</name>
     <description>Rug Commands for GitHub</description>
@@ -25,7 +25,7 @@
         <dependency>
             <groupId>com.atomist</groupId>
             <artifactId>github-lib</artifactId>
-            <version>0.10.0-20161215013640</version>
+            <version>0.11.0-20170109045551</version>
         </dependency>
         <dependency>
             <groupId>org.scalatest</groupId>

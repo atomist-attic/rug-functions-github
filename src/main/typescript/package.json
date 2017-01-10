@@ -1,11 +1,11 @@
 {
-  "name": "@atomist/travis",
+  "name": "@atomist/github",
   "version": "${project.version}",
-  "description": "TypeScript model for Atomist Travis Type",
+  "description": "TypeScript model for Atomist GitHub Commands",
   "keywords": [
     "Atomist",
     "Rug",
-    "Travis"
+    "GitHub"
   ],
   "author": "Atomist, Inc",
   "license": "Apache-2.0",

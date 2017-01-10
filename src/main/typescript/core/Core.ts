@@ -1,10 +1,29 @@
-import {TreeNode} from '@atomist/rug/tree/PathExpression'
+import {Services} from '@atomist/rug/model/Core'
 
-export interface Travis extends TreeNode {
+export interface GitHubService extends Services {
 
-  encrypt(repo: string, token: string, org: string, content: string): void
+  createIssue(title: string, comment: string, owner: string, repo: string, token: string): Status
 
-  enable(repo: string, token: string, org: string): void
+  assignIssue(number: number, assignee: string, owner: string, repo: string, token: string): Status
 
-  disable(repo: string, token: string, org: string): void
+  reopenIssue(number: number, owner: string, repo: string, token: string): Status
+
+  closeIssue(number: number, owner: string, repo: string, token: string): Status
+
+  labelIssue(number: number, label: string, owner: string, repo: string, token: string): Status
+
+  commentIssue(number: number, comment: string, owner: string, repo: string, token: string): Status
+
+  listIssues(days: number, token: string): Status
+
+  mergePullRequest(number: number, owner: string, repo: string, token: string): Status
+
+  createRelease(tagName: string, owner: string, repo: string, token: string): Status
+}
+
+export interface Status {
+
+  success(): boolean
+
+  message(): string
 }
