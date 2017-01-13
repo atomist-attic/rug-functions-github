@@ -16,6 +16,8 @@ export interface GitHubService extends Services {
 
   listIssues(days: number, token: string): Issue[]
 
+  listIssues(search: string, owner: string, repo: string, token: string): Issue[]
+
   mergePullRequest(number: number, owner: string, repo: string, token: string): Status
 
   createRelease(tagName: string, owner: string, repo: string, token: string): Status

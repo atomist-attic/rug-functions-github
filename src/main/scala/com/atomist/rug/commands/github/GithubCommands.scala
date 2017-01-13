@@ -159,6 +159,36 @@ class GitHubOperation extends LazyLogging {
       new JavaScriptArray[GitHubIssue](JavaConversions.seqAsJavaList(result))
   }
 
+  def listIssues(search: String, owner: String, repo: String, token: String): java.util.List[GitHubIssue] = {
+
+    logger.info(s"Invoking listIssues with search '$search', owner '$owner', repo '$repo' and token '${token.charAt(0) + ("*" * (token.length() - 2)) + token.last}");
+
+    val gitHubServices: GitHubServices = new GitHubServicesImpl(token)
+
+    val li = new ListIssues
+    li.setDirection("asc")
+    li.setState("open")
+    li.setSort("updated")
+
+    val cri = SimpleCloudRepoId(owner, repo)
+    var issues = gitHubServices.listIssues(cri, li).asScala
+
+    val result: Seq[GitHubIssue] = issues.filter(i => i.pullRequest == null).sortWith((i1, i2) => i1.updatedAt.compareTo(i2.updatedAt) > 0)
+        .filter(i => ( (search == null || search == "not-set") || (i.body.contains(search) || i.title.contains(search)))).toList.map(i => {
+      val id = i.number
+      val title = i.title
+      // https://api.github.com/repos/octocat/Hello-World/issues/1347
+      val url = i.url.replace("https://api.github.com/repos/", "https://github.com/").replace(s"/issues/${i.number}", "")
+      // https://github.com/atomisthq/bot-service/issues/72
+      val issueUrl = i.url.replace("https://api.github.com/repos/", "https://github.com/")
+      // atomisthq/bot-service
+      val repo = i.url.replace("https://api.github.com/repos/", "").replace(s"/issues/${i.number}", "")
+      val ts = i.updatedAt.toEpochSecond
+      GitHubIssue(id, title, url, issueUrl, repo, ts, i.state)
+    }).slice(0, 10)
+    new JavaScriptArray[GitHubIssue](JavaConversions.seqAsJavaList(result))
+  }
+
   def mergePullRequest(number: Integer, owner: String, repo: String, token: String): GitHubStatus = {
     val gitHubServices: GitHubServices = new GitHubServicesImpl(token)
 
