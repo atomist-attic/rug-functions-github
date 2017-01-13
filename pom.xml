@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.atomist</groupId>
     <artifactId>github-commands</artifactId>
-    <version>0.1.1</version>
+    <version>0.2.0</version>
     <packaging>jar</packaging>
     <name>github-commands</name>
     <description>Rug Commands for GitHub</description>
@@ -14,7 +14,7 @@
         <java.version>1.8</java.version>
         <scala.version>2.11.8</scala.version>
         <scala.binary.version>2.11</scala.binary.version>
-        <rug.version>0.8.0</rug.version>
+        <rug.version>0.9.0</rug.version>
     </properties>
     <dependencies>
         <dependency>
@@ -259,6 +259,14 @@
             <id>public-atomist-release</id>
             <name>Atomist Release</name>
             <url>https://atomist.jfrog.io/atomist/libs-release</url>
+        </repository>
+        <repository>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <id>public-atomist-snapshot</id>
+            <name>Atomist Release</name>
+            <url>https://atomist.jfrog.io/atomist/libs-dev</url>
         </repository>
         <repository>
             <snapshots>

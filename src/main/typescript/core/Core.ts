@@ -14,7 +14,7 @@ export interface GitHubService extends Services {
 
   commentIssue(number: number, comment: string, owner: string, repo: string, token: string): Status
 
-  listIssues(days: number, token: string): Status
+  listIssues(days: number, token: string): Issue[]
 
   mergePullRequest(number: number, owner: string, repo: string, token: string): Status
 
@@ -26,4 +26,20 @@ export interface Status {
   success(): boolean
 
   message(): string
+}
+
+export interface Issue {
+  number(): number
+
+  title(): string
+
+  url(): string
+
+  issueUrl(): string
+
+  repo(): string
+
+  timestamp(): number
+
+  state(): string
 }

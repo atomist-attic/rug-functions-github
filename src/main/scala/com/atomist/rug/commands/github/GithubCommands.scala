@@ -4,30 +4,38 @@ import java.time.OffsetDateTime
 import java.util
 
 import com.atomist.rug.spi.Command
+import com.atomist.util.lang.JavaScriptArray
 import com.atomist.rug.kind.service.ServicesMutableView
 import com.atomist.source.{ArtifactSourceAccessException, SimpleCloudRepoId}
 import com.atomist.source.github.domain._
 import com.atomist.source.github.{GitHubServices, GitHubServicesImpl}
+import com.typesafe.scalalogging.LazyLogging
 
 import scala.collection.JavaConversions
 import scala.collection.mutable.ListBuffer
 import scala.collection.JavaConverters._
 
-class GitHubCommands extends Command[ServicesMutableView] {
+class GitHubCommands extends Command[ServicesMutableView]
+  with LazyLogging {
+
+  val gitHubOperation = new GitHubOperation
 
   override def name: String = "github"
 
   override def nodeTypes: Set[String] = Set("services")
 
   override def invokeOn(services: ServicesMutableView): Object = {
-    new GitHubOperation()
+    gitHubOperation
   }
 
 }
 
-class GitHubOperation() {
+class GitHubOperation extends LazyLogging {
 
   def createIssue(title: String, comment: String, owner: String, repo: String, token: String): GitHubStatus = {
+
+    logger.info(s"Invoking createIssue with title '$title', comment '${comment}', owner '${owner}, repo '${repo} and token '${token.charAt(0) + ("*" * (token.length() - 2)) + token.last}");
+
     val gitHubServices: GitHubServices = new GitHubServicesImpl(token)
 
     val repoId = new SimpleCloudRepoId(owner, repo)
@@ -44,30 +52,59 @@ class GitHubOperation() {
   }
 
   def assignIssue(number: Integer, assignee: String, owner: String, repo: String, token: String): GitHubStatus = {
+
+    logger.info(s"Invoking assignIssue with number '$number', assignee '${assignee}', owner '${owner}, repo '${repo} and token '${token.charAt(0) + ("*" * (token.length() - 2)) + token.last}");
+
     val issue = new EditIssue(number)
     issue.setAssignee(assignee)
     editIssue(issue, owner, repo, token)
   }
 
   def reopenIssue(number: Integer, owner: String, repo: String, token: String): GitHubStatus = {
+
+    logger.info(s"Invoking reopenIssue with number '$number', owner '${owner}, repo '${repo} and token '${token.charAt(0) + ("*" * (token.length() - 2)) + token.last}");
+
     val issue = new EditIssue(number)
     issue.setState("open")
     editIssue(issue, owner, repo, token)
   }
 
   def closeIssue(number: Integer, owner: String, repo: String, token: String): GitHubStatus = {
+
+    logger.info(s"Invoking closeIssue with number '$number', owner '${owner}, repo '${repo} and token '${token.charAt(0) + ("*" * (token.length() - 2)) + token.last}");
+
     val issue = new EditIssue(number)
     issue.setState("closed")
     editIssue(issue, owner, repo, token)
   }
 
   def labelIssue(number: Integer, label: String, owner: String, repo: String, token: String): GitHubStatus = {
+
+    logger.info(s"Invoking labelIssue with number '$number', label '${label}', owner '${owner}, repo '${repo} and token '${token.charAt(0) + ("*" * (token.length() - 2)) + token.last}");
+
     val issue = new EditIssue(number)
     issue.addLabel(label)
     editIssue(issue, owner, repo, token)
   }
 
+  private def editIssue(issue: EditIssue, owner: String, repo: String, token: String): GitHubStatus = {
+    val githubservices: GitHubServices = new GitHubServicesImpl(token)
+
+    val repoId = new SimpleCloudRepoId(owner, repo)
+
+    try {
+      githubservices.editIssue(repoId, issue)
+      GitHubStatus(true, s"Successfully edited issue `#${issue.number}` in `${owner}/${repo}`")
+    }
+    catch {
+      case e: Exception => GitHubStatus(false, e.getMessage)
+    }
+  }
+
   def commentIssue(number: Integer, comment: String, owner: String, repo: String, token: String): GitHubStatus = {
+
+    logger.info(s"Invoking labelIssue with number '$number', comment '${comment}', owner '${owner}, repo '${repo} and token '${token.charAt(0) + ("*" * (token.length() - 2)) + token.last}");
+
     val gitHubServices: GitHubServices = new GitHubServicesImpl(token)
 
     val repoId = new SimpleCloudRepoId(owner, repo)
@@ -82,13 +119,10 @@ class GitHubOperation() {
     }
   }
 
-  private val templateOpen =
-    """{"author_icon":"http://images.atomist.com/rug/issue-open.png","author_link":"%s","author_name":"%s","title":"#%s: %s","title_link":"%s","color":"#2ab27b","ts":%s}""".stripMargin
+  def listIssues(days: Long = 1, token: String): java.util.List[GitHubIssue] = {
 
-  private val templateClosed =
-    """{"author_icon":"http://images.atomist.com/rug/issue-closed.png","author_link":"%s","author_name":"%s","title":"#%s: %s","title_link":"%s","color":"#D04437","ts":%s}""".stripMargin
+    logger.info(s"Invoking listIssues with days '$days' and token '${token.charAt(0) + ("*" * (token.length() - 2)) + token.last}");
 
-  def listIssues(days: Long = 1, token: String): GitHubStatus = {
     val gitHubServices: GitHubServices = new GitHubServicesImpl(token)
 
     val li = new ListIssues
@@ -108,25 +142,21 @@ class GitHubOperation() {
     li.setState("closed")
     issues ++= gitHubServices.listIssuesForUser(cri, li).asScala
 
-    val message = issues.filter(i => i.updatedAt.isAfter(time))
+    val result: Seq[GitHubIssue] = issues.filter(i => i.updatedAt.isAfter(time))
       .sortWith((i1, i2) => i2.updatedAt.compareTo(i1.updatedAt) > 0)
       .toList.map(i => {
-      val id = i.number
-      val title = i.title
-      // https://api.github.com/repos/octocat/Hello-World/issues/1347
-      val url = i.url.replace("https://api.github.com/repos/", "https://github.com/").replace(s"/issues/${i.number}", "")
-      // https://github.com/atomisthq/bot-service/issues/72
-      val issueUrl = i.url.replace("https://api.github.com/repos/", "https://github.com/")
-      // atomisthq/bot-service
-      val repo = i.url.replace("https://api.github.com/repos/", "").replace(s"/issues/${i.number}", "")
-      val ts = i.updatedAt.toEpochSecond
-      i.state match {
-        case "closed" => String.format(templateClosed, url, repo, s"$id", title, issueUrl, s"$ts")
-        case _ =>  String.format(templateOpen, url, repo, s"$id", title, issueUrl, s"$ts")
-      }
-    }).mkString(",")
-
-    GitHubStatus(true, s"""{"attachments": [${message}] }""")
+        val id = i.number
+        val title = i.title
+        // https://api.github.com/repos/octocat/Hello-World/issues/1347
+        val url = i.url.replace("https://api.github.com/repos/", "https://github.com/").replace(s"/issues/${i.number}", "")
+        // https://github.com/atomisthq/bot-service/issues/72
+        val issueUrl = i.url.replace("https://api.github.com/repos/", "https://github.com/")
+        // atomisthq/bot-service
+        val repo = i.url.replace("https://api.github.com/repos/", "").replace(s"/issues/${i.number}", "")
+        val ts = i.updatedAt.toEpochSecond
+        GitHubIssue(id, title, url, issueUrl, repo, ts, i.state)
+      })
+      new JavaScriptArray[GitHubIssue](JavaConversions.seqAsJavaList(result))
   }
 
   def mergePullRequest(number: Integer, owner: String, repo: String, token: String): GitHubStatus = {
@@ -145,19 +175,23 @@ class GitHubOperation() {
   }
 
   def createRelease(tagName: String, owner: String, repo: String, token: String): GitHubStatus = {
+
+    logger.info(s"Invoking createRelease with tag '$tagName', owner '${owner}, repo '${repo} and token '${token.charAt(0) + ("*" * (token.length() - 2)) + token.last}");
+
     val gitHubServices: GitHubServices = new GitHubServicesImpl(token)
 
-    val repoId = new SimpleCloudRepoId(owner, repo);
+    val repoId = new SimpleCloudRepoId(owner, repo)
 
     var tags: util.List[TagInfo] = null
-    var tag: Option[String] = Option.empty
+    var tag: Option[String] = Option.apply(tagName)
 
-    if (tagName != null && tagName.length == 0) {
+    if (tagName == null || (tagName != null && tagName.length == 0)) {
       try {
-        tags = gitHubServices.listTags(repoId);
+        tags = gitHubServices.listTags(repoId)
       } catch {
         case e: ArtifactSourceAccessException =>
           return GitHubStatus(false, e.message)
+        case ex: Exception => throw ex
       }
       if (tags != null && !tags.isEmpty()) {
         tag = Option.apply(JavaConversions.asScalaBuffer(tags).head.name)
@@ -176,24 +210,9 @@ class GitHubOperation() {
         return GitHubStatus(false, e.message)
     }
   }
-
-  private def editIssue(issue: EditIssue, owner: String, repo: String, token: String): GitHubStatus = {
-    val githubservices: GitHubServices = new GitHubServicesImpl(token)
-
-    val repoId = new SimpleCloudRepoId(owner, repo)
-
-    try {
-      githubservices.editIssue(repoId, issue)
-      GitHubStatus(true, s"Successfully edited issue `#${issue.number}` in `${owner}/${repo}`")
-    }
-    catch {
-      case e: Exception => GitHubStatus(false, e.getMessage)
-    }
-  }
-
 }
 
 case class GitHubStatus(success: Boolean, message: String = "")
 
-
+case class GitHubIssue(number: Int, title: String, url: String, issueUrl: String, repo: String, ts: Long, state: String)
 
