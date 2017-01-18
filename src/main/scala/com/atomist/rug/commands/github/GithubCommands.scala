@@ -2,6 +2,7 @@ package com.atomist.rug.commands.github
 
 import java.time.OffsetDateTime
 import java.util
+import java.util.Collections
 
 import com.atomist.rug.spi.Command
 import com.atomist.util.lang.JavaScriptArray
@@ -22,7 +23,7 @@ class GitHubCommands extends Command[ServicesMutableView]
 
   override def name: String = "github"
 
-  override def nodeTypes: Set[String] = Set("services")
+  override def nodeTypes: java.util.Set[String] = Collections.singleton("services")
 
   override def invokeOn(services: ServicesMutableView): Object = {
     gitHubOperation
