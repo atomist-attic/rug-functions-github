@@ -35,7 +35,7 @@ class GitHubOperation extends LazyLogging {
 
   def createIssue(title: String, comment: String, owner: String, repo: String, token: String): GitHubStatus = {
 
-    logger.info(s"Invoking createIssue with title '$title', comment '${comment}', owner '${owner}, repo '${repo} and token '${token.charAt(0) + ("*" * (token.length() - 2)) + token.last}");
+    logger.info(s"Invoking createIssue with title '$title', comment '${comment}', owner '${owner}', repo '${repo}' and token '${safeToken(token)}'");
 
     val gitHubServices: GitHubServices = new GitHubServicesImpl(token)
 
@@ -54,7 +54,8 @@ class GitHubOperation extends LazyLogging {
 
   def assignIssue(number: Integer, assignee: String, owner: String, repo: String, token: String): GitHubStatus = {
 
-    logger.info(s"Invoking assignIssue with number '$number', assignee '${assignee}', owner '${owner}, repo '${repo} and token '${token.charAt(0) + ("*" * (token.length() - 2)) + token.last}");
+    logger.info(s"Invoking assignIssue with number '$number', assignee '${assignee}', owner '${owner}', repo '${repo}' and token '${safeToken(token)}'"
+    );
 
     val issue = new EditIssue(number)
     issue.setAssignee(assignee)
@@ -63,7 +64,7 @@ class GitHubOperation extends LazyLogging {
 
   def reopenIssue(number: Integer, owner: String, repo: String, token: String): GitHubStatus = {
 
-    logger.info(s"Invoking reopenIssue with number '$number', owner '${owner}, repo '${repo} and token '${token.charAt(0) + ("*" * (token.length() - 2)) + token.last}");
+    logger.info(s"Invoking reopenIssue with number '$number', owner '${owner}', repo '${repo}' and token '${safeToken(token)}'");
 
     val issue = new EditIssue(number)
     issue.setState("open")
@@ -72,7 +73,7 @@ class GitHubOperation extends LazyLogging {
 
   def closeIssue(number: Integer, owner: String, repo: String, token: String): GitHubStatus = {
 
-    logger.info(s"Invoking closeIssue with number '$number', owner '${owner}, repo '${repo} and token '${token.charAt(0) + ("*" * (token.length() - 2)) + token.last}");
+    logger.info(s"Invoking closeIssue with number '$number', owner '${owner}, repo '${repo} and token '${safeToken(token)}'");
 
     val issue = new EditIssue(number)
     issue.setState("closed")
@@ -81,7 +82,7 @@ class GitHubOperation extends LazyLogging {
 
   def labelIssue(number: Integer, label: String, owner: String, repo: String, token: String): GitHubStatus = {
 
-    logger.info(s"Invoking labelIssue with number '$number', label '${label}', owner '${owner}, repo '${repo} and token '${token.charAt(0) + ("*" * (token.length() - 2)) + token.last}");
+    logger.info(s"Invoking labelIssue with number '$number', label '${label}', owner '${owner}', repo '${repo}' and token '${safeToken(token)}'");
 
     val issue = new EditIssue(number)
     issue.addLabel(label)
@@ -104,7 +105,7 @@ class GitHubOperation extends LazyLogging {
 
   def commentIssue(number: Integer, comment: String, owner: String, repo: String, token: String): GitHubStatus = {
 
-    logger.info(s"Invoking labelIssue with number '$number', comment '${comment}', owner '${owner}, repo '${repo} and token '${token.charAt(0) + ("*" * (token.length() - 2)) + token.last}");
+    logger.info(s"Invoking labelIssue with number '$number', comment '${comment}', owner '${owner}', repo '${repo}' and token '${safeToken(token)}'");
 
     val gitHubServices: GitHubServices = new GitHubServicesImpl(token)
 
@@ -122,7 +123,7 @@ class GitHubOperation extends LazyLogging {
 
   def listIssues(days: Long = 1, token: String): java.util.List[GitHubIssue] = {
 
-    logger.info(s"Invoking listIssues with days '$days' and token '${token.charAt(0) + ("*" * (token.length() - 2)) + token.last}");
+    logger.info(s"Invoking listIssues with days '$days' and token '${safeToken(token)}'");
 
     val gitHubServices: GitHubServices = new GitHubServicesImpl(token)
 
@@ -162,7 +163,7 @@ class GitHubOperation extends LazyLogging {
 
   def listIssues(search: String, owner: String, repo: String, token: String): java.util.List[GitHubIssue] = {
 
-    logger.info(s"Invoking listIssues with search '$search', owner '$owner', repo '$repo' and token '${token.charAt(0) + ("*" * (token.length() - 2)) + token.last}");
+    logger.info(s"Invoking listIssues with search '$search', owner '$owner', repo '$repo' and token '${safeToken(token)}'");
 
     val gitHubServices: GitHubServices = new GitHubServicesImpl(token)
 
@@ -207,7 +208,7 @@ class GitHubOperation extends LazyLogging {
 
   def createRelease(tagName: String, owner: String, repo: String, token: String): GitHubStatus = {
 
-    logger.info(s"Invoking createRelease with tag '$tagName', owner '${owner}, repo '${repo} and token '${token.charAt(0) + ("*" * (token.length() - 2)) + token.last}");
+    logger.info(s"Invoking createRelease with tag '$tagName', owner '${owner}', repo '${repo}' and token '${safeToken(token)}'");
 
     val gitHubServices: GitHubServices = new GitHubServicesImpl(token)
 
@@ -239,6 +240,15 @@ class GitHubOperation extends LazyLogging {
     } catch {
       case e: ArtifactSourceAccessException =>
         return GitHubStatus(false, e.message)
+    }
+  }
+
+  private def safeToken(token: String): String = {
+    if (token != null) {
+      token.charAt(0) + ("*" * (token.length() - 2)) + token.last
+    }
+    else {
+      null
     }
   }
 }
