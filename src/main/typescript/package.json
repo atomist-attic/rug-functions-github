@@ -22,6 +22,6 @@
   },
   "homepage": "https://github.com/atomist-rugs/travis-rug-type#readme",
   "dependencies": {
-    "@atomist/rug": "${rug.version}"
+    "@atomist/rug": "0.12.0"
   }
 }

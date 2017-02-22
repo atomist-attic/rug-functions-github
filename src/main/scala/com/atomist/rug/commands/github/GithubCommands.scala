@@ -1,12 +1,12 @@
 package com.atomist.rug.commands.github
 
-import java.time.OffsetDateTime
+import java.time.{LocalDateTime, OffsetDateTime}
 import java.util
 import java.util.Collections
 
-import com.atomist.rug.spi.Command
+//import com.atomist.rug.spi.Command
 import com.atomist.util.lang.JavaScriptArray
-import com.atomist.rug.kind.service.ServicesMutableView
+//import com.atomist.rug.kind.service.ServicesMutableView
 import com.atomist.source.{ArtifactSourceAccessException, SimpleCloudRepoId}
 import com.atomist.source.github.domain._
 import com.atomist.source.github.{GitHubServices, GitHubServicesImpl}
@@ -16,20 +16,20 @@ import scala.collection.JavaConversions
 import scala.collection.mutable.ListBuffer
 import scala.collection.JavaConverters._
 
-class GitHubCommands extends Command[ServicesMutableView]
+/*class GitHubCommands extends Command[ServicesMutableView]
   with LazyLogging {
 
   val gitHubOperation = new GitHubOperation
 
   override def name: String = "github"
 
-  override def nodeTypes: java.util.Set[String] = Collections.singleton("services")
+  override def nodeTypes: java.util.Set[String] = Collections.singleton("Services")
 
   override def invokeOn(services: ServicesMutableView): Object = {
     gitHubOperation
   }
 
-}
+}*/
 
 class GitHubOperation extends LazyLogging {
 
@@ -54,12 +54,17 @@ class GitHubOperation extends LazyLogging {
 
   def assignIssue(number: Integer, assignee: String, owner: String, repo: String, token: String): GitHubStatus = {
 
-    logger.info(s"Invoking assignIssue with number '$number', assignee '${assignee}', owner '${owner}', repo '${repo}' and token '${safeToken(token)}'"
-    );
+    logger.info(s"Invoking assignIssue with number '$number', assignee '${assignee}', owner '${owner}', repo '${repo}' and token '${safeToken(token)}'");
 
-    val issue = new EditIssue(number)
-    issue.setAssignee(assignee)
-    editIssue(issue, owner, repo, token)
+    val githubservices: GitHubServices = new GitHubServicesImpl(token)
+
+    val repoId = new SimpleCloudRepoId(owner, repo)
+    val issue = githubservices.getIssue(repoId, number)
+
+    val assignees = new Assignees(number, (issue.assignees.map(a => a.login).toSeq :+ assignee).toArray)
+    githubservices.addAssignees(repoId, assignees)
+
+    GitHubStatus(true, s"Successfully assigned issue `#${issue.number}` in `${owner}/${repo}` to `$assignee`")
   }
 
   def reopenIssue(number: Integer, owner: String, repo: String, token: String): GitHubStatus = {
@@ -84,9 +89,15 @@ class GitHubOperation extends LazyLogging {
 
     logger.info(s"Invoking labelIssue with number '$number', label '${label}', owner '${owner}', repo '${repo}' and token '${safeToken(token)}'");
 
-    val issue = new EditIssue(number)
-    issue.addLabel(label)
-    editIssue(issue, owner, repo, token)
+    val githubservices: GitHubServices = new GitHubServicesImpl(token)
+
+    val repoId = new SimpleCloudRepoId(owner, repo)
+    val issue = githubservices.getIssue(repoId, number)
+
+    val ei = new EditIssue(number)
+    val labels = issue.labels.map(i => i.name).toSeq :+ label
+    ei.addLabels(labels)
+    editIssue(ei, owner, repo, token)
   }
 
   private def editIssue(issue: EditIssue, owner: String, repo: String, token: String): GitHubStatus = {
@@ -114,7 +125,7 @@ class GitHubOperation extends LazyLogging {
 
     try {
       val newComment = gitHubServices.createIssueComment(repoId, issueComment)
-      GitHubStatus(true, s"Successfully created new comment on issue `#${issueComment.num}` in `${owner}/${repo}`")
+      GitHubStatus(true, s"Successfully created new comment on issue `#${issueComment.number}` in `${owner}/${repo}`")
     }
     catch {
       case e: Exception => GitHubStatus(false, e.getMessage)
@@ -144,7 +155,7 @@ class GitHubOperation extends LazyLogging {
     li.setState("closed")
     issues ++= gitHubServices.listIssuesForUser(cri, li).asScala
 
-    val result: Seq[GitHubIssue] = issues.filter(i => i.updatedAt.isAfter(time))
+    val result: Seq[GitHubIssue] = issues.filter(i => i.updatedAt.isAfter(time) || (i.pushedAt != null && i.pushedAt.isAfter(time)))
       .sortWith((i1, i2) => i2.updatedAt.compareTo(i1.updatedAt) > 0)
       .toList.map(i => {
         val id = i.number
@@ -176,7 +187,7 @@ class GitHubOperation extends LazyLogging {
     var issues = gitHubServices.listIssues(cri, li).asScala
 
     val result: Seq[GitHubIssue] = issues.filter(i => i.pullRequest == null).sortWith((i1, i2) => i1.updatedAt.compareTo(i2.updatedAt) > 0)
-        .filter(i => ( (search == null || search == "not-set") || (i.body.contains(search) || i.title.contains(search)))).toList.map(i => {
+        .filter(i => ( (search == null || search == "not-set") || ((i.body != null && i.body.contains(search)) || (i.title != null && i.title.contains(search))))).toList.map(i => {
       val id = i.number
       val title = i.title
       // https://api.github.com/repos/octocat/Hello-World/issues/1347
@@ -243,6 +254,20 @@ class GitHubOperation extends LazyLogging {
     }
   }
 
+
+  def createTag(tag: String, message: String, sha: String, owner: String, repo: String, token: String): GitHubStatus = {
+    logger.info(s"Invoking createTag with tag '$tag', message '$message', sha '$sha', owner '${owner}', repo '${repo}' and token '${safeToken(token)}'");
+
+    val gitHubServices: GitHubServices = new GitHubServicesImpl(token)
+    val repoId = new SimpleCloudRepoId(owner, repo)
+
+    val date = OffsetDateTime.now()
+    val cto = CreateTag(tag, message, sha, "commit", new Tagger("Atomist Bot", "bot@atomist.com", date))
+
+    gitHubServices.createAnnotatedTag(repoId, cto)
+    new GitHubStatus(true, s"Successfully create new tag `$tag` in `$owner/$repo`")
+  }
+
   private def safeToken(token: String): String = {
     if (token != null) {
       token.charAt(0) + ("*" * (token.length() - 2)) + token.last
@@ -251,6 +276,7 @@ class GitHubOperation extends LazyLogging {
       null
     }
   }
+
 }
 
 case class GitHubStatus(success: Boolean, message: String = "")
