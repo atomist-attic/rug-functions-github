@@ -12,9 +12,9 @@ import com.typesafe.scalalogging.LazyLogging
 class CreateIssueFunction extends RugFunction with LazyLogging {
 
   override def run(parameters: ParameterValues): Response = {
-    logger.info(s"Invoking createIssue with title '${parameters.stringParamValue("title")}', body '${parameters.stringParamValue("body")}', owner '${parameters.stringParamValue("owner")}', repo '${parameters.stringParamValue("repo")}' and token '${safeToken(parameters.stringParamValue("token"))}'")
+    logger.info(s"Invoking createIssue with title '${parameters.stringParamValue("title")}', body '${parameters.stringParamValue("body")}', owner '${parameters.stringParamValue("owner")}', repo '${parameters.stringParamValue("repo")}' and token '${safeToken(parameters.stringParamValue("user_token"))}'")
 
-    val gitHubServices: GitHubServices = new GitHubServicesImpl(parameters.stringParamValue("token"))
+    val gitHubServices: GitHubServices = new GitHubServicesImpl(parameters.stringParamValue("user_token"))
 
     val repoId = new SimpleCloudRepoId(parameters.stringParamValue("owner"), parameters.stringParamValue("repo"))
     val issue = new CreateIssue(parameters.stringParamValue("title"))
