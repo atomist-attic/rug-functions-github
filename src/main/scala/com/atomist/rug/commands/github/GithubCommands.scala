@@ -1,5 +1,6 @@
 package com.atomist.rug.commands.github
 
+import java.net.URL
 import java.time.OffsetDateTime
 import java.util
 import java.util.Collections
@@ -11,6 +12,7 @@ import com.atomist.source.{ArtifactSourceAccessException, SimpleCloudRepoId}
 import com.atomist.source.github.domain._
 import com.atomist.source.github.{GitHubServices, GitHubServicesImpl}
 import com.typesafe.scalalogging.LazyLogging
+import org.kohsuke.github.{GHEvent, GitHub}
 
 import scala.collection.JavaConversions
 import scala.collection.mutable.ListBuffer
@@ -23,7 +25,7 @@ class GitHubCommands extends Command[ServicesMutableView]
 
   override def name: String = "github"
 
-  override def nodeTypes: java.util.Set[String] = Collections.singleton("services")
+  override def nodeTypes: java.util.Set[String] = Collections.singleton("Services")
 
   override def invokeOn(services: ServicesMutableView): Object = {
     gitHubOperation
@@ -32,6 +34,31 @@ class GitHubCommands extends Command[ServicesMutableView]
 }
 
 class GitHubOperation extends LazyLogging {
+
+  def installWebhook(url: String, owner: String, repo: String, token: String): GitHubStatus = {
+    logger.info(s"Invoking installWebhook with url '$url', owner '${owner}', repo '${repo}' and token '${safeToken(token)}'");
+
+    val config = new util.HashMap[String, String]()
+    config.put("url", url)
+    config.put("content_type", "json")
+    val events = Seq(GHEvent.ALL)
+
+    if (repo == null || repo.length == 0) {
+      try {
+        val github = GitHub.connectUsingOAuth(token)
+        github.getOrganization(owner).createHook("web", config, events.asJava, true)
+        GitHubStatus(true, s"Successfully installed org-level webhook for `${owner}`")
+      }
+      catch {
+        case e: Exception => GitHubStatus(false, e.getMessage)
+      }
+    }
+    else {
+      val github = GitHub.connectUsingOAuth(token)
+      github.getOrganization(owner).getRepository(repo).createHook("web", config, events.asJava, true)
+      GitHubStatus(true, s"Successfully installed repo-level webhook for `${owner}/${repo}`")
+    }
+  }
 
   def createIssue(title: String, comment: String, owner: String, repo: String, token: String): GitHubStatus = {
 
@@ -144,7 +171,7 @@ class GitHubOperation extends LazyLogging {
     li.setState("closed")
     issues ++= gitHubServices.listIssuesForUser(cri, li).asScala
 
-    val result: Seq[GitHubIssue] = issues.filter(i => i.updatedAt.isAfter(time))
+    val result: Seq[GitHubIssue] = issues.filter(i => (i.pushedAt != null && i.pushedAt.isAfter(time)) || i.updatedAt.isAfter(time))
       .sortWith((i1, i2) => i2.updatedAt.compareTo(i1.updatedAt) > 0)
       .toList.map(i => {
         val id = i.number

@@ -9,7 +9,7 @@ class MessageBuilderCommands extends Command[ServicesMutableView] {
 
   override def name: String = "messageBuilder"
 
-  override def nodeTypes: java.util.Set[String] = Collections.singleton("services")
+  override def nodeTypes: java.util.Set[String] = Collections.singleton("Services")
 
   override def invokeOn(services: ServicesMutableView): Object = {
     services.serviceSource.messageBuilder

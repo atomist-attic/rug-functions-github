@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.atomist</groupId>
     <artifactId>github-commands</artifactId>
-    <version>0.4.1</version>
+    <version>0.7.0</version>
     <packaging>jar</packaging>
     <name>github-commands</name>
     <description>Rug Commands for GitHub</description>
@@ -14,9 +14,14 @@
         <java.version>1.8</java.version>
         <scala.version>2.11.8</scala.version>
         <scala.binary.version>2.11</scala.binary.version>
-        <rug.version>0.10.0</rug.version>
+        <rug.version>0.12.0</rug.version>
     </properties>
     <dependencies>
+        <dependency>
+            <groupId>org.kohsuke</groupId>
+            <artifactId>github-api</artifactId>
+            <version>1.84</version>
+        </dependency>
         <dependency>
             <groupId>com.atomist</groupId>
             <artifactId>rug</artifactId>

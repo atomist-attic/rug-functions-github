@@ -1,6 +1,6 @@
 {
   "name": "@atomist/github",
-  "version": "${project.version}",
+  "version": "0.2.0",
   "description": "TypeScript model for Atomist GitHub Commands",
   "keywords": [
     "Atomist",
@@ -22,6 +22,6 @@
   },
   "homepage": "https://github.com/atomist-rugs/travis-rug-type#readme",
   "dependencies": {
-    "@atomist/rug": "${rug.version}"
+    "@atomist/rug": "0.10.0"
   }
 }
