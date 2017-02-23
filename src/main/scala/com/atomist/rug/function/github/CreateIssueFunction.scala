@@ -1,5 +1,6 @@
 package com.atomist.rug.function.github
 
+import com.atomist.rug.runtime.InstructionResponse
 import com.atomist.rug.spi.AnnotatedRugFunction
 import com.atomist.rug.spi.Handlers.{Response, Status}
 import com.atomist.rug.spi.annotation.{Parameter, RugFunction, Secret, Tag}
@@ -16,7 +17,7 @@ class CreateIssueFunction extends AnnotatedRugFunction with LazyLogging {
              @Parameter(name = "body") body: String,
              @Parameter(name = "repo") repo: String,
              @Parameter(name = "owner") owner: String,
-             @Secret(name = "user_token", path = "github") token: String): Response = {
+             @Secret(name = "user_token", path = "github/user_token=repo") token: String): Response = {
 
     logger.info(s"Invoking createIssue with title '${title}', body '${body}', owner '${owner}', repo '${repo}' and token '${safeToken(token)}'")
 
@@ -28,7 +29,11 @@ class CreateIssueFunction extends AnnotatedRugFunction with LazyLogging {
 
     try {
       val newIssue = gitHubServices.createIssue(repoId, issue)
-      Response(Status.Success, Option(s"Successfully created new issue `#${newIssue.number}` in `${owner}/${repo}`"))
+      Response(Status.Success, Option(s"Successfully created new issue `#${newIssue.number}` in `${owner}/${repo}`"), Option.empty, Option(new InstructionResponse() {
+        override def body = "Successfully created new issue `#${newIssue.number}` in `${owner}/${repo}`"
+        override def code = 1
+        override def status = "Success"
+      }))
     }
     catch {
       case e: Exception => Response(Status.Failure, Option(e.getMessage))
