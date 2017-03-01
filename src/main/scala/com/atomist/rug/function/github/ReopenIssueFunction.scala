@@ -1,0 +1,30 @@
+package com.atomist.rug.function.github
+
+import com.atomist.rug.spi.AnnotatedRugFunction
+import com.atomist.rug.spi.Handlers.Response
+import com.atomist.rug.spi.annotation.{Parameter, RugFunction, Secret, Tag}
+import com.atomist.source.github.domain.EditIssue
+import com.typesafe.scalalogging.LazyLogging
+
+/**
+  * Reopens a github issue
+  */
+class ReopenIssueFunction
+  extends AnnotatedRugFunction
+  with LazyLogging
+  with GitHubFunction
+  with GitHubIssueEditor {
+
+  @RugFunction(name = "reopen-issue", description = "Reopens a closed GitHub issue",
+    tags = Array(new Tag(name = "github"), new Tag(name = "issues")))
+  def invoke(@Parameter(name = "number") number: Int,
+             @Parameter(name = "repo") repo: String,
+             @Parameter(name = "owner") owner: String,
+             @Secret(name = "user_token", path = "github/user_token=repo") token: String): Response = {
+
+    logger.info(s"Invoking reopenIssue with number '$number', owner '$owner', repo '$repo' and token '${safeToken(token)}'");
+    val issue = new EditIssue(number)
+    issue.setState("open")
+    editIssue(issue, owner, repo, token)
+  }
+}
