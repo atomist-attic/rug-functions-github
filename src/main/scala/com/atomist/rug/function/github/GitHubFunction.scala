@@ -1,6 +1,9 @@
 package com.atomist.rug.function.github
 
-trait GitHubFunction {
+import com.atomist.rug.runtime.RugSupport
+
+trait GitHubFunction
+  extends RugSupport{
   /**
     * Sanitize a token
     * @param token
