@@ -1,6 +1,6 @@
 package com.atomist.rug.function.github
 
-import com.atomist.rug.spi.AnnotatedRugFunction
+import com.atomist.rug.spi.{AnnotatedRugFunction, FunctionResponse, JsonBodyOption, StringBodyOption}
 import com.atomist.rug.spi.Handlers.{Response, Status}
 import com.atomist.rug.spi.annotation.{Parameter, RugFunction, Secret, Tag}
 import com.atomist.source.SimpleCloudRepoId
@@ -19,9 +19,9 @@ class AssignIssueFunction
              @Parameter(name = "repo") repo: String,
              @Parameter(name = "assignee") assignee: String,
              @Parameter(name = "owner") owner: String,
-             @Secret(name = "user_token", path = "github/user_token=repo") token: String): Response = {
+             @Secret(name = "user_token", path = "github/user_token=repo") token: String): FunctionResponse = {
 
-    logger.info(s"Invoking assignIssue with number '$number', assignee '$assignee', owner '$owner', repo '$repo' and token '${safeToken(token)}'");
+    logger.info(s"Invoking assignIssue with number '$number', assignee '$assignee', owner '$owner', repo '$repo' and token '${safeToken(token)}'")
 
     val githubservices: GitHubServices = new GitHubServicesImpl(token)
 
@@ -31,11 +31,11 @@ class AssignIssueFunction
     val assignees = Assignees(number, (issue.assignees.map(a => a.login).toSeq :+ assignee).toArray)
 
     try {
-      githubservices.addAssignees(repoId, assignees)
-      Response(Status.Success, Option(s"Successfully assigned issue `#${issue.number}` in `$owner/$repo` to `$assignee`"), None, None)
+      val issue = githubservices.addAssignees(repoId, assignees)
+      FunctionResponse(Status.Success, Option(s"Successfully assigned issue `#${issue.number}` in `$owner/$repo` to `$assignee`"), None, JsonBodyOption(issue))
     }
     catch {
-      case e: Exception => Response(Status.Failure, Some(s"Error assigning issue `#${issue.number}` in `$owner/$repo` to `$assignee`"), None, Some(e.getMessage))
+      case e: Exception => FunctionResponse(Status.Failure, Some(s"Error assigning issue `#${issue.number}` in `$owner/$repo` to `$assignee`"), None, StringBodyOption(e.getMessage))
     }
   }
 }

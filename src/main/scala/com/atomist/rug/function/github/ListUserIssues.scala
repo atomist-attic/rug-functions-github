@@ -2,15 +2,15 @@ package com.atomist.rug.function.github
 
 import java.time.OffsetDateTime
 
-import com.atomist.rug.spi.AnnotatedRugFunction
-import com.atomist.rug.spi.Handlers.{Response, Status}
+import com.atomist.rug.runtime.js.JsonSerializer
+import com.atomist.rug.spi.Handlers.Status
 import com.atomist.rug.spi.annotation.{Parameter, RugFunction, Secret, Tag}
+import com.atomist.rug.spi.{AnnotatedRugFunction, FunctionResponse, JsonBodyOption, StringBodyOption}
 import com.atomist.source.SimpleCloudRepoId
 import com.atomist.source.github.domain.{Issue, ListIssues}
 import com.atomist.source.github.{GitHubServices, GitHubServicesImpl}
 import com.typesafe.scalalogging.LazyLogging
 
-import scala.collection.JavaConversions
 import scala.collection.JavaConverters._
 import scala.collection.mutable.ListBuffer
 
@@ -18,12 +18,12 @@ class ListUserIssues extends AnnotatedRugFunction
   with LazyLogging
   with GitHubFunction{
 
-  @RugFunction(name = "list=user-issues", description = "List issues for user that owns the token",
+  @RugFunction(name = "list-user-issues", description = "List issues for user that owns the token",
     tags = Array(new Tag(name = "github"), new Tag(name = "issues")))
   def invoke(@Parameter(name = "days") days: Int = 1,
-             @Secret(name = "user_token", path = "github/user_token=repo") token: String): Response = {
+             @Secret(name = "user_token", path = "github/user_token=repo") token: String): FunctionResponse = {
 
-    logger.info(s"Invoking listIssues with days '$days' and token '${safeToken(token)}'");
+    logger.info(s"Invoking listIssues with days '$days' and token '${safeToken(token)}'")
 
     val gitHubServices: GitHubServices = new GitHubServicesImpl(token)
 
@@ -59,9 +59,9 @@ class ListUserIssues extends AnnotatedRugFunction
         val ts = i.updatedAt.toEpochSecond
         GitHubIssue(id, title, url, issueUrl, repo, ts, i.state)
       })
-      Response(Status.Success, Some(s"Successfully listed issues"), None, Some(JavaConversions.seqAsJavaList(result)))
+      FunctionResponse(Status.Success, Some(s"Successfully listed issues"), None, JsonBodyOption(result))
     }catch {
-      case e: Exception => Response(Status.Failure, Some(s"Failed to list issues"), None, Some(e.getMessage))
+      case e: Exception => FunctionResponse(Status.Failure, Some(s"Failed to list issues"), None, StringBodyOption(e.getMessage))
     }
   }
 }

@@ -1,6 +1,7 @@
 package com.atomist.rug.function.github
 
-import com.atomist.rug.spi.AnnotatedRugFunction
+import com.atomist.rug.runtime.js.JsonSerializer
+import com.atomist.rug.spi.{AnnotatedRugFunction, FunctionResponse, JsonBodyOption, StringBodyOption}
 import com.atomist.rug.spi.Handlers.{Response, Status}
 import com.atomist.rug.spi.annotation.{Parameter, RugFunction, Secret, Tag}
 import com.atomist.source.SimpleCloudRepoId
@@ -19,7 +20,7 @@ class CommentIssueFunction
              @Parameter(name = "comment") comment: String,
              @Parameter(name = "repo") repo: String,
              @Parameter(name = "owner") owner: String,
-             @Secret(name = "user_token", path = "github/user_token=repo") token: String): Response = {
+             @Secret(name = "user_token", path = "github/user_token=repo") token: String): FunctionResponse = {
 
     logger.info(s"Invoking labelIssue with number '$number', comment '$comment', owner '$owner', repo '$repo' and token '${safeToken(token)}'")
 
@@ -32,10 +33,10 @@ class CommentIssueFunction
     try {
       val newComment = gitHubServices.createIssueComment(repoId, issueComment)
 
-      Response(Status.Success, Option(s"Successfully created new comment on issue `#${issueComment.number}` in `$owner/$repo`"), None, Some(newComment))
+      FunctionResponse(Status.Success, Option(s"Successfully created new comment on issue `#${issueComment.number}` in `$owner/$repo`"), None, JsonBodyOption(newComment))
     }
     catch {
-      case e: Exception => Response(Status.Failure, Some(s"Failed to create new comment on issue `#${issueComment.number}` in `$owner/$repo`"), None, Some(e.getMessage))
+      case e: Exception => FunctionResponse(Status.Failure, Some(s"Failed to create new comment on issue `#${issueComment.number}` in `$owner/$repo`"), None, StringBodyOption(e.getMessage))
     }
   }
 }

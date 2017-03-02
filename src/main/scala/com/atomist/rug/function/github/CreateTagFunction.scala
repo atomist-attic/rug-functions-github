@@ -2,9 +2,9 @@ package com.atomist.rug.function.github
 
 import java.time.OffsetDateTime
 
-import com.atomist.rug.spi.AnnotatedRugFunction
-import com.atomist.rug.spi.Handlers.{Response, Status}
+import com.atomist.rug.spi.Handlers.Status
 import com.atomist.rug.spi.annotation.{Parameter, RugFunction, Secret, Tag}
+import com.atomist.rug.spi._
 import com.atomist.source.SimpleCloudRepoId
 import com.atomist.source.github.domain.{CreateTag, Tagger}
 import com.atomist.source.github.{GitHubServices, GitHubServicesImpl}
@@ -24,7 +24,7 @@ class CreateTagFunction
              @Parameter(name = "message") message: String,
              @Parameter(name = "repo") repo: String,
              @Parameter(name = "owner") owner: String,
-             @Secret(name = "user_token", path = "github/user_token=repo") token: String): Response = {
+             @Secret(name = "user_token", path = "github/user_token=repo") token: String): FunctionResponse = {
 
     logger.info(s"Invoking createTag with tag '$tag', message '$message', sha '$sha', owner '$owner', repo '$repo' and token '${safeToken(token)}'")
 
@@ -35,11 +35,11 @@ class CreateTagFunction
     val cto = CreateTag(tag, message, sha, "commit", Tagger("Atomist Bot", "bot@atomist.com", date))
 
     try {
-      gitHubServices.createAnnotatedTag(repoId, cto)
-      Response(Status.Success, Option(s"Successfully create new tag `$tag` in `$owner/$repo`"), None, None)
+      val response = gitHubServices.createAnnotatedTag(repoId, cto)
+      FunctionResponse(Status.Success, Option(s"Successfully create new tag `$tag` in `$owner/$repo`"), None, JsonBodyOption(response))
     }
     catch {
-      case e: Exception => Response(Status.Failure, Some(s"Failed to create new tag `$tag` in `$owner/$repo`"), None, Some(e.getMessage))
+      case e: Exception => FunctionResponse(Status.Failure, Some(s"Failed to create new tag `$tag` in `$owner/$repo`"), None, StringBodyOption(e.getMessage))
     }
   }
 }

@@ -1,6 +1,6 @@
 package com.atomist.rug.function.github
 
-import com.atomist.rug.spi.AnnotatedRugFunction
+import com.atomist.rug.spi.{AnnotatedRugFunction, FunctionResponse, JsonBodyOption, StringBodyOption}
 import com.atomist.rug.spi.Handlers.{Response, Status}
 import com.atomist.rug.spi.annotation.{Parameter, RugFunction, Secret, Tag}
 import com.atomist.source.SimpleCloudRepoId
@@ -22,7 +22,7 @@ class MergePullRequestFunction
              @Parameter(name = "comment") comment: String,
              @Parameter(name = "repo") repo: String,
              @Parameter(name = "owner") owner: String,
-             @Secret(name = "user_token", path = "github/user_token=repo") token: String): Response = {
+             @Secret(name = "user_token", path = "github/user_token=repo") token: String): FunctionResponse = {
 
     logger.info(s"Invoking merge with number '$number', comment '$comment', owner '$owner', repo '$repo' and token '${safeToken(token)}'")
 
@@ -34,10 +34,10 @@ class MergePullRequestFunction
 
     try {
       gitHubServices.mergePullRequest(repoId, new PullRequestMerge(number, pr.head.sha))
-      Response(Status.Success, Option(s"Successfully merged pull request `${pr.number}"), None, None)
+      FunctionResponse(Status.Success, Option(s"Successfully merged pull request `${pr.number}"))
     }
     catch {
-      case e: Exception => Response(Status.Failure, Some(s"Failed to merge pull request `${pr.number}"), None, Some(e.getMessage))
+      case e: Exception => FunctionResponse(Status.Failure, Some(s"Failed to merge pull request `${pr.number}"), None, StringBodyOption(e.getMessage))
     }
   }
 }

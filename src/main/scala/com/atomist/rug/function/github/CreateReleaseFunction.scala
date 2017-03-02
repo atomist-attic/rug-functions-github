@@ -1,8 +1,8 @@
 package com.atomist.rug.function.github
 
-import com.atomist.rug.spi.AnnotatedRugFunction
-import com.atomist.rug.spi.Handlers.{Response, Status}
+import com.atomist.rug.spi.Handlers.Status
 import com.atomist.rug.spi.annotation.{Parameter, RugFunction, Secret, Tag}
+import com.atomist.rug.spi.{AnnotatedRugFunction, FunctionResponse, JsonBodyOption, StringBodyOption}
 import com.atomist.source.github.domain.{CreateRelease, TagInfo}
 import com.atomist.source.github.{GitHubServices, GitHubServicesImpl}
 import com.atomist.source.{ArtifactSourceAccessException, SimpleCloudRepoId}
@@ -20,7 +20,7 @@ class CreateReleaseFunction extends AnnotatedRugFunction
              @Parameter(name = "message") message: String,
              @Parameter(name = "repo") repo: String,
              @Parameter(name = "owner") owner: String,
-             @Secret(name = "user_token", path = "github/user_token=repo") token: String): Response = {
+             @Secret(name = "user_token", path = "github/user_token=repo") token: String): FunctionResponse = {
 
     logger.info(s"Invoking create-release with tag '$tagName', owner '$owner', repo '$repo' and token '${safeToken(token)}'")
 
@@ -38,7 +38,7 @@ class CreateReleaseFunction extends AnnotatedRugFunction
         tags = gitHubServices.listTags(repoId)
       } catch {
         case e: ArtifactSourceAccessException =>
-          return Response(Status.Failure, Some(s"Failed to create release from tag `$tag` in `$owner/$repo`"), None, Some(e.getMessage))
+          return FunctionResponse(Status.Failure, Some(s"Failed to create release from tag `$tag` in `$owner/$repo`"), None, StringBodyOption(e.getMessage))
         case ex: Exception => throw ex
       }
       if (tags != null && tags.isEmpty) {
@@ -47,15 +47,15 @@ class CreateReleaseFunction extends AnnotatedRugFunction
     }
 
     if (tag.isEmpty) {
-      return Response(Status.Failure, Some(s"No tag found in `$owner/$repo`"))
+      return FunctionResponse(Status.Failure, Some(s"No tag found in `$owner/$repo`"))
     }
 
     try {
       val release = gitHubServices.createRelease(repoId, new CreateRelease(tag.get, "master", null, null, false, false))
-      Response(Status.Success, Some(s"Successfully created release `${release.tagName}` in `$owner/$repo#${release.targetCommitish}`"))
+      FunctionResponse(Status.Success, Some(s"Successfully created release `${release.tagName}` in `$owner/$repo#${release.targetCommitish}`"), None, JsonBodyOption(release))
     } catch {
       case e: ArtifactSourceAccessException =>
-        Response(Status.Failure, Some(s"Failed to create release from new tag `$tag` in `$owner/$repo`"), None, Some(e.getMessage))
+        FunctionResponse(Status.Failure, Some(s"Failed to create release from new tag `$tag` in `$owner/$repo`"), None, StringBodyOption(e.getMessage))
     }
   }
 }

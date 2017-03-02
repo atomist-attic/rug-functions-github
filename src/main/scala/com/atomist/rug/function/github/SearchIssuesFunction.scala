@@ -1,6 +1,6 @@
 package com.atomist.rug.function.github
 
-import com.atomist.rug.spi.AnnotatedRugFunction
+import com.atomist.rug.spi.{AnnotatedRugFunction, FunctionResponse, JsonBodyOption, StringBodyOption}
 import com.atomist.rug.spi.Handlers.{Response, Status}
 import com.atomist.rug.spi.annotation.{Parameter, RugFunction, Secret, Tag}
 import com.atomist.source.SimpleCloudRepoId
@@ -21,7 +21,7 @@ class SearchIssuesFunction
   def invoke(@Parameter(name = "search") search: String,
              @Parameter(name = "repo") repo: String,
              @Parameter(name = "owner") owner: String,
-             @Secret(name = "user_token", path = "github/user_token=repo") token: String): Response = {
+             @Secret(name = "user_token", path = "github/user_token=repo") token: String): FunctionResponse = {
 
     logger.info(s"Invoking listIssues with search '$search', owner '$owner', repo '$repo' and token '${safeToken(token)}'");
 
@@ -50,9 +50,9 @@ class SearchIssuesFunction
         val ts = i.updatedAt.toEpochSecond
         GitHubIssue(id, title, url, issueUrl, repo, ts, i.state)
       }).slice(0, 10)
-      Response(Status.Success, Some(s"Successfully listed issues for search `$search` on `$repo/$owner`"), None, Some(JavaConversions.seqAsJavaList(result)))
+      FunctionResponse(Status.Success, Some(s"Successfully listed issues for search `$search` on `$repo/$owner`"), None, JsonBodyOption(result))
     } catch {
-      case e: Exception => Response(Status.Failure, Some(s"Failed to list issues"), None, Some(e.getMessage))
+      case e: Exception => FunctionResponse(Status.Failure, Some(s"Failed to list issues"), None, StringBodyOption(e.getMessage))
     }
   }
 }

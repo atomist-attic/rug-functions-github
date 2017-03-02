@@ -1,6 +1,7 @@
 package com.atomist.rug.function.github
 
-import com.atomist.rug.spi.AnnotatedRugFunction
+import com.atomist.rug.runtime.js.JsonSerializer
+import com.atomist.rug.spi.{AnnotatedRugFunction, FunctionResponse, JsonBodyOption, StringBodyOption}
 import com.atomist.rug.spi.Handlers.{Response, Status}
 import com.atomist.rug.spi.annotation.{Parameter, RugFunction, Secret, Tag}
 import com.atomist.source.SimpleCloudRepoId
@@ -22,7 +23,7 @@ class CreateIssueFunction
              @Parameter(name = "body") body: String,
              @Parameter(name = "repo") repo: String,
              @Parameter(name = "owner") owner: String,
-             @Secret(name = "user_token", path = "github/user_token=repo") token: String): Response = {
+             @Secret(name = "user_token", path = "github/user_token=repo") token: String): FunctionResponse = {
 
     logger.info(s"Invoking createIssue with title '$title', body '$body', owner '$owner', repo '$repo' and token '${safeToken(token)}'")
 
@@ -34,10 +35,10 @@ class CreateIssueFunction
 
     try {
       val newIssue = gitHubServices.createIssue(repoId, issue)
-      Response(Status.Success, Some(s"Successfully created new issue `#${newIssue.number}` in `$owner/$repo`"), None, Some(newIssue))
+      FunctionResponse(Status.Success, Some(s"Successfully created new issue `#${newIssue.number}` in `$owner/$repo`"), None, JsonBodyOption(newIssue))
     }
     catch {
-      case e: Exception => Response(Status.Failure, Some(s"Failed too create new issue in `$owner/$repo`"), None, Some(e.getMessage))
+      case e: Exception => FunctionResponse(Status.Failure, Some(s"Failed too create new issue in `$owner/$repo`"), None, StringBodyOption(e.getMessage))
     }
   }
 }

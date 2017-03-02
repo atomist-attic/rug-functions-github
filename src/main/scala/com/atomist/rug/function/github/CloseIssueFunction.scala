@@ -1,6 +1,6 @@
 package com.atomist.rug.function.github
 
-import com.atomist.rug.spi.AnnotatedRugFunction
+import com.atomist.rug.spi.{AnnotatedRugFunction, FunctionResponse}
 import com.atomist.rug.spi.Handlers.Response
 import com.atomist.rug.spi.annotation.{Parameter, RugFunction, Secret, Tag}
 import com.atomist.source.github.domain.EditIssue
@@ -19,7 +19,7 @@ class CloseIssueFunction extends AnnotatedRugFunction
   def invoke(@Parameter(name = "number") number: Int,
              @Parameter(name = "repo") repo: String,
              @Parameter(name = "owner") owner: String,
-             @Secret(name = "user_token", path = "github/user_token=repo") token: String): Response = {
+             @Secret(name = "user_token", path = "github/user_token=repo") token: String): FunctionResponse = {
 
     logger.info(s"Invoking reopenIssue with number '$number', owner '$owner', repo '$repo' and token '${safeToken(token)}'");
     val issue = new EditIssue(number)
