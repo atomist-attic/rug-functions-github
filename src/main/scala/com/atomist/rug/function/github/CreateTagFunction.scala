@@ -24,7 +24,7 @@ class CreateTagFunction
              @Parameter(name = "message") message: String,
              @Parameter(name = "repo") repo: String,
              @Parameter(name = "owner") owner: String,
-             @Secret(name = "user_token", path = "github/user_token=repo") token: String): FunctionResponse = {
+             @Secret(name = "user_token", path = "user/github/token?scope=repo") token: String): FunctionResponse = {
 
     logger.info(s"Invoking createTag with tag '$tag', message '$message', sha '$sha', owner '$owner', repo '$repo' and token '${safeToken(token)}'")
 

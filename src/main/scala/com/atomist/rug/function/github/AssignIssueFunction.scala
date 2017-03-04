@@ -19,7 +19,7 @@ class AssignIssueFunction
              @Parameter(name = "repo") repo: String,
              @Parameter(name = "assignee") assignee: String,
              @Parameter(name = "owner") owner: String,
-             @Secret(name = "user_token", path = "github/user_token=repo") token: String): FunctionResponse = {
+             @Secret(name = "user_token", path = "user/github/token?scope=repo") token: String): FunctionResponse = {
 
     logger.info(s"Invoking assignIssue with number '$number', assignee '$assignee', owner '$owner', repo '$repo' and token '${safeToken(token)}'")
 

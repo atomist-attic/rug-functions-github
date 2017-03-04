@@ -20,8 +20,8 @@ class ListUserIssues extends AnnotatedRugFunction
 
   @RugFunction(name = "list-user-issues", description = "List issues for user that owns the token",
     tags = Array(new Tag(name = "github"), new Tag(name = "issues")))
-  def invoke(@Parameter(name = "days") days: Int = 1,
-             @Secret(name = "user_token", path = "github/user_token=repo") token: String): FunctionResponse = {
+  def invoke(@Parameter(name = "days") days: String = "1",
+             @Secret(name = "user_token", path = "user/github/token?scope=repo") token: String): FunctionResponse = {
 
     logger.info(s"Invoking listIssues with days '$days' and token '${safeToken(token)}'")
 
@@ -33,7 +33,7 @@ class ListUserIssues extends AnnotatedRugFunction
     li.setFilter("assigned")
     li.setState("open")
 
-    val time: OffsetDateTime = days match {
+    val time: OffsetDateTime = days.toInt match {
       case e => OffsetDateTime.now.minusDays(e)
       case _ => OffsetDateTime.now.minusDays(1)
     }

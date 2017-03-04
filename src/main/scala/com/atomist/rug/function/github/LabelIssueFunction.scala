@@ -22,7 +22,7 @@ class LabelIssueFunction extends AnnotatedRugFunction
              @Parameter(name = "repo") repo: String,
              @Parameter(name = "owner") owner: String,
              @Parameter(name = "label") label: String,
-             @Secret(name = "user_token", path = "github/user_token=repo") token: String): FunctionResponse = {
+             @Secret(name = "user_token", path = "user/github/token?scope=repo") token: String): FunctionResponse = {
 
     logger.info(s"Invoking labelIssue with number '$number', label '$label', owner '$owner', repo '$repo' and token '${safeToken(token)}'");
 

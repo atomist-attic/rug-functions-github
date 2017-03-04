@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.atomist.rug</groupId>
     <artifactId>rug-functions-github</artifactId>
-    <version>0.2.0</version>
+    <version>0.2.1-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>rug-functions-github</name>
     <description>Rug Functions for GitHub</description>
@@ -21,6 +21,7 @@
             <groupId>com.atomist</groupId>
             <artifactId>rug</artifactId>
             <version>${rug.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.atomist</groupId>

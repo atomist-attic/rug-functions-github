@@ -1,14 +1,13 @@
 package com.atomist.rug.function.github
 
-import com.atomist.rug.spi.{AnnotatedRugFunction, FunctionResponse, JsonBodyOption, StringBodyOption}
-import com.atomist.rug.spi.Handlers.{Response, Status}
+import com.atomist.rug.spi.Handlers.Status
 import com.atomist.rug.spi.annotation.{Parameter, RugFunction, Secret, Tag}
+import com.atomist.rug.spi.{AnnotatedRugFunction, FunctionResponse, JsonBodyOption, StringBodyOption}
 import com.atomist.source.SimpleCloudRepoId
 import com.atomist.source.github.domain.ListIssues
 import com.atomist.source.github.{GitHubServices, GitHubServicesImpl}
 import com.typesafe.scalalogging.LazyLogging
 
-import scala.collection.JavaConversions
 import scala.collection.JavaConverters._
 
 class SearchIssuesFunction
@@ -21,7 +20,7 @@ class SearchIssuesFunction
   def invoke(@Parameter(name = "search") search: String,
              @Parameter(name = "repo") repo: String,
              @Parameter(name = "owner") owner: String,
-             @Secret(name = "user_token", path = "github/user_token=repo") token: String): FunctionResponse = {
+             @Secret(name = "user_token", path = "user/github/token?scope=repo") token: String): FunctionResponse = {
 
     logger.info(s"Invoking listIssues with search '$search', owner '$owner', repo '$repo' and token '${safeToken(token)}'");
 

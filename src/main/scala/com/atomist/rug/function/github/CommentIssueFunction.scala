@@ -20,7 +20,7 @@ class CommentIssueFunction
              @Parameter(name = "comment") comment: String,
              @Parameter(name = "repo") repo: String,
              @Parameter(name = "owner") owner: String,
-             @Secret(name = "user_token", path = "github/user_token=repo") token: String): FunctionResponse = {
+             @Secret(name = "user_token", path = "user/github/token?scope=repo") token: String): FunctionResponse = {
 
     logger.info(s"Invoking labelIssue with number '$number', comment '$comment', owner '$owner', repo '$repo' and token '${safeToken(token)}'")
 
