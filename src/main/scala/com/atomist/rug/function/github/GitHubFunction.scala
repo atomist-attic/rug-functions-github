@@ -1,6 +1,7 @@
 package com.atomist.rug.function.github
 
 import com.atomist.rug.runtime.RugSupport
+import com.atomist.source.github.domain.ResponseUser
 
 trait GitHubFunction
   extends RugSupport{
@@ -19,5 +20,5 @@ trait GitHubFunction
   }
 }
 
-case class GitHubIssue(number: Int, title: String, url: String, issueUrl: String, repo: String, ts: Long, state: String)
+case class GitHubIssue(number: Int, title: String, url: String, issueUrl: String, repo: String, ts: Long, state: String, assignee: ResponseUser)
 

@@ -47,7 +47,7 @@ class SearchIssuesFunction
         // atomisthq/bot-service
         val repo = i.url.replace("https://api.github.com/repos/", "").replace(s"/issues/${i.number}", "")
         val ts = i.updatedAt.toEpochSecond
-        GitHubIssue(id, title, url, issueUrl, repo, ts, i.state)
+        GitHubIssue(id, title, url, issueUrl, repo, ts, i.state, i.assignee)
       }).slice(0, 10)
       FunctionResponse(Status.Success, Some(s"Successfully listed issues for search `$search` on `$repo/$owner`"), None, JsonBodyOption(result))
     } catch {
