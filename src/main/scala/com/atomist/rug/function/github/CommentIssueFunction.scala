@@ -1,9 +1,8 @@
 package com.atomist.rug.function.github
 
-import com.atomist.rug.runtime.js.JsonSerializer
-import com.atomist.rug.spi.{AnnotatedRugFunction, FunctionResponse, JsonBodyOption, StringBodyOption}
-import com.atomist.rug.spi.Handlers.{Response, Status}
+import com.atomist.rug.spi.Handlers.Status
 import com.atomist.rug.spi.annotation.{Parameter, RugFunction, Secret, Tag}
+import com.atomist.rug.spi.{AnnotatedRugFunction, FunctionResponse, JsonBodyOption, StringBodyOption}
 import com.atomist.source.SimpleCloudRepoId
 import com.atomist.source.github.domain.IssueComment
 import com.atomist.source.github.{GitHubServices, GitHubServicesImpl}
