@@ -17,6 +17,7 @@ class CreateTagFunction
   extends AnnotatedRugFunction
     with LazyLogging
     with GitHubFunction{
+
   @RugFunction(name = "create-github-tag", description = "Creates a new tag on a commit",
     tags = Array(new Tag(name = "github"), new Tag(name = "issues")))
   def invoke(@Parameter(name = "tag") tag: String,
