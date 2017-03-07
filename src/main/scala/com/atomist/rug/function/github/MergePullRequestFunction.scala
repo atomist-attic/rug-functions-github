@@ -1,8 +1,8 @@
 package com.atomist.rug.function.github
 
-import com.atomist.rug.spi.{AnnotatedRugFunction, FunctionResponse, JsonBodyOption, StringBodyOption}
-import com.atomist.rug.spi.Handlers.{Response, Status}
+import com.atomist.rug.spi.Handlers.Status
 import com.atomist.rug.spi.annotation.{Parameter, RugFunction, Secret, Tag}
+import com.atomist.rug.spi.{AnnotatedRugFunction, FunctionResponse, StringBodyOption}
 import com.atomist.source.SimpleCloudRepoId
 import com.atomist.source.github.domain.PullRequestMerge
 import com.atomist.source.github.{GitHubServices, GitHubServicesImpl}
@@ -18,13 +18,12 @@ class MergePullRequestFunction
 
   @RugFunction(name = "merge-github-pull-request", description = "Merges a pull request",
     tags = Array(new Tag(name = "github"), new Tag(name = "issues"), new Tag(name = "pr")))
-  def invoke(@Parameter(name = "number") number: Int,
-             @Parameter(name = "comment") comment: String,
+  def invoke(@Parameter(name = "issue") number: Int,
              @Parameter(name = "repo") repo: String,
              @Parameter(name = "owner") owner: String,
              @Secret(name = "user_token", path = "user/github/token?scope=repo") token: String): FunctionResponse = {
 
-    logger.info(s"Invoking merge with number '$number', comment '$comment', owner '$owner', repo '$repo' and token '${safeToken(token)}'")
+    logger.info(s"Invoking merge with number '$number', owner '$owner', repo '$repo' and token '${safeToken(token)}'")
 
     val gitHubServices: GitHubServices = new GitHubServicesImpl(token)
 
