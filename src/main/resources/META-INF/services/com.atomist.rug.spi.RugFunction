@@ -9,3 +9,5 @@ com.atomist.rug.function.github.ListUserIssues
 com.atomist.rug.function.github.MergePullRequestFunction
 com.atomist.rug.function.github.ReopenIssueFunction
 com.atomist.rug.function.github.SearchIssuesFunction
+com.atomist.rug.function.github.InstallOrgWebHookFunction
+com.atomist.rug.function.github.InstallRepoWebHookFunction

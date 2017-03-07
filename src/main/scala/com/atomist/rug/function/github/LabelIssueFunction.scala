@@ -18,7 +18,7 @@ class LabelIssueFunction extends AnnotatedRugFunction
 
   @RugFunction(name = "label-github-issue", description = "Adds a label to an already existing issue",
     tags = Array(new Tag(name = "github"), new Tag(name = "issues")))
-  def invoke(@Parameter(name = "number") number: Int,
+  def invoke(@Parameter(name = "issue") number: Int,
              @Parameter(name = "repo") repo: String,
              @Parameter(name = "owner") owner: String,
              @Parameter(name = "label") label: String,
