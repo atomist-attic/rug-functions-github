@@ -15,7 +15,7 @@ class CommentIssueFunction
 
   @RugFunction(name = "comment-github-issue", description = "Adds a new comment to an issue",
     tags = Array(new Tag(name = "github"), new Tag(name = "issues")))
-  def invoke(@Parameter(name = "number") number: Int,
+  def invoke(@Parameter(name = "issue") number: Int,
              @Parameter(name = "comment") comment: String,
              @Parameter(name = "repo") repo: String,
              @Parameter(name = "owner") owner: String,
