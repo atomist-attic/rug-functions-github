@@ -15,7 +15,7 @@ class AssignIssueFunction
 
   @RugFunction(name = "assign-issue", description = "Assigns an GitHub issue",
     tags = Array(new Tag(name = "github"), new Tag(name = "issues")))
-  def invoke(@Parameter(name = "number") number: Int,
+  def invoke(@Parameter(name = "issue") number: Int,
              @Parameter(name = "repo") repo: String,
              @Parameter(name = "assignee") assignee: String,
              @Parameter(name = "owner") owner: String,
