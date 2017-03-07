@@ -1,6 +1,5 @@
 package com.atomist.rug.commands.github
 
-import java.net.URL
 import java.time.OffsetDateTime
 import java.util
 import java.util.Collections
@@ -21,7 +20,7 @@ import scala.collection.JavaConverters._
 class GitHubCommands extends Command[ServicesMutableView]
   with LazyLogging {
 
-  val gitHubOperation = new GitHubOperation
+  val gitHubOperation = GitHubOperation
 
   override def name: String = "github"
 
@@ -33,7 +32,7 @@ class GitHubCommands extends Command[ServicesMutableView]
 
 }
 
-class GitHubOperation extends LazyLogging {
+object GitHubOperation extends LazyLogging {
 
   def installWebhook(url: String, owner: String, repo: String, token: String): GitHubStatus = {
     logger.info(s"Invoking installWebhook with url '$url', owner '${owner}', repo '${repo}' and token '${safeToken(token)}'");
@@ -46,8 +45,17 @@ class GitHubOperation extends LazyLogging {
     if (repo == null || repo.length == 0) {
       try {
         val github = GitHub.connectUsingOAuth(token)
-        github.getOrganization(owner).createHook("web", config, events.asJava, true)
-        GitHubStatus(true, s"Successfully installed org-level webhook for `${owner}`")
+        if (github.getMyOrganizations.containsKey(owner)) {
+          val org = github.getOrganization(owner)
+          org.getHooks.asScala.find(h => url.equals(h.getConfig.get("url"))) match {
+              case Some(h) =>
+              case None => org.createHook("web", config, events.asJava, true)
+            }
+          GitHubStatus(true, s"Successfully installed org-level webhook for `${owner}`")
+        }
+        else {
+          GitHubStatus(false, s"Can't install org-level webhook on user `$owner`")
+        }
       }
       catch {
         case e: Exception => GitHubStatus(false, e.getMessage)
@@ -55,9 +63,13 @@ class GitHubOperation extends LazyLogging {
     }
     else {
       val github = GitHub.connectUsingOAuth(token)
-      github.getOrganization(owner).getRepository(repo).createHook("web", config, events.asJava, true)
-      GitHubStatus(true, s"Successfully installed repo-level webhook for `${owner}/${repo}`")
-    }
+        val r = github.getRepository(s"$owner/$repo")
+        r.getHooks.asScala.find(h => url.equals(h.getConfig.get("url"))) match {
+          case Some(h) => println(h)
+          case None => r.createHook("web", config, events.asJava, true)
+        }
+        GitHubStatus(true, s"Successfully installed repo-level webhook for `${owner}/${repo}`")
+      }
   }
 
   def createIssue(title: String, comment: String, owner: String, repo: String, token: String): GitHubStatus = {

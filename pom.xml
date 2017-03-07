@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.atomist</groupId>
     <artifactId>github-commands</artifactId>
-    <version>0.7.0</version>
+    <version>0.10.1</version>
     <packaging>jar</packaging>
     <name>github-commands</name>
     <description>Rug Commands for GitHub</description>
@@ -30,7 +30,7 @@
         <dependency>
             <groupId>com.atomist</groupId>
             <artifactId>github-lib</artifactId>
-            <version>0.11.0-20170109045551</version>
+            <version>0.11.9</version>
         </dependency>
         <dependency>
             <groupId>org.scalatest</groupId>
@@ -272,14 +272,6 @@
             <id>public-atomist-snapshot</id>
             <name>Atomist Release</name>
             <url>https://atomist.jfrog.io/atomist/libs-dev</url>
-        </repository>
-        <repository>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-            <id>atomist-snapshots</id>
-            <name>Atomist Snapshots</name>
-            <url>https://sforzando.artifactoryonline.com/sforzando/libs-snapshot</url>
         </repository>
     </repositories>
     <distributionManagement>
