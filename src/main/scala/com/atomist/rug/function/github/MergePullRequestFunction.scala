@@ -16,7 +16,7 @@ class MergePullRequestFunction
   with LazyLogging
   with GitHubFunction{
 
-  @RugFunction(name = "merge-pull-request", description = "Merges a pull request",
+  @RugFunction(name = "merge-github-pull-request", description = "Merges a pull request",
     tags = Array(new Tag(name = "github"), new Tag(name = "issues"), new Tag(name = "pr")))
   def invoke(@Parameter(name = "number") number: Int,
              @Parameter(name = "comment") comment: String,

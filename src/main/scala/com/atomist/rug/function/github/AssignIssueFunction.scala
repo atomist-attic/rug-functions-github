@@ -13,7 +13,7 @@ class AssignIssueFunction
     with LazyLogging
     with GitHubFunction{
 
-  @RugFunction(name = "assign-issue", description = "Assigns an GitHub issue",
+  @RugFunction(name = "assign-github-issue", description = "Assigns an GitHub issue",
     tags = Array(new Tag(name = "github"), new Tag(name = "issues")))
   def invoke(@Parameter(name = "issue") number: Int,
              @Parameter(name = "repo") repo: String,

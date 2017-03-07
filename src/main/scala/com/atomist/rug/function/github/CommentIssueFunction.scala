@@ -13,7 +13,7 @@ class CommentIssueFunction
   with LazyLogging
   with GitHubFunction{
 
-  @RugFunction(name = "comment-issue", description = "Adds a new comment to an issue",
+  @RugFunction(name = "comment-github-issue", description = "Adds a new comment to an issue",
     tags = Array(new Tag(name = "github"), new Tag(name = "issues")))
   def invoke(@Parameter(name = "number") number: Int,
              @Parameter(name = "comment") comment: String,

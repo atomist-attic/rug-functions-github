@@ -15,7 +15,7 @@ class ReopenIssueFunction
   with GitHubFunction
   with GitHubIssueEditor {
 
-  @RugFunction(name = "reopen-issue", description = "Reopens a closed GitHub issue",
+  @RugFunction(name = "reopen-github-issue", description = "Reopens a closed GitHub issue",
     tags = Array(new Tag(name = "github"), new Tag(name = "issues")))
   def invoke(@Parameter(name = "number") number: Int,
              @Parameter(name = "repo") repo: String,

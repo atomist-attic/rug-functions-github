@@ -15,7 +15,7 @@ class SearchIssuesFunction
   with LazyLogging
   with GitHubFunction{
 
-  @RugFunction(name = "search-issues", description = "Search for Github issues",
+  @RugFunction(name = "search-github-issues", description = "Search for Github issues",
     tags = Array(new Tag(name = "github"), new Tag(name = "issues")))
   def invoke(@Parameter(name = "search") search: String,
              @Parameter(name = "repo") repo: String,

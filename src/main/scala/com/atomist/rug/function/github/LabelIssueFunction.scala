@@ -16,7 +16,7 @@ class LabelIssueFunction extends AnnotatedRugFunction
   with GitHubFunction
   with GitHubIssueEditor {
 
-  @RugFunction(name = "label-issue", description = "Adds a label to an already existing issue",
+  @RugFunction(name = "label-github-issue", description = "Adds a label to an already existing issue",
     tags = Array(new Tag(name = "github"), new Tag(name = "issues")))
   def invoke(@Parameter(name = "number") number: Int,
              @Parameter(name = "repo") repo: String,

@@ -14,7 +14,7 @@ import scala.collection.JavaConversions
 class CreateReleaseFunction extends AnnotatedRugFunction
   with LazyLogging
   with GitHubFunction{
-  @RugFunction(name = "create-release", description = "Creates a new release based on a tag",
+  @RugFunction(name = "create-github-release", description = "Creates a new release based on a tag",
     tags = Array(new Tag(name = "github"), new Tag(name = "issues")))
   def invoke(@Parameter(name = "tag") tagName: String,
              @Parameter(name = "message") message: String,

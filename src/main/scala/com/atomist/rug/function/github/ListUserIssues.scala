@@ -17,7 +17,7 @@ class ListUserIssues extends AnnotatedRugFunction
   with LazyLogging
   with GitHubFunction{
 
-  @RugFunction(name = "list-user-issues", description = "List issues for user that owns the token",
+  @RugFunction(name = "list-github-user-issues", description = "List issues for user that owns the token",
     tags = Array(new Tag(name = "github"), new Tag(name = "issues")))
   def invoke(@Parameter(name = "days") days: String = "1",
              @Secret(name = "user_token", path = "user/github/token?scope=repo") token: String): FunctionResponse = {
