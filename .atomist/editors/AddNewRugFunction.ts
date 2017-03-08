@@ -16,7 +16,7 @@ class AddNewRugFunction implements EditProject {
     group: string
 
     @Parameter({description: "ArtifactId to use in the pom. Also used for package", pattern: Pattern.group_id})
-    artifact: string
+    project_name: string
 
     edit(project: Project) {
         let eng: PathExpressionEngine = project.context().pathExpressionEngine()
