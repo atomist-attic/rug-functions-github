@@ -29,6 +29,7 @@ class NewScalaRugFunctionProject implements PopulateProject {
           pom.setProjectName(this.project_name)
           pom.setVersion("0.1.0-SNAPSHOT")
         })
+        project.addFile("src/main/resources/META-INF/services/com.atomist.rug.spi.RugFunction", "")
         project.editWith("AddNewRugFunction", this)
     }
 }

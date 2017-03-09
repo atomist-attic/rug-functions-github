@@ -27,7 +27,7 @@ class AddNewRugFunction implements EditProject {
         project.deleteFile(`${outputDir}/RugFunction.scala`)
         project.replace("__CLASSNAME__", this.functionName)
         project.replace("__PACKAGE_NAME__", `${this.group}`)
-
+        project.findFile("src/main/resources/META-INF/services/com.atomist.rug.spi.RugFunction").append(`${this.group}.${this.functionName}`)
     }
 }
 export const newRugFunction = new AddNewRugFunction();
