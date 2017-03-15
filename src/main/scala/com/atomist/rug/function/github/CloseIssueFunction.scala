@@ -1,17 +1,19 @@
 package com.atomist.rug.function.github
 
+import com.atomist.rug.spi.Handlers.Status
 import com.atomist.rug.spi.annotation.{Parameter, RugFunction, Secret, Tag}
-import com.atomist.rug.spi.{AnnotatedRugFunction, FunctionResponse}
-import com.atomist.source.github.domain.EditIssue
+import com.atomist.rug.spi.{AnnotatedRugFunction, FunctionResponse, StringBodyOption}
 import com.typesafe.scalalogging.LazyLogging
+import org.kohsuke.github.GitHub
+
+import scala.util.{Failure, Success, Try}
 
 /**
-  * Close a github issue
+  * Close a GitHub issue.
   */
 class CloseIssueFunction extends AnnotatedRugFunction
   with LazyLogging
-  with GitHubFunction
-  with GitHubIssueEditor {
+  with GitHubFunction {
 
   @RugFunction(name = "close-github-issue", description = "Reopens a closed GitHub issue",
     tags = Array(new Tag(name = "github"), new Tag(name = "issues")))
@@ -20,9 +22,16 @@ class CloseIssueFunction extends AnnotatedRugFunction
              @Parameter(name = "owner") owner: String,
              @Secret(name = "user_token", path = "user/github/token?scope=repo") token: String): FunctionResponse = {
 
-    logger.info(s"Invoking close issue with number '$number', owner '$owner', repo '$repo' and token '${safeToken(token)}'");
-    val issue = new EditIssue(number)
-    issue.setState("closed")
-    editIssue(issue, owner, repo, token)
+    logger.info(s"Invoking closeIssue with number '$number', owner '$owner', repo '$repo' and token '${safeToken(token)}'")
+
+    Try {
+      val gitHub = GitHub.connectUsingOAuth(token)
+      val repository = gitHub.getOrganization(owner).getRepository(repo)
+      val issue = repository.getIssue(number)
+      issue.close()
+    } match {
+      case Success(_) => FunctionResponse(Status.Success, Some(s"Successfully close issue `#$number` in `$owner/$repo`"), None)
+      case Failure(e) => FunctionResponse(Status.Failure, Some(s"Failed to close issue `#$number` in `$owner/$repo`"), None, StringBodyOption(e.getMessage))
+    }
   }
 }
