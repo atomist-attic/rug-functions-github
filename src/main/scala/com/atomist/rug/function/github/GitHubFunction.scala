@@ -4,17 +4,15 @@ import com.atomist.rug.runtime.RugSupport
 import com.atomist.source.github.domain.ResponseUser
 
 trait GitHubFunction
-  extends RugSupport{
+  extends RugSupport {
+
   /**
-    * Sanitize a token
-    * @param token
-    * @return
+    * Sanitize a token.
     */
   def safeToken(token: String): String = {
     if (token != null) {
       token.charAt(0) + ("*" * (token.length() - 2)) + token.last
-    }
-    else {
+    } else {
       null
     }
   }

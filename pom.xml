@@ -23,6 +23,11 @@
             <version>${rug.version}</version>
             <scope>provided</scope>
         </dependency>
+        <!--<dependency>-->
+            <!--<groupId>com.atomist</groupId>-->
+            <!--<artifactId>artifact-source</artifactId>-->
+            <!--<version>0.16.0</version>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>com.atomist</groupId>
             <artifactId>github-lib</artifactId>
@@ -31,7 +36,7 @@
         <dependency>
             <groupId>org.kohsuke</groupId>
             <artifactId>github-api</artifactId>
-            <version>1.84</version>
+            <version>1.85</version>
         </dependency>
         <dependency>
             <groupId>org.scalatest</groupId>
@@ -78,7 +83,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.5.1</version>
+                <version>3.6.1</version>
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
