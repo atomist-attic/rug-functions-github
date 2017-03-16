@@ -3,7 +3,6 @@ package com.atomist.rug.function.github
 import com.atomist.rug.runtime.RugSupport
 import com.atomist.source.github.util.HttpMethods.Get
 import com.atomist.source.github.util.RestGateway.httpRequest
-import com.fasterxml.jackson.annotation.JsonProperty
 
 import scala.reflect.Manifest
 
@@ -38,17 +37,3 @@ trait GitHubFunction
     nextPage(token, url, firstPage)
   }
 }
-
-case class GitHubIssue(number: Int,
-                       title: String,
-                       url: String,
-                       issueUrl: String,
-                       repo: String,
-                       ts: Long,
-                       state: String,
-                       assignee: ResponseUser)
-
-case class ResponseUser(login: String,
-                        id: Int,
-                        url: String,
-                        @JsonProperty("html_url") htmlUrl: String)

@@ -54,11 +54,4 @@ class SearchIssuesFunction
       case Failure(e) => FunctionResponse(Status.Failure, Some("Failed to list issues"), None, StringBodyOption(e.getMessage))
     }
   }
-//
-//  def getIssues(token: String, params: Map[String, AnyRef]): Seq[Issue] = {
-//    val path = "https://api.github.com/issues"
-//    val response = httpRequest[Seq[Issue]](token, path, Get, None, params)
-//    val obj = response.obj
-//    response.linkHeader.get("next").map(url => paginateResults(token, obj, url, params)).getOrElse(obj)
-//  }
 }

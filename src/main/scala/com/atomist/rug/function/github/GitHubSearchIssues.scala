@@ -9,6 +9,15 @@ import com.fasterxml.jackson.annotation.JsonProperty
   */
 trait GitHubSearchIssues {
 
+  case class GitHubIssue(number: Int,
+                         title: String,
+                         url: String,
+                         issueUrl: String,
+                         repo: String,
+                         ts: Long,
+                         state: String,
+                         assignee: ResponseUser)
+
   case class Issue(number: Int,
                    id: Int,
                    title: String,
@@ -25,6 +34,11 @@ trait GitHubSearchIssues {
                    @JsonProperty("updated_at") updatedAt: OffsetDateTime,
                    @JsonProperty("closed_at") closedAt: OffsetDateTime,
                    assignees: Array[ResponseUser])
+
+  case class ResponseUser(login: String,
+                          id: Int,
+                          url: String,
+                          @JsonProperty("html_url") htmlUrl: String)
 
   case class IssueLabel(id: Integer, url: String, name: String, color: String, default: Boolean)
 
