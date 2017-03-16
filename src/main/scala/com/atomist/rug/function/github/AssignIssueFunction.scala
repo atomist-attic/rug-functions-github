@@ -2,12 +2,15 @@ package com.atomist.rug.function.github
 
 import com.atomist.rug.spi.Handlers.Status
 import com.atomist.rug.spi.annotation.{Parameter, RugFunction, Secret, Tag}
-import com.atomist.rug.spi.{AnnotatedRugFunction, FunctionResponse, JsonBodyOption, StringBodyOption}
+import com.atomist.rug.spi.{AnnotatedRugFunction, FunctionResponse, StringBodyOption}
 import com.typesafe.scalalogging.LazyLogging
 import org.kohsuke.github.GitHub
 
 import scala.util.{Failure, Success, Try}
 
+/**
+  * Assigns an issue to a user.
+  */
 class AssignIssueFunction
   extends AnnotatedRugFunction
     with LazyLogging
@@ -29,8 +32,8 @@ class AssignIssueFunction
       val issue = repository.getIssue(number)
       issue.addAssignees(gitHub.getUser(assignee))
     } match {
-      case Success(_) => FunctionResponse(Status.Success, Option(s"Successfully assigned issue `#$number` in `$owner/$repo`"), None)
-      case Failure(e) => FunctionResponse(Status.Failure, Some(s"Error assigning issue `#$number` in `$owner/$repo` to `$assignee`"), None, StringBodyOption(e.getMessage))
+      case Success(_) => FunctionResponse(Status.Success, Option(s"Successfully assigned issue `#$number` in `$owner/$repo` to `$assignee`"), None)
+      case Failure(e) => FunctionResponse(Status.Failure, Some(s"Failed to assign issue `#$number` in `$owner/$repo` to `$assignee`"), None, StringBodyOption(e.getMessage))
     }
   }
 }
