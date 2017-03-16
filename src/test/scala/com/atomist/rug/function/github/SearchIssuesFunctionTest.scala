@@ -14,12 +14,12 @@ class SearchIssuesFunctionTest extends FlatSpec with Matchers {
     val issues = JsonUtils.fromJson[Seq[GitHubIssue]](body.get.str.get)
     issues.size shouldBe 1
   }
-
-  it should "fail to search issues in non-existent repo" in pendingUntilFixed {
-    val sif = new SearchIssuesFunction
-    val response = sif.invoke(null, "github-commands", "atomisthq", TestCredentials.Token)
-    val body = response.body
-    body shouldBe defined
-    body.get.str shouldBe defined
-  }
+//
+//  it should "fail to search issues in non-existent repo" in pendingUntilFixed {
+//    val sif = new SearchIssuesFunction
+//    val response = sif.invoke(null, "github-commands", "atomisthq", TestCredentials.Token)
+//    val body = response.body
+//    body shouldBe defined
+//    body.get.str shouldBe defined
+//  }
 }
