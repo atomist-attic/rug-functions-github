@@ -23,7 +23,7 @@ class MergePullRequestFunction
              @Parameter(name = "owner") owner: String,
              @Secret(name = "user_token", path = "user/github/token?scope=repo") token: String): FunctionResponse = {
 
-    logger.info(s"Invoking merge with number '$number', owner '$owner', repo '$repo' and token '${safeToken(token)}'")
+    logger.info(s"Invoking mergePullRequest with number '$number', owner '$owner', repo '$repo' and token '${safeToken(token)}'")
 
     Try {
       val gitHub = GitHub.connectUsingOAuth(token)

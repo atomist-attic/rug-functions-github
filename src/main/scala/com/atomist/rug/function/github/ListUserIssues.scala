@@ -23,7 +23,7 @@ class ListUserIssues extends AnnotatedRugFunction
   def invoke(@Parameter(name = "days") days: String = "1",
              @Secret(name = "user_token", path = "user/github/token?scope=repo") token: String): FunctionResponse = {
 
-    logger.info(s"Invoking listIssues with days '$days' and token '${safeToken(token)}'")
+    logger.info(s"Invoking listUserIssues with days '$days' and token '${safeToken(token)}'")
 
     Try {
       val params = Map("per_page" -> "100",

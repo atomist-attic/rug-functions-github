@@ -24,7 +24,7 @@ class InstallRepoWebHookFunction
              @Parameter(name = "owner") owner: String,
              @Secret(name = "user_token", path = "user/github/token?scope=repo") token: String): FunctionResponse = {
 
-    logger.info(s"Invoking installWebhook with url '$url', owner '$owner', repo '$repo' and token '${safeToken(token)}'")
+    logger.info(s"Invoking installRepoWebhook with url '$url', owner '$owner', repo '$repo' and token '${safeToken(token)}'")
 
     Try {
       val gitHub = GitHub.connectUsingOAuth(token)
