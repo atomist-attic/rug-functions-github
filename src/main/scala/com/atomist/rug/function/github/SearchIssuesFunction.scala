@@ -46,7 +46,11 @@ class SearchIssuesFunction
             val repo = urlStr.replace("https://api.github.com/repos/", "").replace(s"/issues/$id", "")
             val ts = i.getUpdatedAt.toInstant.getEpochSecond
             val assignee = i.getAssignee
-            val respUser = ResponseUser(assignee.getLogin, assignee.getId, assignee.getUrl.toExternalForm, assignee.getHtmlUrl.toExternalForm)
+            val respUser =
+              if (assignee == null)
+                null
+              else ResponseUser(assignee.getLogin, assignee.getId, assignee.getUrl.toExternalForm, assignee.getHtmlUrl.toExternalForm)
+
             GitHubIssue(id, title, url, issueUrl, repo, ts, i.getState.name(), respUser)
           }).slice(0, 10)
 
