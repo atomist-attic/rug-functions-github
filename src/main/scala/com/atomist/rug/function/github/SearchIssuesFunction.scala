@@ -13,8 +13,7 @@ import scala.util.{Failure, Success, Try}
 class SearchIssuesFunction
   extends AnnotatedRugFunction
     with LazyLogging
-    with GitHubFunction
-    with GitHubSearchIssues {
+    with GitHubFunction {
 
   @RugFunction(name = "search-github-issues", description = "Search for Github issues",
     tags = Array(new Tag(name = "github"), new Tag(name = "issues")))
@@ -27,7 +26,7 @@ class SearchIssuesFunction
 
     Try {
       val gitHub = GitHub.connectUsingOAuth(token)
-      gitHub.searchIssues().q(s"user:$owner repo:$repo").isOpen.order(GHDirection.ASC).sort(Sort.UPDATED).list()
+      gitHub.searchIssues().q(s"repo:$owner/$repo").isOpen.order(GHDirection.ASC).sort(Sort.UPDATED).list()
     } match {
       case Success(response) =>
         val issues = response.asScala.iterator

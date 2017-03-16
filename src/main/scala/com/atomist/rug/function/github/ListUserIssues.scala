@@ -14,8 +14,7 @@ import scala.util.{Failure, Success, Try}
 
 class ListUserIssues extends AnnotatedRugFunction
   with LazyLogging
-  with GitHubFunction
-  with GitHubSearchIssues {
+  with GitHubFunction {
 
   @RugFunction(name = "list-github-user-issues",
     description = "List issues for user that owns the token",
