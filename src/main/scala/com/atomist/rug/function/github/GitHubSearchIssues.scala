@@ -42,5 +42,6 @@ object GitHubSearchIssues {
   case class Milestone(url: String, id: Integer, number: Integer)
 
   case class PullRequest(url: String)
+
 }
 

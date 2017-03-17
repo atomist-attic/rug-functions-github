@@ -5,13 +5,12 @@ import java.time.OffsetDateTime
 import com.atomist.rug.spi.Handlers.Status
 import com.atomist.rug.spi.annotation.{Parameter, RugFunction, Secret, Tag}
 import com.atomist.rug.spi.{AnnotatedRugFunction, FunctionResponse, JsonBodyOption, StringBodyOption}
-import com.atomist.source.github.util.HttpMethods.Get
-import com.atomist.source.github.util.RestGateway.httpRequest
 import com.typesafe.scalalogging.LazyLogging
 
 import scala.collection.mutable.ListBuffer
 import scala.reflect.Manifest
 import scala.util.{Failure, Success, Try}
+import scalaj.http.Http
 
 class ListUserIssuesFunction extends AnnotatedRugFunction
   with LazyLogging
@@ -66,11 +65,18 @@ class ListUserIssuesFunction extends AnnotatedRugFunction
     }
   }
 
-  private def getIssues(token: String, params: Map[String, AnyRef]): Seq[Issue] = {
-    val path = s"$ApiUrl/issues"
-    val response = httpRequest[Seq[Issue]](token, path, Get, None, params)
-    val obj = response.obj
-    response.linkHeader.get("next").map(url => paginateResults(token, obj, url, params)).getOrElse(obj)
+  private def getIssues(token: String, params: Map[String, String]): Seq[Issue] = {
+    val response = Http(s"$ApiUrl/issues").params(params)
+      .headers(getHeaders(token))
+      .execute(parser = is => fromJson[Seq[Issue]](is))
+      .throwError
+
+    val body = response.body
+    val linkHeader = parseLinkHeader(response.header("Link"))
+    linkHeader.get("next") match {
+      case Some(url) => paginateResults(token, body, url, params)
+      case None => body
+    }
   }
 
   /**
@@ -79,12 +85,20 @@ class ListUserIssuesFunction extends AnnotatedRugFunction
   private def paginateResults[T](token: String,
                                  firstPage: Seq[T],
                                  url: String,
-                                 queryString: Map[String, AnyRef] = Map.empty)
+                                 params: Map[String, String] = Map.empty)
                                 (implicit m: Manifest[T]): Seq[T] = {
     def nextPage(token: String, url: String, accumulator: Seq[T]): Seq[T] = {
-      val response = httpRequest[Seq[T]](token, url, Get, None, queryString)
-      val pages = accumulator ++ response.obj
-      response.linkHeader.get("next").map(nextPage(token, _, pages)).getOrElse(pages)
+      val response = Http(url).params(params)
+        .headers(getHeaders(token))
+        .execute(parser = is => fromJson[Seq[T]](is))
+        .throwError
+
+      val pages = accumulator ++ response.body
+      val linkHeader = parseLinkHeader(response.header("Link"))
+      linkHeader.get("next") match {
+        case Some(url) => nextPage(token, url, pages)
+        case None => pages
+      }
     }
 
     nextPage(token, url, firstPage)

@@ -5,12 +5,11 @@ import java.time.OffsetDateTime
 import com.atomist.rug.spi.Handlers.Status
 import com.atomist.rug.spi._
 import com.atomist.rug.spi.annotation.{Parameter, RugFunction, Secret, Tag}
-import com.atomist.source.github.util.HttpMethods.Post
-import com.atomist.source.github.util.RestGateway.httpRequest
 import com.fasterxml.jackson.annotation.{JsonFormat, JsonProperty}
 import com.typesafe.scalalogging.LazyLogging
 
 import scala.util.{Failure, Success, Try}
+import scalaj.http.Http
 
 /**
   * Create new tag on a commit.
@@ -48,17 +47,19 @@ class CreateTagFunction
     }
   }
 
-  private def createLightweightTag(token: String, repo: String, owner: String, cto: CreateTag) = {
-    val path = s"$ApiUrl/repos/$owner/$repo/git/tags"
-    val response = httpRequest[CreateTagResponse](token, path, Post, Some(cto))
-    response.obj
-  }
+  private def createLightweightTag(token: String, repo: String, owner: String, ct: CreateTag) =
+    Http(s"$ApiUrl/repos/$owner/$repo/git/tags").postData(toJson(ct))
+      .headers(getHeaders(token))
+      .execute(parser = is => fromJson[CreateTagResponse](is))
+      .throwError
+      .body
 
-  private def createReference(token: String, repo: String, owner: String, cr: CreateReference) = {
-    val path = s"$ApiUrl/repos/$owner/$repo/git/refs"
-    val response = httpRequest[Reference](token, path, Post, Some(cr))
-    response.obj
-  }
+  private def createReference(token: String, repo: String, owner: String, cr: CreateReference) =
+    Http(s"$ApiUrl/repos/$owner/$repo/git/refs").postData(toJson(cr))
+      .headers(getHeaders(token))
+      .execute(parser = is => fromJson[Reference](is))
+      .throwError
+      .body
 }
 
 object CreateTagFunction {
@@ -89,4 +90,5 @@ object CreateTagFunction {
                                @JsonProperty("object") obj: GitHubRef)
 
   private case class GitHubRef(url: String, sha: String)
+
 }

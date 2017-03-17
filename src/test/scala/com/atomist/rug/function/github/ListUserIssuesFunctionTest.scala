@@ -7,7 +7,7 @@ import org.scalatest.{FlatSpec, Matchers}
 
 class ListUserIssuesFunctionTest extends FlatSpec with Matchers {
 
-  it should "list issues" in pendingUntilFixed {
+  it should "list issues" in {
     val sif = new ListUserIssuesFunction
     val response = sif.invoke("31", TestCredentials.Token)
     response.status shouldBe Status.Success
