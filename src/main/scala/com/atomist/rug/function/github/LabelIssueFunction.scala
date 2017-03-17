@@ -31,7 +31,7 @@ class LabelIssueFunction extends AnnotatedRugFunction
       val repository = gitHub.getOrganization(owner).getRepository(repo)
       val issue = repository.getIssue(number)
       val labels = issue.getLabels.asScala.map(_.getName).toSeq :+ label
-      issue.setLabels(labels : _*)
+      issue.setLabels(labels: _*)
     } match {
       case Success(_) => FunctionResponse(Status.Success, Some(s"Successfully labelled issue `#$number` in `$owner/$repo`"), None)
       case Failure(e) => FunctionResponse(Status.Failure, Some(s"Failed to label issue `#$number` in `$owner/$repo`"), None, StringBodyOption(e.getMessage))

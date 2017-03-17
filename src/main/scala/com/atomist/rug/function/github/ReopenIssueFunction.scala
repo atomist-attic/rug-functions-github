@@ -13,8 +13,8 @@ import scala.util.{Failure, Success, Try}
   */
 class ReopenIssueFunction
   extends AnnotatedRugFunction
-  with LazyLogging
-  with GitHubFunction {
+    with LazyLogging
+    with GitHubFunction {
 
   @RugFunction(name = "reopen-github-issue", description = "Reopens a closed GitHub issue",
     tags = Array(new Tag(name = "github"), new Tag(name = "issues")))
