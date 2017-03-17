@@ -5,11 +5,11 @@ import com.atomist.rug.spi.Handlers.Status
 import com.atomist.util.JsonUtils
 import org.scalatest.{FlatSpec, Matchers}
 
-class SearchIssuesFunctionTest extends FlatSpec with Matchers {
+class ListUserIssuesFunctionTest extends FlatSpec with Matchers {
 
-  it should "search issues" in {
-    val sif = new SearchIssuesFunction
-    val response = sif.invoke(null, "github-commands", "atomisthqa", TestCredentials.Token)
+  it should "list issues" in pendingUntilFixed {
+    val sif = new ListUserIssuesFunction
+    val response = sif.invoke("31", TestCredentials.Token)
     response.status shouldBe Status.Success
     val body = response.body
     body shouldBe defined
@@ -18,9 +18,9 @@ class SearchIssuesFunctionTest extends FlatSpec with Matchers {
     issues.size shouldBe >(0)
   }
 
-  it should "fail to search issues in non-existent repo" in {
-    val sif = new SearchIssuesFunction
-    val response = sif.invoke(null, "github-commands", "atomisthq", TestCredentials.Token)
+  it should "fail to list issues with bad token" in {
+    val sif = new ListUserIssuesFunction
+    val response = sif.invoke("1", "comfoobar")
     response.status shouldBe Status.Failure
   }
 }

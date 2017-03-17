@@ -10,7 +10,7 @@ import scala.collection.JavaConverters._
 import scala.util.{Failure, Success, Try}
 
 /**
-  * Label an issue (with a known label).
+  * Label an issue with a known label.
   */
 class LabelIssueFunction extends AnnotatedRugFunction
   with LazyLogging

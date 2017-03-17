@@ -10,11 +10,15 @@ import com.atomist.source.github.util.RestGateway.httpRequest
 import com.typesafe.scalalogging.LazyLogging
 
 import scala.collection.mutable.ListBuffer
+import scala.reflect.Manifest
 import scala.util.{Failure, Success, Try}
 
-class ListUserIssues extends AnnotatedRugFunction
+class ListUserIssuesFunction extends AnnotatedRugFunction
   with LazyLogging
   with GitHubFunction {
+
+  import GitHubFunction._
+  import GitHubSearchIssues._
 
   @RugFunction(name = "list-github-user-issues",
     description = "List issues for user that owns the token",
@@ -37,9 +41,9 @@ class ListUserIssues extends AnnotatedRugFunction
       val params2 = params + ("state" -> "closed")
       issues ++= getIssues(token, params2)
 
-      val time: OffsetDateTime = days.toInt match {
-        case e => OffsetDateTime.now.minusDays(e)
-        case _ => OffsetDateTime.now.minusDays(1)
+      val time: OffsetDateTime = Try(days.toInt) match {
+        case Success(d) => OffsetDateTime.now.minusDays(d)
+        case Failure(_) => OffsetDateTime.now.minusDays(1)
       }
 
       issues.filter(i => i.updatedAt.isAfter(time) || (i.pushedAt != null && i.pushedAt.isAfter(time)))
@@ -62,10 +66,27 @@ class ListUserIssues extends AnnotatedRugFunction
     }
   }
 
-  def getIssues(token: String, params: Map[String, AnyRef]): Seq[Issue] = {
-    val path = "https://api.github.com/issues"
+  private def getIssues(token: String, params: Map[String, AnyRef]): Seq[Issue] = {
+    val path = s"$ApiUrl/issues"
     val response = httpRequest[Seq[Issue]](token, path, Get, None, params)
     val obj = response.obj
     response.linkHeader.get("next").map(url => paginateResults(token, obj, url, params)).getOrElse(obj)
+  }
+
+  /**
+    * Paginates a search and returns an aggregated list of results.
+    */
+  private def paginateResults[T](token: String,
+                                 firstPage: Seq[T],
+                                 url: String,
+                                 queryString: Map[String, AnyRef] = Map.empty)
+                                (implicit m: Manifest[T]): Seq[T] = {
+    def nextPage(token: String, url: String, accumulator: Seq[T]): Seq[T] = {
+      val response = httpRequest[Seq[T]](token, url, Get, None, queryString)
+      val pages = accumulator ++ response.obj
+      response.linkHeader.get("next").map(nextPage(token, _, pages)).getOrElse(pages)
+    }
+
+    nextPage(token, url, firstPage)
   }
 }
