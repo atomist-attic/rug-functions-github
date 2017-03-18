@@ -27,7 +27,7 @@ class SearchIssuesFunction
 
     try {
       val gitHub = GitHub.connectUsingOAuth(token)
-      val response = gitHub.searchIssues().q(s"repo:$owner/$repo").isOpen.order(GHDirection.ASC).sort(Sort.UPDATED).list().withPageSize(100)
+      val response = gitHub.searchIssues().q(s"repo:$owner/$repo").order(GHDirection.ASC).sort(Sort.UPDATED).list().withPageSize(100)
       val issues = response.asScala.toSeq
         .filter(i => (search == null || search == "not-set") || ((i.getBody != null && i.getBody.contains(search)) || (i.getTitle != null && i.getTitle.contains(search))))
         .sortWith((i1, i2) => i1.getUpdatedAt.compareTo(i2.getUpdatedAt) > 0)
