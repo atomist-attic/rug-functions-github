@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.atomist</groupId>
-    <artifactId>github-commands</artifactId>
-    <version>0.10.1</version>
+    <groupId>com.atomist.rug</groupId>
+    <artifactId>rug-functions-github</artifactId>
+    <version>0.2.3-SNAPSHOT</version>
     <packaging>jar</packaging>
-    <name>github-commands</name>
-    <description>Rug Commands for GitHub</description>
+    <name>rug-functions-github</name>
+    <description>Rug Functions for GitHub</description>
     <properties>
         <maven.build.timestamp.format>yyyyMMddHHmmss</maven.build.timestamp.format>
         <timestamp>${maven.build.timestamp}</timestamp>
@@ -14,23 +14,35 @@
         <java.version>1.8</java.version>
         <scala.version>2.11.8</scala.version>
         <scala.binary.version>2.11</scala.binary.version>
-        <rug.version>0.12.0</rug.version>
+        <rug.version>(0.12.9,0.13.1)</rug.version>
     </properties>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.atomist</groupId>
+                <artifactId>atomist-bom</artifactId>
+                <version>0.9.0</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
     <dependencies>
-        <dependency>
-            <groupId>org.kohsuke</groupId>
-            <artifactId>github-api</artifactId>
-            <version>1.84</version>
-        </dependency>
         <dependency>
             <groupId>com.atomist</groupId>
             <artifactId>rug</artifactId>
             <version>${rug.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.atomist</groupId>
-            <artifactId>github-lib</artifactId>
-            <version>0.11.9</version>
+            <groupId>org.kohsuke</groupId>
+            <artifactId>github-api</artifactId>
+            <version>1.85</version>
+        </dependency>
+        <dependency>
+            <groupId>org.scalaj</groupId>
+            <artifactId>scalaj-http_${scala.binary.version}</artifactId>
+            <version>2.3.0</version>
         </dependency>
         <dependency>
             <groupId>org.scalatest</groupId>
@@ -77,7 +89,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.5.1</version>
+                <version>3.6.1</version>
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
@@ -182,70 +194,6 @@
                     <highlighting>true</highlighting>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <version>1.8</version>
-                <executions>
-                    <execution>
-                        <id>copy-ts</id>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <phase>generate-resources</phase>
-                        <configuration>
-                            <target>
-                                <mkdir dir="${project.build.directory}/typescript"/>
-                                <copy todir="${project.build.directory}/typescript">
-                                    <fileset dir="${project.basedir}/src/main/typescript"/>
-                                </copy>
-                            </target>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>npm-package</id>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <phase>process-resources</phase>
-                        <configuration>
-                            <target>
-                                <copy file="${project.basedir}/src/main/typescript/package.json" tofile="${project.build.directory}/typescript/package.json" overwrite="true">
-                                    <filterchain>
-                                        <expandproperties/>
-                                    </filterchain>
-                                </copy>
-                            </target>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>npm-install</id>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <phase>compile</phase>
-                        <configuration>
-                            <target>
-                                <exec dir="${project.build.directory}/typescript" executable="npm" failonerror="true">
-                                    <arg value="install"/>
-                                </exec>
-                            </target>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>compile-typescript</id>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <phase>compile</phase>
-                        <configuration>
-                            <target>
-                                <exec dir="${project.build.directory}/typescript" executable="tsc" failonerror="true"></exec>
-                            </target>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
     </build>
     <repositories>
@@ -272,6 +220,14 @@
             <id>public-atomist-snapshot</id>
             <name>Atomist Release</name>
             <url>https://atomist.jfrog.io/atomist/libs-dev</url>
+        </repository>
+        <repository>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <id>atomist-snapshots</id>
+            <name>Atomist Snapshots</name>
+            <url>https://sforzando.artifactoryonline.com/sforzando/libs-snapshot</url>
         </repository>
     </repositories>
     <distributionManagement>
