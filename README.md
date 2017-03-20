@@ -1,6 +1,6 @@
-# Atomist 'github-commands'
+# Atomist 'rug-functions-github'
 
-Rug commands for GitHub.
+Rug Functions for GitHub.
 
 ## Developing
 
