@@ -18,7 +18,7 @@ class CreateReleaseFunction extends AnnotatedRugFunction
              @Parameter(name = "message") message: String,
              @Parameter(name = "repo") repo: String,
              @Parameter(name = "owner") owner: String,
-             @Secret(name = "user_token", path = "user/github/token?scope=repo") token: String): FunctionResponse = {
+             @Secret(name = "user_token", path = "github://user_token?scopes=repos") token: String): FunctionResponse = {
 
     logger.info(s"Invoking createRelease with tag '$tagName', owner '$owner', repo '$repo' and token '${safeToken(token)}'")
 

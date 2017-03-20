@@ -20,7 +20,7 @@ class CloseIssueFunction extends AnnotatedRugFunction
   def invoke(@Parameter(name = "issue") number: Int,
              @Parameter(name = "repo") repo: String,
              @Parameter(name = "owner") owner: String,
-             @Secret(name = "user_token", path = "user/github/token?scope=repo") token: String): FunctionResponse = {
+             @Secret(name = "user_token", path = "github://user_token?scopes=repos") token: String): FunctionResponse = {
 
     logger.info(s"Invoking closeIssue with number '$number', owner '$owner', repo '$repo' and token '${safeToken(token)}'")
 
