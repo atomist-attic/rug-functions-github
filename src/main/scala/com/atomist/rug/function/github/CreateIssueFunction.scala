@@ -31,7 +31,7 @@ class CreateIssueFunction
       val repository = gitHub.getOrganization(owner).getRepository(repo)
       repository.createIssue(title).body(body).create()
     } match {
-      case Success(response) => FunctionResponse(Status.Success, Some(s"Successfully created issue `#${response.getNumber}` in `$owner/$repo`"), None, JsonBodyOption(response))
+      case Success(response) => FunctionResponse(Status.Success, Some(s"Successfully created issue `#${response.getNumber}` in `$owner/$repo`"), None, None)
       case Failure(e) => FunctionResponse(Status.Failure, Some(s"Failed to create issue in `$owner/$repo`"), None, StringBodyOption(e.getMessage))
     }
   }

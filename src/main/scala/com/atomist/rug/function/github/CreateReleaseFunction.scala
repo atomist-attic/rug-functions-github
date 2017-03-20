@@ -27,7 +27,7 @@ class CreateReleaseFunction extends AnnotatedRugFunction
       val repository = gitHub.getOrganization(owner).getRepository(repo)
       repository.createRelease(tagName).draft(false).prerelease(false).name(null).commitish("master").create()
     } match {
-      case Success(response) => FunctionResponse(Status.Success, Some(s"Successfully created release `${response.getTagName}` in `$owner/$repo#${response.getTargetCommitish}`"), None, JsonBodyOption(response))
+      case Success(response) => FunctionResponse(Status.Success, Some(s"Successfully created release `${response.getTagName}` in `$owner/$repo#${response.getTargetCommitish}`"), None, None)
       case Failure(e) => FunctionResponse(Status.Failure, Some(s"Failed to create release from tag `$tagName` in `$owner/$repo`"), None, StringBodyOption(e.getMessage))
     }
   }

@@ -32,7 +32,7 @@ class InstallRepoWebHookFunction
       val config = Map("url" -> url, "content_type" -> "json")
       repository.createHook("web", config.asJava, Seq(GHEvent.ALL).asJava, true)
     } match {
-      case Success(response) => FunctionResponse(Status.Success, Some(s"Successfully installed repo-level webhook for `$owner/$repo`"), None, JsonBodyOption(response))
+      case Success(response) => FunctionResponse(Status.Success, Some(s"Successfully installed repo-level webhook for `$owner/$repo`"), None, None)
       case Failure(e) => FunctionResponse(Status.Failure, Some(s"Failed to create repo-level webhook for `$owner/$repo`"), None, StringBodyOption(e.getMessage))
     }
   }

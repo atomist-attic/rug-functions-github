@@ -42,7 +42,7 @@ class CreateTagFunction
       // val repository = gitHub.getOrganization(owner).getRepository(repo)
       // repository.createRef(s"refs/tags/${ctr.tag}", ctr.sha)
     } match {
-      case Success(response) => FunctionResponse(Status.Success, Option(s"Successfully create new tag `$tag` in `$owner/$repo`"), None, JsonBodyOption(response))
+      case Success(response) => FunctionResponse(Status.Success, Option(s"Successfully create new tag `$tag` in `$owner/$repo`"), None, None)
       case Failure(e) => FunctionResponse(Status.Failure, Some(s"Failed to create new tag `$tag` in `$owner/$repo`"), None, StringBodyOption(e.getMessage))
     }
   }
