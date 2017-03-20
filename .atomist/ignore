@@ -1,0 +1,12 @@
+target
+.idea
+.settings
+*.iml
+*.yml
+README.md
+*.bash
+.atomist.yml
+LICENSE
+CHANGELOG.md
+src/main/scala/com/atomist/rug/function/
+src/main/resources/META-INF/services

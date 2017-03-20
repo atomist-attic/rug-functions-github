@@ -1,0 +1,13 @@
+com.atomist.rug.function.github.AssignIssueFunction
+com.atomist.rug.function.github.CloseIssueFunction
+com.atomist.rug.function.github.CommentIssueFunction
+com.atomist.rug.function.github.CreateIssueFunction
+com.atomist.rug.function.github.CreateReleaseFunction
+com.atomist.rug.function.github.CreateTagFunction
+com.atomist.rug.function.github.LabelIssueFunction
+com.atomist.rug.function.github.ListUserIssuesFunction
+com.atomist.rug.function.github.MergePullRequestFunction
+com.atomist.rug.function.github.ReopenIssueFunction
+com.atomist.rug.function.github.SearchIssuesFunction
+com.atomist.rug.function.github.InstallOrgWebHookFunction
+com.atomist.rug.function.github.InstallRepoWebHookFunction
