@@ -2,6 +2,7 @@ package com.atomist.rug.function.github
 
 import java.time.OffsetDateTime
 
+import com.atomist.rug.function.github.GitHubFunction._
 import com.atomist.rug.spi.Handlers.Status
 import com.atomist.rug.spi._
 import com.atomist.rug.spi.annotation.{Parameter, RugFunction, Secret, Tag}
@@ -20,7 +21,6 @@ class CreateTagFunction
     with GitHubFunction {
 
   import CreateTagFunction._
-  import GitHubFunction._
 
   @RugFunction(name = "create-github-tag", description = "Creates a new tag on a commit",
     tags = Array(new Tag(name = "github"), new Tag(name = "issues")))
@@ -42,7 +42,7 @@ class CreateTagFunction
       // val repository = gitHub.getOrganization(owner).getRepository(repo)
       // repository.createRef(s"refs/tags/${ctr.tag}", ctr.sha)
     } match {
-      case Success(response) => FunctionResponse(Status.Success, Option(s"Successfully create new tag `$tag` in `$owner/$repo`"), None, None)
+      case Success(response) => FunctionResponse(Status.Success, Option(s"Successfully create new tag `$tag` in `$owner/$repo`"), None, JsonBodyOption(response))
       case Failure(e) => FunctionResponse(Status.Failure, Some(s"Failed to create new tag `$tag` in `$owner/$repo`"), None, StringBodyOption(e.getMessage))
     }
   }

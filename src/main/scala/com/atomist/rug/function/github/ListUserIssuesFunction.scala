@@ -2,9 +2,12 @@ package com.atomist.rug.function.github
 
 import java.time.OffsetDateTime
 
+import com.atomist.rug.function.github.GitHubFunction._
+import com.atomist.rug.function.github.GitHubIssues.{GitHubIssue, Issue}
 import com.atomist.rug.spi.Handlers.Status
 import com.atomist.rug.spi.annotation.{Parameter, RugFunction, Secret, Tag}
 import com.atomist.rug.spi.{AnnotatedRugFunction, FunctionResponse, JsonBodyOption, StringBodyOption}
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.typesafe.scalalogging.LazyLogging
 
 import scala.collection.mutable.ListBuffer
@@ -15,9 +18,6 @@ import scalaj.http.Http
 class ListUserIssuesFunction extends AnnotatedRugFunction
   with LazyLogging
   with GitHubFunction {
-
-  import GitHubFunction._
-  import GitHubSearchIssues._
 
   @RugFunction(name = "list-github-user-issues",
     description = "List issues for user that owns the token",
@@ -45,7 +45,7 @@ class ListUserIssuesFunction extends AnnotatedRugFunction
         case Failure(_) => OffsetDateTime.now.minusDays(1)
       }
 
-      issues.filter(i => i.updatedAt.isAfter(time) || (i.pushedAt != null && i.pushedAt.isAfter(time)))
+      issues.filter(i => i.updatedAt.isAfter(time) || (i.repository.isDefined && i.repository.get.pushedAt.isAfter(time)))
         .sortWith((i1, i2) => i2.updatedAt.compareTo(i1.updatedAt) > 0)
         .map(i => {
           val id = i.number
@@ -68,7 +68,7 @@ class ListUserIssuesFunction extends AnnotatedRugFunction
   private def getIssues(token: String, params: Map[String, String]): Seq[Issue] = {
     val response = Http(s"$ApiUrl/issues").params(params)
       .headers(getHeaders(token))
-      .execute(parser = is => fromJson[Seq[Issue]](is))
+      .execute(is => fromJson[Seq[Issue]](is))
       .throwError
 
     val body = response.body
@@ -90,13 +90,13 @@ class ListUserIssuesFunction extends AnnotatedRugFunction
     def nextPage(token: String, url: String, accumulator: Seq[T]): Seq[T] = {
       val response = Http(url).params(params)
         .headers(getHeaders(token))
-        .execute(parser = is => fromJson[Seq[T]](is))
+        .execute(is => fromJson[Seq[T]](is))
         .throwError
 
       val pages = accumulator ++ response.body
       val linkHeader = parseLinkHeader(response.header("Link"))
       linkHeader.get("next") match {
-        case Some(url) => nextPage(token, url, pages)
+        case Some(nextUrl) => nextPage(token, nextUrl, pages)
         case None => pages
       }
     }

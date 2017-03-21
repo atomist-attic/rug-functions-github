@@ -1,8 +1,9 @@
 package com.atomist.rug.function.github
 
+import com.atomist.rug.function.github.GitHubIssues.mapIssue
 import com.atomist.rug.spi.Handlers.Status
 import com.atomist.rug.spi.annotation.{Parameter, RugFunction, Secret, Tag}
-import com.atomist.rug.spi.{AnnotatedRugFunction, FunctionResponse, StringBodyOption}
+import com.atomist.rug.spi.{AnnotatedRugFunction, FunctionResponse, JsonBodyOption, StringBodyOption}
 import com.typesafe.scalalogging.LazyLogging
 import org.kohsuke.github.GitHub
 
@@ -16,7 +17,7 @@ class AssignIssueFunction
     with LazyLogging
     with GitHubFunction {
 
-  @RugFunction(name = "assign-github-issue", description = "Assigns an GitHub issue",
+  @RugFunction(name = "assign-github-issue", description = "Assigns a GitHub issue",
     tags = Array(new Tag(name = "github"), new Tag(name = "issues")))
   def invoke(@Parameter(name = "issue") number: Int,
              @Parameter(name = "repo") repo: String,
@@ -31,8 +32,9 @@ class AssignIssueFunction
       val repository = gitHub.getOrganization(owner).getRepository(repo)
       val issue = repository.getIssue(number)
       issue.addAssignees(gitHub.getUser(assignee))
+      mapIssue(repository.getIssue(number))
     } match {
-      case Success(_) => FunctionResponse(Status.Success, Option(s"Successfully assigned issue `#$number` in `$owner/$repo` to `$assignee`"), None)
+      case Success(response) => FunctionResponse(Status.Success, Option(s"Successfully assigned issue `#$number` in `$owner/$repo` to `$assignee`"), None, JsonBodyOption(response))
       case Failure(e) => FunctionResponse(Status.Failure, Some(s"Failed to assign issue `#$number` in `$owner/$repo` to `$assignee`"), None, StringBodyOption(e.getMessage))
     }
   }

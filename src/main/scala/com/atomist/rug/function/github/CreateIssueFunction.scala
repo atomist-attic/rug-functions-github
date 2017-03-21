@@ -1,5 +1,6 @@
 package com.atomist.rug.function.github
 
+import com.atomist.rug.function.github.GitHubIssues.mapIssue
 import com.atomist.rug.spi.Handlers.Status
 import com.atomist.rug.spi.annotation.{Parameter, RugFunction, Secret, Tag}
 import com.atomist.rug.spi.{AnnotatedRugFunction, FunctionResponse, JsonBodyOption, StringBodyOption}
@@ -29,9 +30,10 @@ class CreateIssueFunction
     Try {
       val gitHub = GitHub.connectUsingOAuth(token)
       val repository = gitHub.getOrganization(owner).getRepository(repo)
-      repository.createIssue(title).body(body).create()
+      val gHIssue = repository.createIssue(title).body(body).create()
+      mapIssue(gHIssue)
     } match {
-      case Success(response) => FunctionResponse(Status.Success, Some(s"Successfully created issue `#${response.getNumber}` in `$owner/$repo`"), None, None)
+      case Success(response) => FunctionResponse(Status.Success, Some(s"Successfully created issue `#${response.number}` in `$owner/$repo`"), None, JsonBodyOption(response))
       case Failure(e) => FunctionResponse(Status.Failure, Some(s"Failed to create issue in `$owner/$repo`"), None, StringBodyOption(e.getMessage))
     }
   }

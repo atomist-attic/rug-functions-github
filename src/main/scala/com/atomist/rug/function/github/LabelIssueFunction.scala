@@ -1,8 +1,9 @@
 package com.atomist.rug.function.github
 
+import com.atomist.rug.function.github.GitHubIssues.mapIssue
 import com.atomist.rug.spi.Handlers.Status
 import com.atomist.rug.spi.annotation.{Parameter, RugFunction, Secret, Tag}
-import com.atomist.rug.spi.{AnnotatedRugFunction, FunctionResponse, StringBodyOption}
+import com.atomist.rug.spi.{AnnotatedRugFunction, FunctionResponse, JsonBodyOption, StringBodyOption}
 import com.typesafe.scalalogging.LazyLogging
 import org.kohsuke.github.GitHub
 
@@ -32,9 +33,11 @@ class LabelIssueFunction extends AnnotatedRugFunction
       val issue = repository.getIssue(number)
       val labels = issue.getLabels.asScala.map(_.getName).toSeq :+ label
       issue.setLabels(labels: _*)
+      mapIssue(repository.getIssue(number))
     } match {
-      case Success(_) => FunctionResponse(Status.Success, Some(s"Successfully labelled issue `#$number` in `$owner/$repo`"), None)
+      case Success(response) => FunctionResponse(Status.Success, Some(s"Successfully labelled issue `#$number` in `$owner/$repo`"), None, JsonBodyOption(response))
       case Failure(e) => FunctionResponse(Status.Failure, Some(s"Failed to label issue `#$number` in `$owner/$repo`"), None, StringBodyOption(e.getMessage))
     }
   }
 }
+

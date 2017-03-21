@@ -1,5 +1,6 @@
 package com.atomist.rug.function.github
 
+import com.atomist.rug.function.github.GitHubWebHooks.mapHook
 import com.atomist.rug.spi.Handlers.Status
 import com.atomist.rug.spi.annotation.{Parameter, RugFunction, Secret, Tag}
 import com.atomist.rug.spi.{AnnotatedRugFunction, FunctionResponse, JsonBodyOption, StringBodyOption}
@@ -28,9 +29,10 @@ class InstallOrgWebHookFunction extends AnnotatedRugFunction
       val gitHub = GitHub.connectUsingOAuth(token)
       val org = gitHub.getOrganization(owner)
       val config = Map("url" -> url, "content_type" -> "json")
-      org.createHook("web", config.asJava, Seq(GHEvent.ALL).asJava, true)
+      val gHHook = org.createHook("web", config.asJava, Seq(GHEvent.ALL).asJava, true)
+      mapHook(gHHook)
     } match {
-      case Success(response) => FunctionResponse(Status.Success, Some(s"Successfully installed org-level webhook for `$owner`"), None, None)
+      case Success(response) => FunctionResponse(Status.Success, Some(s"Successfully installed org-level webhook for `$owner`"), None, JsonBodyOption(response))
       case Failure(e) => FunctionResponse(Status.Failure, Some(s"Failed to create org-level webhook for `$owner`"), None, StringBodyOption(e.getMessage))
     }
   }

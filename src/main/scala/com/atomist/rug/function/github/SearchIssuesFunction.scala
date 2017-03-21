@@ -14,7 +14,7 @@ class SearchIssuesFunction
     with LazyLogging
     with GitHubFunction {
 
-  import GitHubSearchIssues._
+  import GitHubIssues._
 
   @RugFunction(name = "search-github-issues", description = "Search for Github issues",
     tags = Array(new Tag(name = "github"), new Tag(name = "issues")))

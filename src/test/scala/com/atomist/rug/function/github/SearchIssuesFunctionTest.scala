@@ -1,6 +1,6 @@
 package com.atomist.rug.function.github
 
-import com.atomist.rug.function.github.GitHubSearchIssues.GitHubIssue
+import com.atomist.rug.function.github.GitHubIssues.GitHubIssue
 import com.atomist.rug.function.github.TestCredentials.Token
 import com.atomist.rug.spi.Handlers.Status
 import com.atomist.util.JsonUtils

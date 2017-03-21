@@ -2,6 +2,8 @@ package com.atomist.rug.function.github
 
 import java.io.InputStream
 import java.text.SimpleDateFormat
+import java.time.{OffsetDateTime, ZoneId}
+import java.util.Date
 
 import com.atomist.rug.runtime.RugSupport
 import com.fasterxml.jackson.annotation.JsonInclude.Include
@@ -57,4 +59,7 @@ object GitHubFunction {
       }.toMap
     case None => Map()
   }
+
+  def convertDate(date: Date): OffsetDateTime =
+    if (date == null) null else OffsetDateTime.ofInstant(date.toInstant, ZoneId.systemDefault())
 }

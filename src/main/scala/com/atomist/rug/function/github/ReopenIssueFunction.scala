@@ -2,7 +2,7 @@ package com.atomist.rug.function.github
 
 import com.atomist.rug.spi.Handlers.Status
 import com.atomist.rug.spi.annotation.{Parameter, RugFunction, Secret, Tag}
-import com.atomist.rug.spi.{AnnotatedRugFunction, FunctionResponse, StringBodyOption}
+import com.atomist.rug.spi.{AnnotatedRugFunction, FunctionResponse, JsonBodyOption, StringBodyOption}
 import com.typesafe.scalalogging.LazyLogging
 import org.kohsuke.github.GitHub
 
@@ -15,6 +15,8 @@ class ReopenIssueFunction
   extends AnnotatedRugFunction
     with LazyLogging
     with GitHubFunction {
+
+  import GitHubIssues._
 
   @RugFunction(name = "reopen-github-issue", description = "Reopens a closed GitHub issue",
     tags = Array(new Tag(name = "github"), new Tag(name = "issues")))
@@ -30,8 +32,9 @@ class ReopenIssueFunction
       val repository = gitHub.getOrganization(owner).getRepository(repo)
       val issue = repository.getIssue(number)
       issue.reopen()
+      mapIssue(repository.getIssue(number))
     } match {
-      case Success(_) => FunctionResponse(Status.Success, Some(s"Successfully reopened issue `#$number` in `$owner/$repo`"), None)
+      case Success(response) => FunctionResponse(Status.Success, Some(s"Successfully reopened issue `#$number` in `$owner/$repo`"), None, JsonBodyOption(response))
       case Failure(e) => FunctionResponse(Status.Failure, Some(s"Failed to reopen issue `#$number` in `$owner/$repo`"), None, StringBodyOption(e.getMessage))
     }
   }
