@@ -7,7 +7,6 @@ import com.atomist.rug.function.github.GitHubIssues.{GitHubIssue, Issue}
 import com.atomist.rug.spi.Handlers.Status
 import com.atomist.rug.spi.annotation.{Parameter, RugFunction, Secret, Tag}
 import com.atomist.rug.spi.{AnnotatedRugFunction, FunctionResponse, JsonBodyOption, StringBodyOption}
-import com.fasterxml.jackson.annotation.JsonProperty
 import com.typesafe.scalalogging.LazyLogging
 
 import scala.collection.mutable.ListBuffer
