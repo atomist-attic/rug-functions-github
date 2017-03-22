@@ -61,8 +61,9 @@ object GitHubIssues {
     val pullRequest = if (gHIssue.getPullRequest == null) None else Some(PullRequest(gHIssue.getPullRequest.getUrl.toExternalForm))
     val repository = if (gHIssue.getRepository == null) None else Some(IssueRepository(convertDate(gHIssue.getRepository.getPushedAt)))
     val closedAt = if (gHIssue.getClosedAt == null) None else Some(convertDate(gHIssue.getClosedAt))
-    val assignees = if (gHIssue.getAssignees.isEmpty) None
-    else Some(gHIssue.getAssignees.asScala.map(a => ResponseUser(a.getLogin, a.getId, a.getUrl.toExternalForm, a.getHtmlUrl.toExternalForm)).toArray)
+    val assignees =
+      if (gHIssue.getAssignees.isEmpty) None
+      else Some(gHIssue.getAssignees.asScala.map(a => ResponseUser(a.getLogin, a.getId, a.getUrl.toExternalForm, a.getHtmlUrl.toExternalForm)).toArray)
 
     Issue(gHIssue.getNumber, gHIssue.getId, gHIssue.getTitle, gHIssue.getUrl.toExternalForm, gHIssue.getBody,
       user, assignee, labels, milestone, gHIssue.getState.name, pullRequest, repository, convertDate(gHIssue.getCreatedAt),

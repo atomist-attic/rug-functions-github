@@ -34,13 +34,10 @@ class CreateTagFunction
     logger.info(s"Invoking createTag with tag '$tag', message '$message', sha '$sha', owner '$owner', repo '$repo' and token '${safeToken(token)}'")
 
     Try {
-      // val gitHub = GitHub.connectUsingOAuth(token)
       val cto = CreateTag(tag, message, sha, "commit", Tagger("Atomist Bot", "bot@atomist.com", OffsetDateTime.now()))
       val ctr = createLightweightTag(token, repo, owner, cto)
       val cr = CreateReference(s"refs/tags/${ctr.tag}", ctr.sha)
       createReference(token, repo, owner, cr)
-      // val repository = gitHub.getOrganization(owner).getRepository(repo)
-      // repository.createRef(s"refs/tags/${ctr.tag}", ctr.sha)
     } match {
       case Success(response) => FunctionResponse(Status.Success, Option(s"Successfully create new tag `$tag` in `$owner/$repo`"), None, JsonBodyOption(response))
       case Failure(e) => FunctionResponse(Status.Failure, Some(s"Failed to create new tag `$tag` in `$owner/$repo`"), None, StringBodyOption(e.getMessage))
@@ -50,14 +47,14 @@ class CreateTagFunction
   private def createLightweightTag(token: String, repo: String, owner: String, ct: CreateTag) =
     Http(s"$ApiUrl/repos/$owner/$repo/git/tags").postData(toJson(ct))
       .headers(getHeaders(token))
-      .execute(parser = is => fromJson[CreateTagResponse](is))
+      .execute(is => fromJson[CreateTagResponse](is))
       .throwError
       .body
 
   private def createReference(token: String, repo: String, owner: String, cr: CreateReference) =
     Http(s"$ApiUrl/repos/$owner/$repo/git/refs").postData(toJson(cr))
       .headers(getHeaders(token))
-      .execute(parser = is => fromJson[Reference](is))
+      .execute(is => fromJson[Reference](is))
       .throwError
       .body
 }
