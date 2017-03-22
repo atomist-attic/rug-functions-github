@@ -21,7 +21,7 @@ class InstallOrgWebHookFunction extends AnnotatedRugFunction
     tags = Array(new Tag(name = "github"), new Tag(name = "webhooks")))
   def invoke(@Parameter(name = "url") url: String,
              @Parameter(name = "owner") owner: String,
-             @Secret(name = "user_token", path = "github://user_token?scopes=repos") token: String): FunctionResponse = {
+             @Secret(name = "user_token", path = "github://user_token?scopes=admin:org_hook") token: String): FunctionResponse = {
 
     logger.info(s"Invoking installOrgWebhook with url '$url', owner '$owner' and token '${safeToken(token)}'")
 

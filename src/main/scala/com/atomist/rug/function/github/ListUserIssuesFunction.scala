@@ -22,7 +22,7 @@ class ListUserIssuesFunction extends AnnotatedRugFunction
     description = "List issues for user that owns the token",
     tags = Array(new Tag(name = "github"), new Tag(name = "issues")))
   def invoke(@Parameter(name = "days") days: String = "1",
-             @Secret(name = "user_token", path = "github://user_token?scopes=repos") token: String): FunctionResponse = {
+             @Secret(name = "user_token", path = "github://user_token?scopes=repo") token: String): FunctionResponse = {
 
     logger.info(s"Invoking listUserIssues with days '$days' and token '${safeToken(token)}'")
 

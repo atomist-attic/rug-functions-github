@@ -23,7 +23,7 @@ class ReopenIssueFunction
   def invoke(@Parameter(name = "issue") number: Int,
              @Parameter(name = "repo") repo: String,
              @Parameter(name = "owner") owner: String,
-             @Secret(name = "user_token", path = "github://user_token?scopes=repos") token: String): FunctionResponse = {
+             @Secret(name = "user_token", path = "github://user_token?scopes=repo") token: String): FunctionResponse = {
 
     logger.info(s"Invoking reopenIssue with number '$number', owner '$owner', repo '$repo' and token '${safeToken(token)}'")
 
