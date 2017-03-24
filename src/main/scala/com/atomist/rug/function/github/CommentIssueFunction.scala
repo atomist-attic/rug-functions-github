@@ -46,7 +46,7 @@ class CommentIssueFunction
 
   private def mapIssueComment(ghIssueComment: GHIssueComment): Comment = {
     val gHUser = ghIssueComment.getUser
-    val user = ResponseUser(gHUser.getLogin, gHUser.getId, gHUser.getUrl.toExternalForm, gHUser.getHtmlUrl.toExternalForm)
+    val user = ResponseUser(gHUser.getLogin, gHUser.getId, gHUser.getUrl.toExternalForm, gHUser.getAvatarUrl, gHUser.getHtmlUrl.toExternalForm)
 
     Comment(ghIssueComment.getId, ghIssueComment.getUrl.toExternalForm, ghIssueComment.getBody, user,
       convertDate(ghIssueComment.getCreatedAt), convertDate(ghIssueComment.getUpdatedAt))

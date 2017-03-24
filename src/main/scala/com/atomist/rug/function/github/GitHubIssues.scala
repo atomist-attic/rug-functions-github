@@ -40,6 +40,7 @@ object GitHubIssues {
   case class ResponseUser(login: String,
                           id: Int,
                           url: String,
+                          @JsonProperty("avatar_url") avatarUrl: String,
                           @JsonProperty("html_url") htmlUrl: String)
 
   case class IssueLabel(url: String, name: String, color: String)
@@ -52,9 +53,9 @@ object GitHubIssues {
 
   def mapIssue(gHIssue: GHIssue): Issue = {
     val gHUser = gHIssue.getUser
-    val user = ResponseUser(gHUser.getLogin, gHUser.getId, gHUser.getUrl.toExternalForm, gHUser.getHtmlUrl.toExternalForm)
+    val user = ResponseUser(gHUser.getLogin, gHUser.getId, gHUser.getUrl.toExternalForm, gHUser.getAvatarUrl, gHUser.getHtmlUrl.toExternalForm)
     val gHAssignee = gHIssue.getAssignee
-    val assignee = ResponseUser(gHAssignee.getLogin, gHAssignee.getId, gHAssignee.getUrl.toExternalForm, gHAssignee.getHtmlUrl.toExternalForm)
+    val assignee = ResponseUser(gHAssignee.getLogin, gHAssignee.getId, gHAssignee.getUrl.toExternalForm, gHUser.getAvatarUrl, gHAssignee.getHtmlUrl.toExternalForm)
     val labels = gHIssue.getLabels.asScala.map(l => IssueLabel(l.getUrl, l.getName, l.getColor)).toArray
     val gHMilestone = gHIssue.getMilestone
     val milestone = if (gHMilestone == null) None else Some(Milestone(gHMilestone.getUrl.toExternalForm, gHMilestone.getId, gHMilestone.getNumber))
@@ -63,7 +64,7 @@ object GitHubIssues {
     val closedAt = if (gHIssue.getClosedAt == null) None else Some(convertDate(gHIssue.getClosedAt))
     val assignees =
       if (gHIssue.getAssignees.isEmpty) None
-      else Some(gHIssue.getAssignees.asScala.map(a => ResponseUser(a.getLogin, a.getId, a.getUrl.toExternalForm, a.getHtmlUrl.toExternalForm)).toArray)
+      else Some(gHIssue.getAssignees.asScala.map(a => ResponseUser(a.getLogin, a.getId, a.getUrl.toExternalForm, gHUser.getAvatarUrl, a.getHtmlUrl.toExternalForm)).toArray)
 
     Issue(gHIssue.getNumber, gHIssue.getId, gHIssue.getTitle, gHIssue.getUrl.toExternalForm, gHIssue.getBody,
       user, assignee, labels, milestone, gHIssue.getState.name, pullRequest, repository, convertDate(gHIssue.getCreatedAt),

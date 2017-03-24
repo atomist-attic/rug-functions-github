@@ -46,7 +46,7 @@ class SearchIssuesFunction
           val respUser =
             if (assignee == null)
               null
-            else ResponseUser(assignee.getLogin, assignee.getId, assignee.getUrl.toExternalForm, assignee.getHtmlUrl.toExternalForm)
+            else ResponseUser(assignee.getLogin, assignee.getId, assignee.getUrl.toExternalForm, assignee.getAvatarUrl, assignee.getHtmlUrl.toExternalForm)
 
           GitHubIssue(id, title, url, issueUrl, repo, ts, i.getState.name(), respUser)
         }).slice(0, 10)
