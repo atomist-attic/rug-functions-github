@@ -44,7 +44,7 @@ class ListUserIssuesFunction extends AnnotatedRugFunction
         case Failure(_) => OffsetDateTime.now.minusDays(1)
       }
 
-      issues.filter(i => i.updatedAt.isAfter(time) || (i.repository.isDefined && i.repository.get.pushedAt.isAfter(time)))
+      issues.filter(i => i.updatedAt.isAfter(time))
         .sortWith((i1, i2) => i2.updatedAt.compareTo(i1.updatedAt) > 0)
         .map(i => {
           val id = i.number
