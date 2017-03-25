@@ -33,7 +33,10 @@ class CloseIssueFunction extends AnnotatedRugFunction
       mapIssue(repository.getIssue(number))
     } match {
       case Success(response) => FunctionResponse(Status.Success, Some(s"Successfully closed issue `#$number` in `$owner/$repo`"), None, JsonBodyOption(response))
-      case Failure(e) => FunctionResponse(Status.Failure, Some(s"Failed to close issue `#$number` in `$owner/$repo`"), None, StringBodyOption(e.getMessage))
+      case Failure(e) =>
+        val msg = s"Failed to close issue `#$number` in `$owner/$repo`"
+        logger.error(msg, e)
+        FunctionResponse(Status.Failure, Some(msg), None, StringBodyOption(e.getMessage))
     }
   }
 }

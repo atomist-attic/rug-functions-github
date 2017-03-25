@@ -54,7 +54,10 @@ class SearchIssuesFunction
       FunctionResponse(Status.Success, Some(s"Successfully listed issues for search `$search` on `$repo/$owner`"), None, JsonBodyOption(issues))
     } catch {
       // Need to catch Throwable as Exception lets through GitHub message errors
-      case t: Throwable => FunctionResponse(Status.Failure, Some("Failed to list issues"), None, StringBodyOption(t.getMessage))
+      case t: Throwable =>
+        val msg = "Failed to list issues"
+        logger.error(msg,t)
+        FunctionResponse(Status.Failure, Some(msg), None, StringBodyOption(t.getMessage))
     }
   }
 }

@@ -37,7 +37,10 @@ class CreateReleaseFunction extends AnnotatedRugFunction
         convertDate(gHRelease.getPublished_at), gHRelease.getUploadUrl, gHRelease.getZipballUrl, gHRelease.getTarballUrl)
     } match {
       case Success(response) => FunctionResponse(Status.Success, Some(s"Successfully created release `${response.tagName}` in `$owner/$repo#${response.targetCommitish}`"), None, JsonBodyOption(response))
-      case Failure(e) => FunctionResponse(Status.Failure, Some(s"Failed to create release from tag `$tagName` in `$owner/$repo`"), None, StringBodyOption(e.getMessage))
+      case Failure(e) =>
+        val msg = s"Failed to create release from tag `$tagName` in `$owner/$repo`"
+        logger.error(msg,e)
+        FunctionResponse(Status.Failure, Some(msg), None, StringBodyOption(e.getMessage))
     }
   }
 }

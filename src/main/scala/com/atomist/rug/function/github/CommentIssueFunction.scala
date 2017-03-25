@@ -40,7 +40,10 @@ class CommentIssueFunction
       mapIssueComment(issue.comment(comment))
     } match {
       case Success(response) => FunctionResponse(Status.Success, Some(s"Successfully added comment to issue `#$number` in `$owner/$repo`"), None, JsonBodyOption(response))
-      case Failure(e) => FunctionResponse(Status.Failure, Some(s"Failed to add comment to issue `#$number` in `$owner/$repo`"), None, StringBodyOption(e.getMessage))
+      case Failure(e) =>
+        val msg = s"Failed to add comment to issue `#$number` in `$owner/$repo`"
+        logger.error(msg, e)
+        FunctionResponse(Status.Failure, Some(msg), None, StringBodyOption(e.getMessage))
     }
   }
 

@@ -40,7 +40,10 @@ class CreateTagFunction
       createReference(token, repo, owner, cr)
     } match {
       case Success(response) => FunctionResponse(Status.Success, Option(s"Successfully create new tag `$tag` in `$owner/$repo`"), None, JsonBodyOption(response))
-      case Failure(e) => FunctionResponse(Status.Failure, Some(s"Failed to create new tag `$tag` in `$owner/$repo`"), None, StringBodyOption(e.getMessage))
+      case Failure(e) =>
+        val msg = s"Failed to create new tag `$tag` in `$owner/$repo`"
+        logger.error(msg,e)
+        FunctionResponse(Status.Failure, Some(msg), None, StringBodyOption(e.getMessage))
     }
   }
 

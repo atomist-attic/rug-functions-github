@@ -60,7 +60,10 @@ class ListUserIssuesFunction extends AnnotatedRugFunction
         })
     } match {
       case Success(response) => FunctionResponse(Status.Success, Some("Successfully listed issues"), None, JsonBodyOption(response))
-      case Failure(e) => FunctionResponse(Status.Failure, Some("Failed to list issues"), None, StringBodyOption(e.getMessage))
+      case Failure(e) =>
+        val msg = "Failed to list issues"
+        logger.error(msg,e)
+        FunctionResponse(Status.Failure, Some(msg), None, StringBodyOption(e.getMessage))
     }
   }
 

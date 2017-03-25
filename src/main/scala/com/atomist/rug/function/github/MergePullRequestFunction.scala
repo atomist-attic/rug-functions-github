@@ -32,7 +32,10 @@ class MergePullRequestFunction
       pullRequest.merge(null)
     } match {
       case Success(_) => FunctionResponse(Status.Success, Some(s"Successfully merged pull request `$number"), None)
-      case Failure(e) => FunctionResponse(Status.Failure, Some(s"Failed to merge pull request `$number"), None, StringBodyOption(e.getMessage))
+      case Failure(e) =>
+        val msg = s"Failed to merge pull request `$number"
+        logger.error(msg,e)
+        FunctionResponse(Status.Failure, Some(msg), None, StringBodyOption(e.getMessage))
     }
   }
 }

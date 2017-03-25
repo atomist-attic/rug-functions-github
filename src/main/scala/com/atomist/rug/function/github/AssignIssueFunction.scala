@@ -35,7 +35,10 @@ class AssignIssueFunction
       mapIssue(repository.getIssue(number))
     } match {
       case Success(response) => FunctionResponse(Status.Success, Option(s"Successfully assigned issue `#$number` in `$owner/$repo` to `$assignee`"), None, JsonBodyOption(response))
-      case Failure(e) => FunctionResponse(Status.Failure, Some(s"Failed to assign issue `#$number` in `$owner/$repo` to `$assignee`"), None, StringBodyOption(e.getMessage))
+      case Failure(e) =>
+        val msg = s"Failed to assign issue `#$number` in `$owner/$repo` to `$assignee`"
+        logger.error(msg, e)
+        FunctionResponse(Status.Failure, Some(msg), None, StringBodyOption(e.getMessage))
     }
   }
 }
