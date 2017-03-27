@@ -38,7 +38,7 @@ class ReopenIssueFunction
       case Success(response) => FunctionResponse(Status.Success, Some(s"Successfully reopened issue `#$number` in `$owner/$repo`"), None, JsonBodyOption(response))
       case Failure(e) =>
         val msg = s"Failed to reopen issue `#$number` in `$owner/$repo`"
-        logger.error(msg,e)
+        logger.error(msg, e)
         FunctionResponse(Status.Failure, Some(msg), None, StringBodyOption(e.getMessage))
     }
   }

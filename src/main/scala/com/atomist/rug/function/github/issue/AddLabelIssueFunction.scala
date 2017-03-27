@@ -39,7 +39,7 @@ class AddLabelIssueFunction extends AnnotatedRugFunction
       case Success(response) => FunctionResponse(Status.Success, Some(s"Successfully labelled issue `#$number` in `$owner/$repo`"), None, JsonBodyOption(response))
       case Failure(e) =>
         val msg = s"Failed to label issue `#$number` in `$owner/$repo`"
-        logger.error(msg,e)
+        logger.error(msg, e)
         FunctionResponse(Status.Failure, Some(msg), None, StringBodyOption(e.getMessage))
     }
   }

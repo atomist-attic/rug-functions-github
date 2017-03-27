@@ -37,7 +37,7 @@ class CreateIssueFunction
       case Success(response) => FunctionResponse(Status.Success, Some(s"Successfully created issue `#${response.number}` in `$owner/$repo`"), None, JsonBodyOption(response))
       case Failure(e) =>
         val msg = s"Failed to create issue in `$owner/$repo`"
-        logger.warn(msg,e)
+        logger.warn(msg, e)
         FunctionResponse(Status.Failure, Some(msg), None, StringBodyOption(e.getMessage))
     }
   }
