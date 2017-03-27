@@ -11,6 +11,7 @@ class SearchIssuesFunctionTest extends GitHubFunctionTest(Token) {
     val tempRepo = newPopulatedTemporaryRepo()
     val issue = createIssue(tempRepo, "test issue", "Issue body")
     issue.addAssignees(gitHub.getUser("alankstewart"))
+    Thread.sleep(2000)
 
     val f = new SearchIssuesFunction
     val response = f.invoke(null, tempRepo.getName, tempRepo.getOwnerName, Token)

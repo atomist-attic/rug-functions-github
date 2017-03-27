@@ -56,7 +56,7 @@ class ListUserIssuesFunction extends AnnotatedRugFunction
           // atomisthq/bot-service
           val repo = i.url.replace("https://api.github.com/repos/", "").replace(s"/issues/${i.number}", "")
           val ts = i.updatedAt.toEpochSecond
-          GitHubIssue(id, title, url, issueUrl, repo, ts, i.state, i.assignee)
+          GitHubIssue(id, title, url, issueUrl, repo, ts, i.state, i.assignee.orNull)
         })
     } match {
       case Success(response) => FunctionResponse(Status.Success, Some("Successfully listed issues"), None, JsonBodyOption(response))

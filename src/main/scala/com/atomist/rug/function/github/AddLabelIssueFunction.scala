@@ -13,11 +13,11 @@ import scala.util.{Failure, Success, Try}
 /**
   * Label an issue with a known label.
   */
-class LabelIssueFunction extends AnnotatedRugFunction
+class AddLabelIssueFunction extends AnnotatedRugFunction
   with LazyLogging
   with GitHubFunction {
 
-  @RugFunction(name = "label-github-issue", description = "Adds a label to an already existing issue",
+  @RugFunction(name = "add-label-github-issue", description = "Adds a label to an already existing issue",
     tags = Array(new Tag(name = "github"), new Tag(name = "issues")))
   def invoke(@Parameter(name = "issue") number: Int,
              @Parameter(name = "repo") repo: String,
@@ -25,7 +25,7 @@ class LabelIssueFunction extends AnnotatedRugFunction
              @Parameter(name = "label") label: String,
              @Secret(name = "user_token", path = "github://user_token?scopes=repo") token: String): FunctionResponse = {
 
-    logger.info(s"Invoking labelIssue with number '$number', label '$label', owner '$owner', repo '$repo' and token '${safeToken(token)}'")
+    logger.info(s"Invoking addLabelIssue with number '$number', label '$label', owner '$owner', repo '$repo' and token '${safeToken(token)}'")
 
     Try {
       val gitHub = GitHub.connectUsingOAuth(token)
