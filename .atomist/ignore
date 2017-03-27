@@ -2,7 +2,6 @@ target
 .idea
 .settings
 *.iml
-*.yml
 README.md
 *.bash
 .atomist.yml
