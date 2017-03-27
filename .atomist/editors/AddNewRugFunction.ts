@@ -9,7 +9,7 @@ import { PathExpressionEngine } from "@atomist/rug/tree/PathExpression";
 @Tags("rug", "function", "scala")
 class AddNewRugFunction implements EditProject {
 
-    @Parameter({description: "Name of the new Rug Function", pattern: "Pattern.project_name"})
+    @Parameter({description: "Name of the new Rug Function", pattern: Pattern.project_name})
     functionName: string
 
     @Parameter({description: "GroupId to use in the pom. Also used for package", pattern: Pattern.group_id})
