@@ -1,5 +1,6 @@
 # Created using https://www.gitignore.io/api/scala,intellij
 
+.atomist/node_modules/
 git.properties
 provenance.properties
 
