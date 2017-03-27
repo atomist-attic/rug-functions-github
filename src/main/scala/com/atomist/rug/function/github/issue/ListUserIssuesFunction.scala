@@ -1,9 +1,10 @@
-package com.atomist.rug.function.github
+package com.atomist.rug.function.github.issue
 
 import java.time.OffsetDateTime
 
+import com.atomist.rug.function.github.GitHubFunction
 import com.atomist.rug.function.github.GitHubFunction._
-import com.atomist.rug.function.github.GitHubIssues.{GitHubIssue, Issue}
+import com.atomist.rug.function.github.issue.GitHubIssues.{GitHubIssue, Issue}
 import com.atomist.rug.spi.Handlers.Status
 import com.atomist.rug.spi.annotation.{Parameter, RugFunction, Secret, Tag}
 import com.atomist.rug.spi.{AnnotatedRugFunction, FunctionResponse, JsonBodyOption, StringBodyOption}
@@ -60,10 +61,10 @@ class ListUserIssuesFunction extends AnnotatedRugFunction
         })
     } match {
       case Success(response) => FunctionResponse(Status.Success, Some("Successfully listed issues"), None, JsonBodyOption(response))
-      case Failure(e) =>
+      case Failure(t: Throwable) =>
         val msg = "Failed to list issues"
-        logger.error(msg,e)
-        FunctionResponse(Status.Failure, Some(msg), None, StringBodyOption(e.getMessage))
+        logger.error(msg, t)
+        FunctionResponse(Status.Failure, Some(msg), None, StringBodyOption(t.getMessage))
     }
   }
 

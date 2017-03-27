@@ -1,7 +1,8 @@
-package com.atomist.rug.function.github
+package com.atomist.rug.function.github.issue
 
 import java.time.OffsetDateTime
 
+import com.atomist.rug.function.github.GitHubFunction
 import com.fasterxml.jackson.annotation.JsonProperty
 import org.kohsuke.github.GHIssue
 
@@ -55,7 +56,7 @@ object GitHubIssues {
     val gHUser = gHIssue.getUser
     val user = ResponseUser(gHUser.getLogin, gHUser.getId, gHUser.getUrl.toExternalForm, gHUser.getAvatarUrl, gHUser.getHtmlUrl.toExternalForm)
     val gHAssignee = gHIssue.getAssignee
-    val assignee = if (gHAssignee == null) None else Some(ResponseUser(gHAssignee.getLogin, gHAssignee.getId, gHAssignee.getUrl.toExternalForm, gHAssignee.getHtmlUrl.toExternalForm))
+    val assignee = if (gHAssignee == null) None else Some(ResponseUser(gHAssignee.getLogin, gHAssignee.getId, gHAssignee.getUrl.toExternalForm, gHAssignee.getAvatarUrl, gHAssignee.getHtmlUrl.toExternalForm))
     val labels = gHIssue.getLabels.asScala.map(l => IssueLabel(l.getUrl, l.getName, l.getColor)).toArray
     val gHMilestone = gHIssue.getMilestone
     val milestone = if (gHMilestone == null) None else Some(Milestone(gHMilestone.getUrl.toExternalForm, gHMilestone.getId, gHMilestone.getNumber))

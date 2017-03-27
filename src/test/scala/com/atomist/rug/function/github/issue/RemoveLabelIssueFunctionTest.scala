@@ -1,13 +1,14 @@
-package com.atomist.rug.function.github
+package com.atomist.rug.function.github.issue
 
-import com.atomist.rug.function.github.GitHubIssues.Issue
+import com.atomist.rug.function.github.GitHubFunctionTest
 import com.atomist.rug.function.github.TestCredentials.Token
+import com.atomist.rug.function.github.issue.GitHubIssues.Issue
 import com.atomist.rug.spi.Handlers.Status
 import com.atomist.util.JsonUtils
 
-class AddLabelIssueFunctionTest extends GitHubFunctionTest(Token) {
+class RemoveLabelIssueFunctionTest extends GitHubFunctionTest(Token) {
 
-  it should "add label to issue" in {
+  it should "remove label from issue" in {
     val tempRepo = newPopulatedTemporaryRepo()
     val gHIssue = createIssue(tempRepo, "test issue", "Issue body")
 
@@ -21,5 +22,15 @@ class AddLabelIssueFunctionTest extends GitHubFunctionTest(Token) {
     val labels = issue.labels
     labels should have size 1
     labels(0).name shouldBe "bug"
+
+    val f2 = new RemoveLabelIssueFunction
+    val response2 = f2.invoke(gHIssue.getNumber, tempRepo.getName, tempRepo.getOwnerName, "bug", Token)
+    response2.status shouldBe Status.Success
+    val body2 = response2.body
+    body2 shouldBe defined
+    body2.get.str shouldBe defined
+    val issue2 = JsonUtils.fromJson[Issue](body2.get.str.get)
+    val labels2 = issue2.labels
+    labels2 shouldBe empty
   }
 }

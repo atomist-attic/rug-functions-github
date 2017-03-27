@@ -1,7 +1,8 @@
-package com.atomist.rug.function.github
+package com.atomist.rug.function.github.issue
 
-import com.atomist.rug.function.github.GitHubIssues.GitHubIssue
+import com.atomist.rug.function.github.GitHubFunctionTest
 import com.atomist.rug.function.github.TestCredentials.Token
+import com.atomist.rug.function.github.issue.GitHubIssues.GitHubIssue
 import com.atomist.rug.spi.Handlers.Status
 import com.atomist.util.JsonUtils
 
