@@ -8,4 +8,5 @@ README.md
 LICENSE
 CHANGELOG.md
 src/main/scala/com/atomist/rug/function/
+src/test/scala
 src/main/resources/META-INF/services
