@@ -4,9 +4,10 @@ import com.atomist.rug.function.github.GitHubFunction
 import com.atomist.rug.spi.Handlers.Status
 import com.atomist.rug.spi.annotation.{Parameter, RugFunction, Secret, Tag}
 import com.atomist.rug.spi.{AnnotatedRugFunction, FunctionResponse, JsonBodyOption, StringBodyOption}
+import com.atomist.source.github.GitHubServices
 import com.typesafe.scalalogging.LazyLogging
+import org.kohsuke.github.GHDirection
 import org.kohsuke.github.GHIssueSearchBuilder.Sort
-import org.kohsuke.github.{GHDirection, GitHub}
 
 import scala.collection.JavaConverters._
 
@@ -27,8 +28,8 @@ class SearchIssuesFunction
     logger.info(s"Invoking searchIssues with search '$search', owner '$owner', repo '$repo' and token '${safeToken(token)}'")
 
     try {
-      val gitHub = GitHub.connectUsingOAuth(token)
-      val response = gitHub.searchIssues().q(s"repo:$owner/$repo").order(GHDirection.ASC).sort(Sort.UPDATED).list().withPageSize(100)
+      val ghs = GitHubServices(token)
+      val response = ghs.gitHub.searchIssues().q(s"repo:$owner/$repo").order(GHDirection.ASC).sort(Sort.UPDATED).list().withPageSize(100)
       val issues = response.asScala.toSeq
         .filter(i => (search == null || search == "not-set") || ((i.getBody != null && i.getBody.contains(search)) || (i.getTitle != null && i.getTitle.contains(search))))
         .sortWith((i1, i2) => i1.getUpdatedAt.compareTo(i2.getUpdatedAt) > 0)
@@ -56,7 +57,7 @@ class SearchIssuesFunction
     } catch {
       // Need to catch Throwable as Exception lets through GitHub message errors
       case t: Throwable =>
-        val msg = "Failed to list issues"
+        val msg = "Failed to search issues"
         logger.error(msg, t)
         FunctionResponse(Status.Failure, Some(msg), None, StringBodyOption(t.getMessage))
     }

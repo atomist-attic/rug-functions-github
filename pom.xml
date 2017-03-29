@@ -35,14 +35,9 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.kohsuke</groupId>
-            <artifactId>github-api</artifactId>
-            <version>1.85</version>
-        </dependency>
-        <dependency>
-            <groupId>org.scalaj</groupId>
-            <artifactId>scalaj-http_${scala.binary.version}</artifactId>
-            <version>2.3.0</version>
+            <groupId>com.atomist</groupId>
+            <artifactId>github-artifact-source</artifactId>
+            <version>0.2.0</version>
         </dependency>
         <dependency>
             <groupId>org.scalatest</groupId>

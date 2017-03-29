@@ -11,7 +11,7 @@ class CloseIssueFunctionTest extends GitHubFunctionTest(Token) {
   it should "close issue" in {
     val tempRepo = newPopulatedTemporaryRepo()
     val issue = createIssue(tempRepo, "test issue", "Issue body")
-    issue.addAssignees(gitHub.getUser("alankstewart"))
+    issue.addAssignees(ghs.gitHub.getUser("alankstewart"))
 
     val f = new CloseIssueFunction
     val response = f.invoke(issue.getNumber, tempRepo.getName, tempRepo.getOwnerName, Token)

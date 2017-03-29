@@ -8,11 +8,10 @@ import com.atomist.rug.function.github.issue.GitHubIssues.ResponseUser
 import com.atomist.rug.spi.Handlers.Status
 import com.atomist.rug.spi.annotation.{Parameter, RugFunction, Secret, Tag}
 import com.atomist.rug.spi.{AnnotatedRugFunction, FunctionResponse, JsonBodyOption, StringBodyOption}
+import com.atomist.source.github.GitHubServices
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.typesafe.scalalogging.LazyLogging
-import org.kohsuke.github.{GHIssueComment, GitHub}
-
-import scala.util.{Failure, Success, Try}
+import org.kohsuke.github.GHIssueComment
 
 /**
   * Adds a comment to an issue.
@@ -34,14 +33,17 @@ class CommentIssueFunction
 
     logger.info(s"Invoking commentIssue with number '$number', comment '$comment', owner '$owner', repo '$repo' and token '${safeToken(token)}'")
 
-    Try {
-      val gitHub = GitHub.connectUsingOAuth(token)
-      val repository = gitHub.getOrganization(owner).getRepository(repo)
-      val issue = repository.getIssue(number)
-      mapIssueComment(issue.comment(comment))
-    } match {
-      case Success(response) => FunctionResponse(Status.Success, Some(s"Successfully added comment to issue `#$number` in `$owner/$repo`"), None, JsonBodyOption(response))
-      case Failure(e) =>
+    try {
+      val ghs = GitHubServices(token)
+      ghs.getRepository(repo, owner)
+        .map(repository => {
+          val issue = repository.getIssue(number)
+          val response = mapIssueComment(issue.comment(comment))
+          FunctionResponse(Status.Success, Some(s"Successfully added comment to issue `#$number` in `$owner/$repo`"), None, JsonBodyOption(response))
+        })
+        .getOrElse(FunctionResponse(Status.Failure, Some(s"Failed to find repository `$repo` for owner `$owner`"), None, None))
+    } catch {
+      case e: Exception =>
         val msg = s"Failed to add comment to issue `#$number` in `$owner/$repo`"
         logger.error(msg, e)
         FunctionResponse(Status.Failure, Some(msg), None, StringBodyOption(e.getMessage))

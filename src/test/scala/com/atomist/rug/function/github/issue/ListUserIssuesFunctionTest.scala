@@ -11,7 +11,7 @@ class ListUserIssuesFunctionTest extends GitHubFunctionTest(Token) {
   it should "list issues" in {
     val tempRepo = newPopulatedTemporaryRepo()
     val issue = createIssue(tempRepo, "test issue", "Issue body")
-    issue.addAssignees(gitHub.getUser("alankstewart"))
+    issue.addAssignees(ghs.gitHub.getUser("alankstewart"))
 
     val f = new ListUserIssuesFunction
     val response = f.invoke("1", Token)

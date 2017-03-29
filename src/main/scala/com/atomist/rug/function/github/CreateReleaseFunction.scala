@@ -6,11 +6,9 @@ import com.atomist.rug.function.github.GitHubFunction.convertDate
 import com.atomist.rug.spi.Handlers.Status
 import com.atomist.rug.spi.annotation.{Parameter, RugFunction, Secret, Tag}
 import com.atomist.rug.spi.{AnnotatedRugFunction, FunctionResponse, JsonBodyOption, StringBodyOption}
+import com.atomist.source.github.GitHubServices
 import com.fasterxml.jackson.annotation.{JsonCreator, JsonProperty}
 import com.typesafe.scalalogging.LazyLogging
-import org.kohsuke.github.GitHub
-
-import scala.util.{Failure, Success, Try}
 
 class CreateReleaseFunction extends AnnotatedRugFunction
   with LazyLogging
@@ -28,18 +26,21 @@ class CreateReleaseFunction extends AnnotatedRugFunction
 
     logger.info(s"Invoking createRelease with tag '$tagName', owner '$owner', repo '$repo' and token '${safeToken(token)}'")
 
-    Try {
-      val gitHub = GitHub.connectUsingOAuth(token)
-      val repository = gitHub.getOrganization(owner).getRepository(repo)
-      val gHRelease = repository.createRelease(tagName).draft(false).prerelease(false).name(null).commitish("master").create()
-      Release(gHRelease.getId, gHRelease.getTagName, gHRelease.getTargetCommitish, gHRelease.getName, gHRelease.getBody,
-        gHRelease.isDraft, gHRelease.isPrerelease, convertDate(gHRelease.getCreatedAt),
-        convertDate(gHRelease.getPublished_at), gHRelease.getUploadUrl, gHRelease.getZipballUrl, gHRelease.getTarballUrl)
-    } match {
-      case Success(response) => FunctionResponse(Status.Success, Some(s"Successfully created release `${response.tagName}` in `$owner/$repo#${response.targetCommitish}`"), None, JsonBodyOption(response))
-      case Failure(e) =>
+    try {
+      val ghs = GitHubServices(token)
+      ghs.getRepository(repo, owner)
+        .map(repository => {
+          val gHRelease = repository.createRelease(tagName).draft(false).prerelease(false).name(null).commitish("master").create()
+          val response = Release(gHRelease.getId, gHRelease.getTagName, gHRelease.getTargetCommitish, gHRelease.getName, gHRelease.getBody,
+            gHRelease.isDraft, gHRelease.isPrerelease, convertDate(gHRelease.getCreatedAt),
+            convertDate(gHRelease.getPublished_at), gHRelease.getUploadUrl, gHRelease.getZipballUrl, gHRelease.getTarballUrl)
+          FunctionResponse(Status.Success, Some(s"Successfully created release `${response.tagName}` in `$owner/$repo#${response.targetCommitish}`"), None, JsonBodyOption(response))
+        })
+        .getOrElse(FunctionResponse(Status.Failure, Some(s"Failed to find repository `$repo` for owner `$owner`"), None, None))
+    } catch {
+      case e: Exception =>
         val msg = s"Failed to create release from tag `$tagName` in `$owner/$repo`"
-        logger.error(msg,e)
+        logger.error(msg, e)
         FunctionResponse(Status.Failure, Some(msg), None, StringBodyOption(e.getMessage))
     }
   }
@@ -59,4 +60,5 @@ object CreateReleaseFunction {
                                     @JsonProperty("upload_url") uploadlUrl: String,
                                     @JsonProperty("zipball_url") zipballUrl: String,
                                     @JsonProperty("tarball_url") tarballUrl: String)
+
 }

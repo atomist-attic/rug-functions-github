@@ -1,8 +1,9 @@
 package com.atomist.rug.function.github
 
-import com.atomist.source.{ArtifactSourceAccessException, ArtifactSourceCreationException, ArtifactSourceUpdateException}
+import com.atomist.source.github.GitHubServices
+import com.atomist.source.{ArtifactSourceAccessException, ArtifactSourceUpdateException}
 import com.typesafe.scalalogging.LazyLogging
-import org.kohsuke.github.{GHIssue, GHRepository, GitHub}
+import org.kohsuke.github.{GHIssue, GHRepository}
 import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll, FlatSpec, Matchers}
 
 import scala.collection.JavaConverters._
@@ -17,30 +18,15 @@ abstract class GitHubFunctionTest(val oAuthToken: String, val apiUrl: String = "
 
   import TestConstants._
 
-  protected lazy val gitHub = apiUrl match {
-    case url if url != null && !url.isEmpty => GitHub.connectToEnterprise(url, oAuthToken)
-    case _ => GitHub.connectUsingOAuth(oAuthToken)
-  }
+  protected val ghs = GitHubServices(oAuthToken, apiUrl)
 
   override protected def afterAll(): Unit = cleanUp()
 
   /**
     * Return a temporary repository callers can use.
     */
-  def newTemporaryRepo(autoInit: Boolean = false) = {
-    Try(gitHub.getOrganization(TestOrg).createRepository(getRepoName)
-      .private_(true)
-      .description("temporary test repository")
-      .issues(true)
-      .autoInit(autoInit)
-      .create()) match {
-      case Success(repo) =>
-        repo should not be null
-        repo.getDescription shouldEqual "temporary test repository"
-        repo
-      case Failure(e) => throw ArtifactSourceCreationException(e.getMessage, e)
-    }
-  }
+  def newTemporaryRepo(autoInit: Boolean = false) =
+    ghs.createRepository(getRepoName, TestOrg, "temporary test repository", true, true, autoInit)
 
   /**
     * Most callers will want a repository with something in it. Otherwise there isn't even a default branch,
@@ -52,7 +38,7 @@ abstract class GitHubFunctionTest(val oAuthToken: String, val apiUrl: String = "
     * Clean up after the work of this class.
     */
   private def cleanUp() =
-    Try(gitHub.searchRepositories().q(s"user:$TestOrg in:name $TemporaryRepoPrefix").list) match {
+    Try(ghs.gitHub.searchRepositories().q(s"user:$TestOrg in:name $TemporaryRepoPrefix").list) match {
       case Success(repos) => repos.asScala.foreach(_.delete)
       case Failure(e) => throw ArtifactSourceAccessException(e.getMessage, e)
     }

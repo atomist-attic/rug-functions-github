@@ -5,11 +5,10 @@ import com.atomist.rug.function.github.issue.GitHubIssues.mapIssue
 import com.atomist.rug.spi.Handlers.Status
 import com.atomist.rug.spi.annotation.{Parameter, RugFunction, Secret, Tag}
 import com.atomist.rug.spi.{AnnotatedRugFunction, FunctionResponse, JsonBodyOption, StringBodyOption}
+import com.atomist.source.github.GitHubServices
 import com.typesafe.scalalogging.LazyLogging
-import org.kohsuke.github.GitHub
 
 import scala.collection.JavaConverters._
-import scala.util.{Failure, Success, Try}
 
 /**
   * Label an issue with a known label.
@@ -24,20 +23,24 @@ class AddLabelIssueFunction extends AnnotatedRugFunction
              @Parameter(name = "repo") repo: String,
              @Parameter(name = "owner") owner: String,
              @Parameter(name = "label") label: String,
+             // @Parameter(name = "api_url" defaultValue = "") apiUrl: String,
              @Secret(name = "user_token", path = "github://user_token?scopes=repo") token: String): FunctionResponse = {
 
     logger.info(s"Invoking addLabelIssue with number '$number', label '$label', owner '$owner', repo '$repo' and token '${safeToken(token)}'")
 
-    Try {
-      val gitHub = GitHub.connectUsingOAuth(token)
-      val repository = gitHub.getOrganization(owner).getRepository(repo)
-      val issue = repository.getIssue(number)
-      val labels = issue.getLabels.asScala.map(_.getName).toSeq :+ label
-      issue.setLabels(labels: _*)
-      mapIssue(repository.getIssue(number))
-    } match {
-      case Success(response) => FunctionResponse(Status.Success, Some(s"Successfully labelled issue `#$number` in `$owner/$repo`"), None, JsonBodyOption(response))
-      case Failure(e) =>
+    try {
+      val ghs = GitHubServices(token)
+      ghs.getRepository(repo, owner)
+        .map(repository => {
+          val issue = repository.getIssue(number)
+          val labels = issue.getLabels.asScala.map(_.getName).toSeq :+ label
+          issue.setLabels(labels: _*)
+          val response = mapIssue(repository.getIssue(number))
+          FunctionResponse(Status.Success, Some(s"Successfully labelled issue `#$number` in `$owner/$repo`"), None, JsonBodyOption(response))
+        })
+        .getOrElse(FunctionResponse(Status.Failure, Some(s"Failed to find repository `$repo` for owner `$owner`"), None, None))
+    } catch {
+      case e: Exception =>
         val msg = s"Failed to label issue `#$number` in `$owner/$repo`"
         logger.error(msg, e)
         FunctionResponse(Status.Failure, Some(msg), None, StringBodyOption(e.getMessage))

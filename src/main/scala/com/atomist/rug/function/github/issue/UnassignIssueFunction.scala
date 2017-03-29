@@ -5,10 +5,10 @@ import com.atomist.rug.function.github.issue.GitHubIssues.mapIssue
 import com.atomist.rug.spi.Handlers.Status
 import com.atomist.rug.spi.annotation.{Parameter, RugFunction, Secret, Tag}
 import com.atomist.rug.spi.{AnnotatedRugFunction, FunctionResponse, JsonBodyOption, StringBodyOption}
+import com.atomist.source.github.GitHubServices
 import com.typesafe.scalalogging.LazyLogging
-import org.kohsuke.github.GitHub
+
 import scala.collection.JavaConverters._
-import scala.util.{Failure, Success, Try}
 
 /**
   * Unassigns an issue from a user.
@@ -28,16 +28,19 @@ class UnassignIssueFunction
 
     logger.info(s"Invoking unassignIssue with number '$number', assignee '$assignee', owner '$owner', repo '$repo' and token '${safeToken(token)}'")
 
-    Try {
-      val gitHub = GitHub.connectUsingOAuth(token)
-      val repository = gitHub.getOrganization(owner).getRepository(repo)
-      val issue = repository.getIssue(number)
-      val assignees = issue.getAssignees.asScala.filterNot(_.getLogin == assignee)
-      issue.setAssignees(assignees.asJava)
-      mapIssue(repository.getIssue(number))
-    } match {
-      case Success(response) => FunctionResponse(Status.Success, Option(s"Successfully unassigned issue `#$number` in `$owner/$repo` from `$assignee`"), None, JsonBodyOption(response))
-      case Failure(e) =>
+    try {
+      val ghs = GitHubServices(token)
+      ghs.getRepository(repo, owner)
+        .map(repository => {
+          val issue = repository.getIssue(number)
+          val assignees = issue.getAssignees.asScala.filterNot(_.getLogin == assignee)
+          issue.setAssignees(assignees.asJava)
+          val response = mapIssue(repository.getIssue(number))
+          FunctionResponse(Status.Success, Some(s"Successfully unassigned issue `#$number` in `$owner/$repo` from `$assignee`"), None, JsonBodyOption(response))
+        })
+        .getOrElse(FunctionResponse(Status.Failure, Some(s"Failed to find repository `$repo` for owner `$owner`"), None, None))
+    } catch {
+      case e: Exception =>
         val msg = s"Failed to unassign issue `#$number` in `$owner/$repo` from `$assignee`"
         logger.error(msg, e)
         FunctionResponse(Status.Failure, Some(msg), None, StringBodyOption(e.getMessage))
