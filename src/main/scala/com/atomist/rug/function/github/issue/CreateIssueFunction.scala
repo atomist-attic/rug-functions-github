@@ -16,7 +16,7 @@ class CreateIssueFunction
     with LazyLogging
     with GitHubFunction {
 
-  @RugFunction(name = "create-github-issue", description = "Creates an GitHub issue",
+  @RugFunction(name = "create-github-issue", description = "Creates a GitHub issue",
     tags = Array(new Tag(name = "github"), new Tag(name = "issues")))
   def invoke(@Parameter(name = "title") title: String,
              @Parameter(name = "body") body: String,
