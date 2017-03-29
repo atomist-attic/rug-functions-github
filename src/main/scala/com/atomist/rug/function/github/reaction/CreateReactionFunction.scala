@@ -1,16 +1,15 @@
 package com.atomist.rug.function.github.reaction
 
+import java.lang.{Iterable => JIterable}
+
 import com.atomist.rug.function.github.GitHubFunction
 import com.atomist.rug.function.github.reaction.CreateReactionFunction.{CommentReactableKey, ReactableKey}
 import com.atomist.rug.function.github.reaction.GithubReactions.Reaction
 import com.atomist.rug.spi.Handlers.Status
 import com.atomist.rug.spi.{AnnotatedRugFunction, FunctionResponse, JsonBodyOption, StringBodyOption}
+import com.atomist.source.github.GitHubServices
 import com.typesafe.scalalogging.LazyLogging
-import org.kohsuke.github._
-import org.kohsuke.github.{Reactable => GHReactable}
-import java.lang.{Iterable => JIterable}
-
-import scala.util.{Failure, Success, Try}
+import org.kohsuke.github.{Reactable => GHReactable, _}
 
 /**
   * Extend to create a GitHub reaction on an reactable
@@ -25,22 +24,26 @@ trait CreateReactionFunction[T <: ReactableKey]
   def retrieveReactable(repository: GHRepository, reactableKey: T): Reactable
 
   def createReaction(reaction: String,
-             reactableKey: T,
-             repo: String,
-             owner: String,
-             token: String): FunctionResponse = {
+                     reactableKey: T,
+                     repo: String,
+                     owner: String,
+                     token: String): FunctionResponse = {
+
     logger.info(s"Invoking createReaction on ${reactableKey.description} for owner '$owner', repo '$repo' and token '${safeToken(token)}'")
-    Try {val gitHub = GitHub.connectUsingOAuth(token)
-      val repository = gitHub.getOrganization(owner).getRepository(repo)
-      val reactable = retrieveReactable(repository, reactableKey)
-      val gHReaction = reactable.createReaction(ReactionContent.forContent(reaction))
-      Reaction(reactable.getId, reactable.getUrl, gHReaction.getContent.getContent)
-    }match {
-      case Success(response) =>
-        val msg = s"Successfully added reaction '${response.content}' to '${reactableKey.description}"
-        FunctionResponse(Status.Success, Some(msg), None, JsonBodyOption(response))
-      case Failure(e) =>
-        var msg = s"Failed to add reaction to '${reactableKey.description}"
+
+    try {
+      val ghs = GitHubServices(token)
+      ghs.getRepository(repo, owner)
+        .map(repository => {
+          val reactable = retrieveReactable(repository, reactableKey)
+          val gHReaction = reactable.createReaction(ReactionContent.forContent(reaction))
+          val response = Reaction(reactable.getId, reactable.getUrl, gHReaction.getContent.getContent)
+          FunctionResponse(Status.Success, Some(s"Successfully added reaction '${response.content}' to '${reactableKey.description}"), None, JsonBodyOption(response))
+        })
+        .getOrElse(FunctionResponse(Status.Failure, Some(s"Failed to find repository `$repo` for owner `$owner`"), None, None))
+    } catch {
+      case e: Exception =>
+        val msg = s"Failed to add reaction to '${reactableKey.description}"
         logger.warn(msg, e)
         FunctionResponse(Status.Failure, Some(msg), None, StringBodyOption(e.getMessage))
     }
@@ -55,11 +58,15 @@ trait CreateReactionFunction[T <: ReactableKey]
   }
 
 }
+
 object CreateReactionFunction {
+
   trait ReactableKey {
     def description: String
   }
+
   trait CommentReactableKey extends ReactableKey {
     def commentId: Int
   }
+
 }

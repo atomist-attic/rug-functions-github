@@ -39,7 +39,7 @@ class AssignIssueFunction
     } catch {
       case e: Exception =>
         val msg = s"Failed to assign issue `#$number` in `$owner/$repo` to `$assignee`"
-        logger.error(msg, e)
+        logger.warn(msg, e)
         FunctionResponse(Status.Failure, Some(msg), None, StringBodyOption(e.getMessage))
     }
   }

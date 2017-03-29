@@ -39,7 +39,7 @@ class ReopenIssueFunction
     } catch {
       case e: Exception =>
         val msg = s"Failed to reopen issue `#$number` in `$owner/$repo`"
-        logger.error(msg, e)
+        logger.warn(msg, e)
         FunctionResponse(Status.Failure, Some(msg), None, StringBodyOption(e.getMessage))
     }
   }

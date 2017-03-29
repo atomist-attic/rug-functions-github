@@ -42,7 +42,7 @@ class AddLabelIssueFunction extends AnnotatedRugFunction
     } catch {
       case e: Exception =>
         val msg = s"Failed to label issue `#$number` in `$owner/$repo`"
-        logger.error(msg, e)
+        logger.warn(msg, e)
         FunctionResponse(Status.Failure, Some(msg), None, StringBodyOption(e.getMessage))
     }
   }

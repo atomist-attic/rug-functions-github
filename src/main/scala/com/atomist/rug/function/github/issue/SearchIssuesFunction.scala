@@ -58,7 +58,7 @@ class SearchIssuesFunction
       // Need to catch Throwable as Exception lets through GitHub message errors
       case t: Throwable =>
         val msg = "Failed to search issues"
-        logger.error(msg, t)
+        logger.warn(msg, t)
         FunctionResponse(Status.Failure, Some(msg), None, StringBodyOption(t.getMessage))
     }
   }

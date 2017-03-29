@@ -42,7 +42,7 @@ class UnassignIssueFunction
     } catch {
       case e: Exception =>
         val msg = s"Failed to unassign issue `#$number` in `$owner/$repo` from `$assignee`"
-        logger.error(msg, e)
+        logger.warn(msg, e)
         FunctionResponse(Status.Failure, Some(msg), None, StringBodyOption(e.getMessage))
     }
   }

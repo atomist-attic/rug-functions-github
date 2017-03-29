@@ -41,7 +41,7 @@ class RemoveLabelIssueFunction extends AnnotatedRugFunction
     } catch {
       case e: Exception =>
         val msg = s"Failed to remove label from issue `#$number` in `$owner/$repo`"
-        logger.error(msg, e)
+        logger.warn(msg, e)
         FunctionResponse(Status.Failure, Some(msg), None, StringBodyOption(e.getMessage))
     }
   }
