@@ -12,7 +12,8 @@ import org.kohsuke.github.GHRepository
 class ReactPullRequestFunction extends CreateReactionFunction[PullRequestReactableKey] {
 
   override def retrieveReactable(repository: GHRepository, reactableKey: PullRequestReactableKey): Reactable = {
-    repository.getPullRequest(reactableKey.pullRequestId)
+    // must look pull request up as an Issue to add reactions
+    repository.getIssue(reactableKey.pullRequestId)
   }
 
   @RugFunction(name = "react-github-pull-request", description = "Reacts to a GitHub pull request",
