@@ -13,7 +13,6 @@ com.atomist.rug.function.github.issue.RemoveLabelIssueFunction
 com.atomist.rug.function.github.issue.ListUserIssuesFunction
 com.atomist.rug.function.github.issue.ReopenIssueFunction
 com.atomist.rug.function.github.issue.SearchIssuesFunction
-com.atomist.rug.function.github.reaction.CreateReactionFunction
 com.atomist.rug.function.github.reaction.ReactCommitCommentFunction
 com.atomist.rug.function.github.reaction.ReactIssueCommentFunction
 com.atomist.rug.function.github.reaction.ReactIssueFunction
