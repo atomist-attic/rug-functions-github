@@ -196,14 +196,6 @@
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
-            <id>atomist-release</id>
-            <name>Atomist Release</name>
-            <url>https://sforzando.artifactoryonline.com/sforzando/libs-release</url>
-        </repository>
-        <repository>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
             <id>public-atomist-release</id>
             <name>Atomist Release</name>
             <url>https://atomist.jfrog.io/atomist/libs-release</url>
