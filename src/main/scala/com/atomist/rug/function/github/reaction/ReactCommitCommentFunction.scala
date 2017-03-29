@@ -20,7 +20,7 @@ class ReactCommitCommentFunction extends CreateReactionFunction[CommitCommentRea
     tags = Array(new Tag(name = "github"), new Tag(name = "commits"), new Tag(name = "comments"), new Tag(name = "reactions")))
   def invoke(@Parameter(name = "reaction") reaction: String,
              @Parameter(name = "sha1") sha1: String,
-             @Parameter(name = "commentId") commentId: Int,
+             @Parameter(name = "comment") commentId: Int,
              @Parameter(name = "repo") repo: String,
              @Parameter(name = "owner") owner: String,
              @Secret(name = "user_token", path = "github://user_token?scopes=repo") token: String): FunctionResponse = {

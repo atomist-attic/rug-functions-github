@@ -18,7 +18,7 @@ class ReactIssueFunction extends CreateReactionFunction[IssueReactableKey] {
   @RugFunction(name = "react-github-issue", description = "Reacts to a GitHub issue",
     tags = Array(new Tag(name = "github"), new Tag(name = "issues"), new Tag(name = "reactions")))
   def invoke(@Parameter(name = "reaction") reaction: String,
-             @Parameter(name = "issueId") issueId: Int,
+             @Parameter(name = "issue") issueId: Int,
              @Parameter(name = "repo") repo: String,
              @Parameter(name = "owner") owner: String,
              @Secret(name = "user_token", path = "github://user_token?scopes=repo") token: String): FunctionResponse = {
