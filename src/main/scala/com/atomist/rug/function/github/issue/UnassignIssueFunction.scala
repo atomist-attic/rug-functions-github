@@ -36,12 +36,12 @@ class UnassignIssueFunction
           val assignees = issue.getAssignees.asScala.filterNot(_.getLogin == assignee)
           issue.setAssignees(assignees.asJava)
           val response = mapIssue(repository.getIssue(number))
-          FunctionResponse(Status.Success, Some(s"Successfully unassigned issue `#$number` in `$owner/$repo` from `$assignee`"), None, JsonBodyOption(response))
+          FunctionResponse(Status.Success, Some(s"Successfully unassigned `$assignee` from issue `#$number` in `$owner/$repo`"), None, JsonBodyOption(response))
         })
         .getOrElse(FunctionResponse(Status.Failure, Some(s"Failed to find repository `$repo` for owner `$owner`"), None, None))
     } catch {
       case e: Exception =>
-        val msg = s"Failed to unassign issue `#$number` in `$owner/$repo` from `$assignee`"
+        val msg = s"Failed to unassign `$assignee` from issue `#$number` in `$owner/$repo`"
         logger.warn(msg, e)
         FunctionResponse(Status.Failure, Some(msg), None, StringBodyOption(e.getMessage))
     }
