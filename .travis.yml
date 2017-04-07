@@ -16,7 +16,7 @@ addons:
   apt:
     packages:
     - openssl
-    - gpg
+    - gnupg
 before_install:
 - openssl aes-256-cbc -K $encrypted_de282c3465e2_key -iv $encrypted_de282c3465e2_iv
   -in secret.key.enc -out secret.key -d
