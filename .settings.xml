@@ -11,7 +11,7 @@
       <password>${env.ATOMIST_REPO_TOKEN}</password>
     </server>
     <server>
-      <id>info@atomist.com</id>
+      <id>BDC1066F</id>
       <passphrase>${env.GPG_PASSPHRASE}</passphrase>
     </server>
   </servers>
@@ -21,7 +21,7 @@
         <activeByDefault>true</activeByDefault>
       </activation>
       <properties>
-        <gpg.keyname>info@atomist.com</gpg.keyname>
+        <gpg.keyname>BDC1066F</gpg.keyname>
       </properties>
     </profile>
   </profiles>
