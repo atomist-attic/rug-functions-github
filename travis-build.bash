@@ -38,8 +38,13 @@ function main() {
         fi
     fi
 
-    if ! $mvn install -Dgpg.skip -Dmaven.javadoc.skip=true; then
+    if ! $mvn package -Dgpg.skip -Dmaven.javadoc.skip=true; then
         err "maven install failed"
+        return 1
+    fi
+
+    if ! $mvn gpg:sign -DskipTests -Dmaven.javadoc.skip=true; then
+        err "Signing failed"
         return 1
     fi
 
