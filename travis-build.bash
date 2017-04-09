@@ -38,7 +38,7 @@ function main() {
         fi
     fi
 
-    if ! $mvn package gpg:sign -DskipTests -Dmaven.javadoc.skip=true; then
+    if ! $mvn test -Dmaven.javadoc.skip=true; then
         err "Signing failed"
         return 1
     fi
