@@ -38,11 +38,6 @@ function main() {
         fi
     fi
 
-    if ! $mvn test -Dmaven.javadoc.skip=true; then
-        err "Signing failed"
-        return 1
-    fi
-
     if [[ $TRAVIS_PULL_REQUEST != false ]]; then
         msg "not publishing or tagging pull request"
         return 0
@@ -54,7 +49,7 @@ function main() {
         if [[ $TRAVIS_BRANCH == master ]]; then
             mvn_deploy_args=-DaltDeploymentRepository=public-atomist-dev::default::https://atomist.jfrog.io/atomist/libs-dev-local
         fi
-        if ! $mvn deploy -DskipTests $mvn_deploy_args; then
+        if ! $mvn package gpg:sign deploy -DskipTests $mvn_deploy_args; then
             err "maven deploy failed"
             return 1
         fi
