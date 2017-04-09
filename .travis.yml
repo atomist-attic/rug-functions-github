@@ -23,7 +23,6 @@ before_install:
 - tar -xvf signing.tar
 - cat secret.key | base64 --decode | gpg --import
 - cat key.trust | base64 --decode | gpg --import-ownertrust
-- gpg --list-keys
 script: bash travis-build.bash
 notifications:
   email: false
