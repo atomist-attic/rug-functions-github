@@ -25,6 +25,7 @@ before_install:
   --import; fi
 - if [ ! -z "$GPG_OWNERTRUST" ]; then cat key.trust | base64 --decode | $GPG_EXECUTABLE
   --import-ownertrust; fi
+- gpg --list-keys
 script: bash travis-build.bash
 notifications:
   email: false
