@@ -21,9 +21,9 @@ before_install:
 - openssl aes-256-cbc -K $encrypted_de282c3465e2_key -iv $encrypted_de282c3465e2_iv
   -in signing.tar.enc -out signing.tar -d
 - tar -xvf signing.tar
-- if [ ! -z "$GPG_SECRET_KEYS" ]; then cat secret.key | base64 --decode | $GPG_EXECUTABLE
+- secret.key | base64 --decode | $GPG_EXECUTABLE
   --import; fi
-- if [ ! -z "$GPG_OWNERTRUST" ]; then cat key.trust | base64 --decode | $GPG_EXECUTABLE
+- cat key.trust | base64 --decode | $GPG_EXECUTABLE
   --import-ownertrust; fi
 - gpg --list-keys
 script: bash travis-build.bash
