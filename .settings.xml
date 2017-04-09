@@ -10,18 +10,15 @@
       <username>${env.ATOMIST_REPO_USER}</username>
       <password>${env.ATOMIST_REPO_TOKEN}</password>
     </server>
-    <server>
-      <id>BDC1066F</id>
-      <passphrase>${env.GPG_PASSPHRASE}</passphrase>
-    </server>
   </servers>
-    <profiles>
+  <profiles>
     <profile>
       <activation>
         <activeByDefault>true</activeByDefault>
       </activation>
       <properties>
         <gpg.keyname>BDC1066F</gpg.keyname>
+        <gpg.passphrase>${env.GPG_PASSPHRASE}</gpg.passphrase>
       </properties>
     </profile>
   </profiles>
