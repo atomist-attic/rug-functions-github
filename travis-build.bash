@@ -38,6 +38,11 @@ function main() {
         fi
     fi
 
+    if ! $mvn test $mvn_deploy_args; then
+        err "maven test failed"
+        return 1
+    fi
+
     if [[ $TRAVIS_PULL_REQUEST != false ]]; then
         msg "not publishing or tagging pull request"
         return 0
@@ -49,7 +54,19 @@ function main() {
         if [[ $TRAVIS_BRANCH == master ]]; then
             mvn_deploy_args=-DaltDeploymentRepository=public-atomist-dev::default::https://atomist.jfrog.io/atomist/libs-dev-local
         fi
-        if ! $mvn package gpg:sign deploy -DskipTests $mvn_deploy_args; then
+
+        STOREPASS=`openssl rand -base64 32`
+        if [ $? -ne 0 ]; then
+            err "Error generating temporary keystore password"
+            return 1
+        fi
+
+        if ! keytool -import -noprompt -alias info@atomist.com -file atomist.crt -keypass ${KEYPASS} -keystore keystore.jks -storepass ${STOREPASS} > /dev/null 2>&1; then
+            err "failed to import certificate into keystore"
+            return 1
+        fi
+
+        if ! $mvn deploy -Djarsigner.keypass=${KEYPASS} -Djarsigner.storepass=${STOREPASS} -DskipTests $mvn_deploy_args > /dev/null 2>&1; then
             err "maven deploy failed"
             return 1
         fi
