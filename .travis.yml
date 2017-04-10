@@ -19,7 +19,7 @@ addons:
 before_install:
 - openssl aes-256-cbc -K $encrypted_de282c3465e2_key -iv $encrypted_de282c3465e2_iv
   -in atomist.crt.enc -out atomist.crt -d
-install: exit 0
+install: true
 script: bash travis-build.bash
 notifications:
   email: false
