@@ -5,7 +5,7 @@ import java.text.SimpleDateFormat
 import java.time.{OffsetDateTime, ZoneId}
 import java.util.Date
 
-import com.atomist.rug.runtime.RugSupport
+import com.atomist.rug.runtime.Rug
 import com.fasterxml.jackson.annotation.JsonInclude.Include
 import com.fasterxml.jackson.databind.{DeserializationFeature, ObjectMapper, SerializationFeature}
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module
@@ -14,7 +14,7 @@ import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import com.fasterxml.jackson.module.scala.experimental.ScalaObjectMapper
 
 trait GitHubFunction
-  extends RugSupport {
+  extends Rug {
 
   /**
     * Sanitize a token.
