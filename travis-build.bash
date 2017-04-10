@@ -55,18 +55,7 @@ function main() {
             mvn_deploy_args=-DaltDeploymentRepository=public-atomist-dev::default::https://atomist.jfrog.io/atomist/libs-dev-local
         fi
 
-        STOREPASS=`openssl rand -base64 32`
-        if [ $? -ne 0 ]; then
-            err "Error generating temporary keystore password"
-            return 1
-        fi
-
-        if ! keytool -import -noprompt -alias info@atomist.com -file atomist.crt -keypass "$KEYPASS" -keystore keystore.jks -storepass "$STOREPASS"; then
-            err "failed to import certificate into keystore"
-            return 1
-        fi
-
-        if ! $mvn -e -X deploy -Djarsigner.keypass="$KEYPASS" -Djarsigner.storepass="$STOREPASS" -DskipTests $mvn_deploy_args; then
+        if ! $mvn  -e deploy -Djarsigner.keypass="$KEYPASS" -Djarsigner.storepass="$STOREPASS" -DskipTests $mvn_deploy_args; then
             err "maven deploy failed"
             return 1
         fi
