@@ -66,7 +66,7 @@ function main() {
             return 1
         fi
 
-        if ! $mvn deploy -Djarsigner.keypass=${KEYPASS} -Djarsigner.storepass=${STOREPASS} -DskipTests $mvn_deploy_args; then
+        if ! $mvn -e deploy -Djarsigner.keypass=${KEYPASS} -Djarsigner.storepass=${STOREPASS} -DskipTests $mvn_deploy_args; then
             err "maven deploy failed"
             return 1
         fi
