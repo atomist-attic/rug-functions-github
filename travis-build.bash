@@ -55,6 +55,10 @@ function main() {
             mvn_deploy_args=-DaltDeploymentRepository=public-atomist-dev::default::https://atomist.jfrog.io/atomist/libs-dev-local
         fi
 
+        if ! gpg --allow-secret-key-import --import atomist_sec.gpg; then
+            err "failed to import gpg key"
+            return 1
+        fi
         if ! $mvn  -e deploy -Dgpg.executable=gpg -Dgpg.keyname=DA85ED8F -Dgpg.passphrase="$GPG_PASSPHRASE" -DskipTests $mvn_deploy_args; then
             err "maven deploy failed"
             return 1
