@@ -55,7 +55,7 @@ function main() {
             mvn_deploy_args=-DaltDeploymentRepository=public-atomist-dev::default::https://atomist.jfrog.io/atomist/libs-dev-local
         fi
 
-        if ! $mvn  -e deploy -Djarsigner.keypass="$KEYPASS" -Djarsigner.storepass="$STOREPASS" -DskipTests $mvn_deploy_args; then
+        if ! $mvn  -e deploy -Dgpg.executable=gpg -Dgpg.keyname=DA85ED8F -Dgpg.passphrase="$GPG_PASSPHRASE" -DskipTests $mvn_deploy_args; then
             err "maven deploy failed"
             return 1
         fi

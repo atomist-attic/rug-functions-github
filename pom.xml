@@ -15,7 +15,6 @@
         <scala.version>2.11.8</scala.version>
         <scala.binary.version>2.11</scala.binary.version>
         <rug.version>(0.25.0,0.26.0]</rug.version>
-        <gpg.keyname>info@atomist.com</gpg.keyname>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -192,26 +191,17 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jarsigner-plugin</artifactId>
-                <version>1.4</version>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>1.6</version>
                 <executions>
                     <execution>
-                        <id>sign</id>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
                         <goals>
                             <goal>sign</goal>
                         </goals>
                     </execution>
-                    <execution>
-                        <id>verify</id>
-                        <goals>
-                            <goal>verify</goal>
-                        </goals>
-                    </execution>
                 </executions>
-                <configuration>
-                    <keystore>atomist.keystore</keystore>
-                    <alias>info@atomist.com</alias>
-                </configuration>
             </plugin>
         </plugins>
     </build>
