@@ -16,7 +16,7 @@ addons:
   apt:
     packages:
     - openssl
-    - gpg
+    - gnupg
 install: true
 script: bash travis-build.bash
 notifications:
