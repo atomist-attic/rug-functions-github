@@ -59,7 +59,7 @@ function main() {
             err "failed to import gpg key"
             return 1
         fi
-        if ! $mvn  -e deploy -Dgpg.executable=gpg -Dgpg.keyname=DA85ED8F -Dgpg.passphrase="$GPG_PASSPHRASE" -DskipTests $mvn_deploy_args; then
+        if ! $mvn -e deploy -PsignedRelease -Dgpg.executable=gpg -Dgpg.keyname=DA85ED8F -Dgpg.passphrase="$GPG_PASSPHRASE" -DskipTests $mvn_deploy_args; then
             err "maven deploy failed"
             return 1
         fi
