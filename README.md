@@ -1,8 +1,19 @@
 # Atomist 'rug-functions-github'
 
-[![Build Status](https://travis-ci.org/atomist-rugs/rug-functions-github.svg?branch=master)](https://travis-ci.org/atomist-rugs/rug-functions-github)
+[![Build Status](https://travis-ci.org/atomist/rug-functions-github.svg?branch=master)](https://travis-ci.org/atomist/rug-functions-github)
+[![Slack Status](https://join.atomist.com/badge.svg)](https://join.atomist.com)
 
 Rug Functions for GitHub.
+
+## Support
+
+General support questions should be discussed in the `#support`
+channel on our community Slack team
+at [atomist-community.slack.com][slack].
+
+If you find a problem, please create an [issue][].
+
+[issue]: https://github.com/atomist/rug-functions-github/issues
 
 ## Developing
 
@@ -33,3 +44,10 @@ of the release notes.  It will also automatically upload the needed
 artifacts.
 
 [semver]: http://semver.org
+
+---
+Created by [Atomist][atomist].
+Need Help?  [Join our Slack team][slack].
+
+[atomist]: https://www.atomist.com/
+[slack]: https://join.atomist.com/
