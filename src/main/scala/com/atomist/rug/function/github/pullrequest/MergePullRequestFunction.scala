@@ -1,5 +1,6 @@
-package com.atomist.rug.function.github
+package com.atomist.rug.function.github.pullrequest
 
+import com.atomist.rug.function.github.GitHubFunction
 import com.atomist.rug.spi.Handlers.Status
 import com.atomist.rug.spi.annotation.{Parameter, RugFunction, Secret, Tag}
 import com.atomist.rug.spi.{AnnotatedRugFunction, FunctionResponse, StringBodyOption}

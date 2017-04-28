@@ -1,5 +1,5 @@
 com.atomist.rug.function.github.CreateTagFunction
-com.atomist.rug.function.github.MergePullRequestFunction
+com.atomist.rug.function.github.pullrequest.MergePullRequestFunction
 com.atomist.rug.function.github.InstallOrgWebHookFunction
 com.atomist.rug.function.github.InstallRepoWebHookFunction
 com.atomist.rug.function.github.CreateReleaseFunction

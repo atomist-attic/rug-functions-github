@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.atomist.rug</groupId>
     <artifactId>rug-functions-github</artifactId>
-    <version>0.14.2-SNAPSHOT</version>
+    <version>0.15.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>rug-functions-github</name>
     <description>Rug Functions for GitHub</description>
@@ -14,14 +14,14 @@
         <java.version>1.8</java.version>
         <scala.version>2.11.8</scala.version>
         <scala.binary.version>2.11</scala.binary.version>
-        <rug.version>(0.25.0,0.26.0]</rug.version>
+        <rug.version>(0.25.0,1.0.0-m.2]</rug.version>
     </properties>
     <dependencyManagement>
         <dependencies>
             <dependency>
                 <groupId>com.atomist</groupId>
                 <artifactId>atomist-bom</artifactId>
-                <version>0.9.0</version>
+                <version>1.0.0-m.1</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -37,7 +37,7 @@
         <dependency>
             <groupId>com.atomist</groupId>
             <artifactId>github-artifact-source</artifactId>
-            <version>0.2.0</version>
+            <version>0.7.0</version>
         </dependency>
         <dependency>
             <groupId>org.scalatest</groupId>

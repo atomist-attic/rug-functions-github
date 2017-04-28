@@ -1,11 +1,6 @@
-package com.atomist.rug.function.github
-
-import com.atomist.source.github.GitHubServices.{PullRequestBranch, PullRequestStatus}
-import org.kohsuke.github.GHPullRequest
+package com.atomist.rug.function.github.pullrequest
 
 object GitHubPullRequests {
-
-  import GitHubFunction._
 
 //  def mapPullRequest(pr: GHPullRequest): PullRequestStatus =
 //    PullRequestStatus(pr.getId, pr.getUrl.toExternalForm, pr.getHtmlUrl.toExternalForm, pr.getNumber, pr.getTitle,
