@@ -37,12 +37,12 @@
         <dependency>
             <groupId>com.atomist</groupId>
             <artifactId>github-artifact-source</artifactId>
-            <version>0.7.0</version>
+            <version>0.9.0-20170522000631</version>
         </dependency>
         <dependency>
             <groupId>org.scalatest</groupId>
             <artifactId>scalatest_${scala.binary.version}</artifactId>
-            <version>3.0.1</version>
+            <version>3.0.3</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
