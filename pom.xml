@@ -233,22 +233,6 @@
             <name>Atomist Release</name>
             <url>https://atomist.jfrog.io/atomist/libs-dev</url>
         </repository>
-        <repository>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-            <id>atomist-release</id>
-            <name>Atomist Release</name>
-            <url>https://sforzando.jfrog.io/sforzando/libs-release</url>
-        </repository>
-        <repository>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-            <id>atomist-snapshots</id>
-            <name>Atomist Snapshots</name>
-            <url>https://sforzando.jfrog.io/sforzando/libs-snapshot</url>
-        </repository>
     </repositories>
     <distributionManagement>
         <repository>
