@@ -24,7 +24,6 @@ class CloseIssueFunctionTest extends GitHubFunctionTest(Token) {
     body shouldBe defined
     body.get.str shouldBe defined
     val issues = JsonUtils.fromJson[Seq[GitHubIssue]](body.get.str.get)
-    issues should have size 1
-    issues.head.state shouldEqual "CLOSED"
+    issues shouldBe empty
   }
 }

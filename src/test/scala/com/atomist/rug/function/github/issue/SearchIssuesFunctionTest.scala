@@ -22,7 +22,9 @@ class SearchIssuesFunctionTest extends GitHubFunctionTest(Token) {
     body.get.str shouldBe defined
     val issues = JsonUtils.fromJson[Seq[GitHubIssue]](body.get.str.get)
     issues should have size 1
-    issues.head.title shouldBe "test issue"
+    val issue1 = issues.head
+    issue1.title shouldBe "test issue"
+    issue1.state shouldBe "OPEN"
   }
 
   it should "fail to search issues in non-existent repo" in {
