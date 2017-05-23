@@ -2,6 +2,8 @@ package com.atomist.rug.function.github
 
 object TestConstants {
 
+  val Token = System.getenv("GITHUB_TOKEN")
+
   val TemporaryRepoPrefix = "TEST_CAN_DELETE_"
 
   /**

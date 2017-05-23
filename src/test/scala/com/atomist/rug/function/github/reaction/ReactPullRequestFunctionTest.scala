@@ -1,7 +1,7 @@
 package com.atomist.rug.function.github.reaction
 
 import com.atomist.rug.function.github.GitHubFunctionTest
-import com.atomist.rug.function.github.TestCredentials._
+import com.atomist.rug.function.github.TestConstants._
 import com.atomist.rug.spi.Handlers.Status
 import com.atomist.util.JsonUtils
 import org.kohsuke.github.ReactionContent
