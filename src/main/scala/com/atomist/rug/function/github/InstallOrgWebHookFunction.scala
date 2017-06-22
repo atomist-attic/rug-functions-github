@@ -21,12 +21,16 @@ class InstallOrgWebHookFunction extends AnnotatedRugFunction
     tags = Array(new Tag(name = "github"), new Tag(name = "webhooks")))
   def invoke(@Parameter(name = "url") url: String,
              @Parameter(name = "owner") owner: String,
+             @Parameter(name = "apiUrl", required = false) apiUrl: String,
              @Secret(name = "user_token", path = "github://user_token?scopes=admin:org_hook") token: String): FunctionResponse = {
 
     logger.info(s"Invoking installOrgWebhook with url '$url', owner '$owner' and token '${safeToken(token)}'")
 
     try {
-      val ghs = GitHubServices(token)
+      val ghs = apiUrl match {
+        case url: String => GitHubServices(token, url)
+        case _ => GitHubServices(token)
+      }
       val org = ghs.gitHub.getOrganization(owner)
       val config = Map("url" -> url, "content_type" -> "json")
       val gHHook = org.createHook("web", config.asJava, Seq(GHEvent.ALL).asJava, true)

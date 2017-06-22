@@ -23,12 +23,16 @@ class InstallRepoWebHookFunction
   def invoke(@Parameter(name = "url") url: String,
              @Parameter(name = "repo") repo: String,
              @Parameter(name = "owner") owner: String,
+             @Parameter(name = "apiUrl", required = false) apiUrl: String,
              @Secret(name = "user_token", path = "github://user_token?scopes=repo") token: String): FunctionResponse = {
 
     logger.info(s"Invoking installRepoWebhook with url '$url', owner '$owner', repo '$repo' and token '${safeToken(token)}'")
 
     try {
-      val ghs = GitHubServices(token)
+      val ghs = apiUrl match {
+        case url: String => GitHubServices(token, url)
+        case _ => GitHubServices(token)
+      }
       ghs.getRepository(repo, owner)
         .map(repository => {
           val config = Map("url" -> url, "content_type" -> "json")
