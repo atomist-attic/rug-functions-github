@@ -3,7 +3,7 @@ package com.atomist.rug.function.github.pullrequest
 import com.atomist.rug.function.github.GitHubFunctionTest
 import com.atomist.rug.function.github.TestConstants.Token
 import com.atomist.rug.spi.Handlers.Status
-import com.atomist.source.github.GitHubServices.ReviewComment
+import com.atomist.source.git.GitHubServices.ReviewComment
 import com.atomist.util.JsonUtils
 
 import scala.collection.JavaConverters._

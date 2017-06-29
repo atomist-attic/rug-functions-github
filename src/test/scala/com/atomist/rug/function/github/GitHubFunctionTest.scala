@@ -1,6 +1,6 @@
 package com.atomist.rug.function.github
 
-import com.atomist.source.github.GitHubServices
+import com.atomist.source.git.GitHubServices
 import com.atomist.source.{ArtifactSourceAccessException, ArtifactSourceUpdateException}
 import com.typesafe.scalalogging.LazyLogging
 import org.kohsuke.github.{GHIssue, GHRepository}

@@ -4,7 +4,7 @@ import com.atomist.rug.function.github.GitHubWebHooks.mapHook
 import com.atomist.rug.spi.Handlers.Status
 import com.atomist.rug.spi.annotation.{Parameter, RugFunction, Secret, Tag}
 import com.atomist.rug.spi.{AnnotatedRugFunction, FunctionResponse, JsonBodyOption, StringBodyOption}
-import com.atomist.source.github.GitHubServices
+import com.atomist.source.git.GitHubServices
 import com.typesafe.scalalogging.LazyLogging
 import org.kohsuke.github.GHEvent
 

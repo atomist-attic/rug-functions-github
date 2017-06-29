@@ -6,7 +6,7 @@ import com.atomist.rug.function.github.GitHubFunction.convertDate
 import com.atomist.rug.spi.Handlers.Status
 import com.atomist.rug.spi.annotation.{Parameter, RugFunction, Secret, Tag}
 import com.atomist.rug.spi.{AnnotatedRugFunction, FunctionResponse, JsonBodyOption, StringBodyOption}
-import com.atomist.source.github.GitHubServices
+import com.atomist.source.git.GitHubServices
 import com.fasterxml.jackson.annotation.{JsonCreator, JsonProperty}
 import com.typesafe.scalalogging.LazyLogging
 
