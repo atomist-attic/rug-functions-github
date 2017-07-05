@@ -24,7 +24,7 @@ class InstallOrgWebHookFunction extends AnnotatedRugFunction
              @Parameter(name = "apiUrl", required = false) apiUrl: String,
              @Secret(name = "user_token", path = "github://user_token?scopes=admin:org_hook") token: String): FunctionResponse = {
 
-    logger.info(s"Invoking installOrgWebhook with url '$url', owner '$owner' and token '${safeToken(token)}'")
+    logger.info(s"Invoking installOrgWebhook with url '$url', owner '$owner', apiUrl '$apiUrl' and token '${safeToken(token)}'")
 
     try {
       val ghs = apiUrl match {
