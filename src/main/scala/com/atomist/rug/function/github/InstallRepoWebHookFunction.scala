@@ -23,7 +23,7 @@ class InstallRepoWebHookFunction
   def invoke(@Parameter(name = "url") url: String,
              @Parameter(name = "repo") repo: String,
              @Parameter(name = "owner") owner: String,
-             @Parameter(name = "apiUrl", required = false) apiUrl: String,
+             @Parameter(name = "apiUrl") apiUrl: String,
              @Secret(name = "user_token", path = "github://user_token?scopes=repo") token: String): FunctionResponse = {
 
     logger.info(s"Invoking installRepoWebhook with url '$url', owner '$owner', repo '$repo', apiUrl '$apiUrl' and token '${safeToken(token)}'")
