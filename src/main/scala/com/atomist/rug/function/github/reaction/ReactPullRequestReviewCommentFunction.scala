@@ -23,8 +23,9 @@ class ReactPullRequestReviewCommentFunction extends CreateReactionFunction[PullR
              @Parameter(name = "commentId") commentId: Int,
              @Parameter(name = "repo") repo: String,
              @Parameter(name = "owner") owner: String,
+             @Parameter(name = "apiUrl") apiUrl: String,
              @Secret(name = "user_token", path = "github://user_token?scopes=repo") token: String): FunctionResponse = {
-      createReaction(reaction, PullRequestReviewCommentReactableKey(pullRequestId, commentId), repo, owner, token)
+      createReaction(reaction, PullRequestReviewCommentReactableKey(pullRequestId, commentId), repo, owner, token, apiUrl)
   }
 }
 

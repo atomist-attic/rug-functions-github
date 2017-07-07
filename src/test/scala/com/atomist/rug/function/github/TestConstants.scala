@@ -4,6 +4,8 @@ object TestConstants {
 
   val Token = System.getenv("GITHUB_TOKEN")
 
+  val ApiUrl = "https://api.github.com"
+
   val TemporaryRepoPrefix = "TEST_CAN_DELETE_"
 
   /**

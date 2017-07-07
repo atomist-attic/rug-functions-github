@@ -5,7 +5,6 @@ import com.atomist.rug.function.github.issue.GitHubIssues.mapIssue
 import com.atomist.rug.spi.Handlers.Status
 import com.atomist.rug.spi.annotation.{Parameter, RugFunction, Secret, Tag}
 import com.atomist.rug.spi.{AnnotatedRugFunction, FunctionResponse, JsonBodyOption, StringBodyOption}
-import com.atomist.source.git.GitHubServices
 import com.typesafe.scalalogging.LazyLogging
 
 import scala.collection.JavaConverters._
@@ -23,12 +22,13 @@ class RemoveLabelIssueFunction extends AnnotatedRugFunction
              @Parameter(name = "repo") repo: String,
              @Parameter(name = "owner") owner: String,
              @Parameter(name = "label") label: String,
+             @Parameter(name = "apiUrl") apiUrl: String,
              @Secret(name = "user_token", path = "github://user_token?scopes=repo") token: String): FunctionResponse = {
 
     logger.info(s"Invoking removeLabelIssue with number '$number', label '$label', owner '$owner', repo '$repo' and token '${safeToken(token)}'")
 
     try {
-      val ghs = GitHubServices(token)
+      val ghs = gitHubServices(token, apiUrl)
       ghs.getRepository(repo, owner)
         .map(repository => {
           val issue = repository.getIssue(number)

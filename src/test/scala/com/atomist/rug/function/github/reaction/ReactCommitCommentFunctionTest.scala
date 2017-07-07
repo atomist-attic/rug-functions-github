@@ -16,7 +16,7 @@ class ReactCommitCommentFunctionTest extends GitHubFunctionTest(Token) {
     val commitComment = commit.createComment("test comment")
 
     val f = new ReactCommitCommentFunction
-    val response = f.invoke("+1", commit.getSHA1, commitComment.getId, tempRepo.getName, tempRepo.getOwnerName, Token)
+    val response = f.invoke("+1", commit.getSHA1, commitComment.getId, tempRepo.getName, tempRepo.getOwnerName, Token, ApiUrl)
     response.status shouldBe Status.Success
     val result = JsonUtils.fromJson[Map[String, Any]](response.body.get.str.get)
     result("content") shouldBe "+1"

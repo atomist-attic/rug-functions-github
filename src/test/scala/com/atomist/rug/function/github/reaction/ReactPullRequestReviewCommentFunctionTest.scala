@@ -20,7 +20,7 @@ class ReactPullRequestReviewCommentFunctionTest extends GitHubFunctionTest(Token
     val comment = pullRequest.createReviewComment("test body", update.getCommit.getSHA1, readme.getPath, 1)
 
     val f = new ReactPullRequestReviewCommentFunction
-    val response = f.invoke("+1", pullRequest.getNumber, comment.getId, tempRepo.getName, tempRepo.getOwnerName, Token)
+    val response = f.invoke("+1", pullRequest.getNumber, comment.getId, tempRepo.getName, tempRepo.getOwnerName, Token, ApiUrl)
     response.status shouldBe Status.Success
     val result = JsonUtils.fromJson[Map[String, Any]](response.body.get.str.get)
     result("content") shouldBe "+1"

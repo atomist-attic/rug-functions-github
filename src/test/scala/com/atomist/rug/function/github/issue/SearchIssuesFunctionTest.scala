@@ -1,7 +1,7 @@
 package com.atomist.rug.function.github.issue
 
 import com.atomist.rug.function.github.GitHubFunctionTest
-import com.atomist.rug.function.github.TestConstants.Token
+import com.atomist.rug.function.github.TestConstants.{ApiUrl, Token}
 import com.atomist.rug.function.github.issue.GitHubIssues.GitHubIssue
 import com.atomist.rug.spi.Handlers.Status
 import com.atomist.util.JsonUtils
@@ -15,7 +15,7 @@ class SearchIssuesFunctionTest extends GitHubFunctionTest(Token) {
     Thread.sleep(2000)
 
     val f = new SearchIssuesFunction
-    val response = f.invoke(null, tempRepo.getName, tempRepo.getOwnerName, Token)
+    val response = f.invoke(null, tempRepo.getName, tempRepo.getOwnerName, Token, ApiUrl)
     response.status shouldBe Status.Success
     val body = response.body
     body shouldBe defined
@@ -29,7 +29,7 @@ class SearchIssuesFunctionTest extends GitHubFunctionTest(Token) {
 
   it should "fail to search issues in non-existent repo" in {
     val f = new SearchIssuesFunction
-    val response = f.invoke(null, "github-commands", "comfoobar", Token)
+    val response = f.invoke(null, "github-commands", "comfoobar", Token, ApiUrl)
     response.status shouldBe Status.Failure
   }
 }

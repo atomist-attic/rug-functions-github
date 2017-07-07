@@ -1,19 +1,19 @@
 package com.atomist.rug.function.github.issue
 
 import com.atomist.rug.function.github.GitHubFunctionTest
-import com.atomist.rug.function.github.TestConstants.Token
+import com.atomist.rug.function.github.TestConstants.{ApiUrl, Token}
 import com.atomist.rug.function.github.issue.GitHubIssues.Issue
 import com.atomist.rug.spi.Handlers.Status
 import com.atomist.util.JsonUtils
 
-class AddLabelIssueFunctionTest extends GitHubFunctionTest(Token) {
+class AddLabelIssueFunctionTest extends GitHubFunctionTest(Token, ApiUrl) {
 
   it should "add label to issue" in {
     val tempRepo = newPopulatedTemporaryRepo()
     val gHIssue = createIssue(tempRepo, "test issue", "Issue body")
 
     val f = new AddLabelIssueFunction
-    val response = f.invoke(gHIssue.getNumber, tempRepo.getName, tempRepo.getOwnerName, "bug", Token)
+    val response = f.invoke(gHIssue.getNumber, tempRepo.getName, tempRepo.getOwnerName, "bug", Token, ApiUrl)
     response.status shouldBe Status.Success
     val body = response.body
     body shouldBe defined

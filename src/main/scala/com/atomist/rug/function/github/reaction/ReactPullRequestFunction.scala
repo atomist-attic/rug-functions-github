@@ -22,8 +22,9 @@ class ReactPullRequestFunction extends CreateReactionFunction[PullRequestReactab
              @Parameter(name = "pullRequest") pullRequestId: Int,
              @Parameter(name = "repo") repo: String,
              @Parameter(name = "owner") owner: String,
+             @Parameter(name = "apiUrl") apiUrl: String,
              @Secret(name = "user_token", path = "github://user_token?scopes=repo") token: String): FunctionResponse = {
-      createReaction(reaction, PullRequestReactableKey(pullRequestId), repo, owner, token)
+      createReaction(reaction, PullRequestReactableKey(pullRequestId), repo, owner, token, apiUrl)
   }
 
 }

@@ -23,8 +23,9 @@ class ReactCommitCommentFunction extends CreateReactionFunction[CommitCommentRea
              @Parameter(name = "comment") commentId: Int,
              @Parameter(name = "repo") repo: String,
              @Parameter(name = "owner") owner: String,
+             @Parameter(name = "apiUrl") apiUrl: String,
              @Secret(name = "user_token", path = "github://user_token?scopes=repo") token: String): FunctionResponse = {
-    createReaction(reaction, CommitCommentReactableKey(sha1, commentId), repo, owner, token)
+    createReaction(reaction, CommitCommentReactableKey(sha1, commentId), repo, owner, token, apiUrl)
   }
 
 }

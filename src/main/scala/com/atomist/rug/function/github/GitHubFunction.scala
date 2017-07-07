@@ -6,6 +6,7 @@ import java.time.{OffsetDateTime, ZoneId}
 import java.util.Date
 
 import com.atomist.rug.runtime.Rug
+import com.atomist.source.git.GitHubServices
 import com.fasterxml.jackson.annotation.JsonInclude.Include
 import com.fasterxml.jackson.databind.{DeserializationFeature, ObjectMapper, SerializationFeature}
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module
@@ -24,6 +25,13 @@ trait GitHubFunction
       token.charAt(0) + ("*" * (token.length() - 2)) + token.last
     } else {
       null
+    }
+  }
+
+  def gitHubServices(token: String, apiUrl: String): GitHubServices = {
+    apiUrl match {
+      case url: String => GitHubServices(token, url)
+      case _ => GitHubServices(token)
     }
   }
 }

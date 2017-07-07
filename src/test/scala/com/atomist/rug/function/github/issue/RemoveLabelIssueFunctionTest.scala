@@ -1,7 +1,7 @@
 package com.atomist.rug.function.github.issue
 
 import com.atomist.rug.function.github.GitHubFunctionTest
-import com.atomist.rug.function.github.TestConstants.Token
+import com.atomist.rug.function.github.TestConstants.{ApiUrl, Token}
 import com.atomist.rug.function.github.issue.GitHubIssues.Issue
 import com.atomist.rug.spi.Handlers.Status
 import com.atomist.util.JsonUtils
@@ -13,7 +13,7 @@ class RemoveLabelIssueFunctionTest extends GitHubFunctionTest(Token) {
     val gHIssue = createIssue(tempRepo, "test issue", "Issue body")
 
     val f = new AddLabelIssueFunction
-    val response = f.invoke(gHIssue.getNumber, tempRepo.getName, tempRepo.getOwnerName, "bug", Token)
+    val response = f.invoke(gHIssue.getNumber, tempRepo.getName, tempRepo.getOwnerName, "bug", Token, ApiUrl)
     response.status shouldBe Status.Success
     val body = response.body
     body shouldBe defined
@@ -24,7 +24,7 @@ class RemoveLabelIssueFunctionTest extends GitHubFunctionTest(Token) {
     labels(0).name shouldBe "bug"
 
     val f2 = new RemoveLabelIssueFunction
-    val response2 = f2.invoke(gHIssue.getNumber, tempRepo.getName, tempRepo.getOwnerName, "bug", Token)
+    val response2 = f2.invoke(gHIssue.getNumber, tempRepo.getName, tempRepo.getOwnerName, "bug", Token, ApiUrl)
     response2.status shouldBe Status.Success
     val body2 = response2.body
     body2 shouldBe defined

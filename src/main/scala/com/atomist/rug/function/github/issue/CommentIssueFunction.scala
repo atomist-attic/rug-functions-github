@@ -8,7 +8,6 @@ import com.atomist.rug.function.github.issue.GitHubIssues.ResponseUser
 import com.atomist.rug.spi.Handlers.Status
 import com.atomist.rug.spi.annotation.{Parameter, RugFunction, Secret, Tag}
 import com.atomist.rug.spi.{AnnotatedRugFunction, FunctionResponse, JsonBodyOption, StringBodyOption}
-import com.atomist.source.git.GitHubServices
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.typesafe.scalalogging.LazyLogging
 import org.kohsuke.github.GHIssueComment
@@ -29,12 +28,13 @@ class CommentIssueFunction
              @Parameter(name = "comment") comment: String,
              @Parameter(name = "repo") repo: String,
              @Parameter(name = "owner") owner: String,
+             @Parameter(name = "apiUrl") apiUrl: String,
              @Secret(name = "user_token", path = "github://user_token?scopes=repo") token: String): FunctionResponse = {
 
     logger.info(s"Invoking commentIssue with number '$number', comment '$comment', owner '$owner', repo '$repo' and token '${safeToken(token)}'")
 
     try {
-      val ghs = GitHubServices(token)
+      val ghs = gitHubServices(token, apiUrl )
       ghs.getRepository(repo, owner)
         .map(repository => {
           val issue = repository.getIssue(number)

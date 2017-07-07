@@ -16,7 +16,7 @@ class ReactIssueCommentFunctionTest extends GitHubFunctionTest(Token) {
     val issueComment = issue.comment("test comment")
 
     val f = new ReactIssueCommentFunction
-    val response = f.invoke("+1", issue.getNumber, issueComment.getId, tempRepo.getName, tempRepo.getOwnerName, Token)
+    val response = f.invoke("+1", issue.getNumber, issueComment.getId, tempRepo.getName, tempRepo.getOwnerName, Token, ApiUrl)
     response.status shouldBe Status.Success
     val result = JsonUtils.fromJson[Map[String, Any]](response.body.get.str.get)
     result("content") shouldBe "+1"

@@ -4,7 +4,6 @@ import com.atomist.rug.function.github.GitHubWebHooks.mapHook
 import com.atomist.rug.spi.Handlers.Status
 import com.atomist.rug.spi.annotation.{Parameter, RugFunction, Secret, Tag}
 import com.atomist.rug.spi.{AnnotatedRugFunction, FunctionResponse, JsonBodyOption, StringBodyOption}
-import com.atomist.source.git.GitHubServices
 import com.typesafe.scalalogging.LazyLogging
 import org.kohsuke.github.GHEvent
 
@@ -29,10 +28,7 @@ class InstallRepoWebHookFunction
     logger.info(s"Invoking installRepoWebhook with url '$url', owner '$owner', repo '$repo', apiUrl '$apiUrl' and token '${safeToken(token)}'")
 
     try {
-      val ghs = apiUrl match {
-        case url: String => GitHubServices(token, url)
-        case _ => GitHubServices(token)
-      }
+      val ghs =gitHubServices(token, apiUrl)
       ghs.getRepository(repo, owner)
         .map(repository => {
           val config = Map("url" -> url, "content_type" -> "json")

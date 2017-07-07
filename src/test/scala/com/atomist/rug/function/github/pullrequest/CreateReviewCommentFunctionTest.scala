@@ -1,7 +1,7 @@
 package com.atomist.rug.function.github.pullrequest
 
 import com.atomist.rug.function.github.GitHubFunctionTest
-import com.atomist.rug.function.github.TestConstants.Token
+import com.atomist.rug.function.github.TestConstants.{ApiUrl, Token}
 import com.atomist.rug.spi.Handlers.Status
 import com.atomist.source.git.GitHubServices.ReviewComment
 import com.atomist.util.JsonUtils
@@ -19,7 +19,7 @@ class CreateReviewCommentFunctionTest extends GitHubFunctionTest(Token) {
     val pr = tempRepo.createPullRequest("test title", "test", "master", "test body")
 
     val f = new CreateReviewCommentFunction
-    val response = f.invoke(pr.getNumber, "comment body", pr.getHead.getSha, "README.md", 1, tempRepo.getName, tempRepo.getOwnerName, Token)
+    val response = f.invoke(pr.getNumber, "comment body", pr.getHead.getSha, "README.md", 1, tempRepo.getName, tempRepo.getOwnerName, Token, ApiUrl)
     response.status shouldBe Status.Success
     val body = response.body
     body shouldBe defined
