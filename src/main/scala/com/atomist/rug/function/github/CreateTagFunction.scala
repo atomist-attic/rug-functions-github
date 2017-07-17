@@ -32,23 +32,31 @@ class CreateTagFunction
              @Parameter(name = "apiUrl") apiUrl: String,
              @Secret(name = "user_token", path = "github://user_token?scopes=repo") token: String): FunctionResponse = {
 
-    logger.info(s"Invoking createTag with tag '$tag', message '$message', sha '$sha', owner '$owner', repo '$repo' and token '${safeToken(token)}'")
+    logger.warn(s"Invoking createTag with tag '$tag', message '$message', sha '$sha', owner '$owner', repo '$repo', apiUrl '$apiUrl' and token '${safeToken(token)}'")
 
     Try {
       val cto = CreateTag(tag, message, sha, "commit", Tagger("Atomist Bot", "bot@atomist.com", OffsetDateTime.now()))
-      val ctr = createLightweightTag(token, repo, owner, cto, apiUrl)
-      val cr = CreateReference(s"refs/tags/${ctr.tag}", ctr.sha)
-      createReference(token, repo, owner, cr, apiUrl)
+      createTagObject(token, repo, owner, cto, apiUrl)
     } match {
-      case Success(response) => FunctionResponse(Status.Success, Option(s"Successfully created new tag `$tag` in `$owner/$repo`"), None, JsonBodyOption(response))
+      case Success(ctr) =>
+        Try {
+          val cr = CreateReference(s"refs/tags/${ctr.tag}", ctr.sha)
+          createReference(token, repo, owner, cr, apiUrl)
+        } match {
+          case Success(response) => FunctionResponse(Status.Success, Option(s"Successfully created new annotated tag `$tag` in `$owner/$repo`"), None, JsonBodyOption(response))
+          case Failure(e) =>
+            val msg = s"Failed to create tag ref `$tag` on `$sha` in $apiUrl for `$owner/$repo`"
+            logger.error(msg,e)
+            FunctionResponse(Status.Failure, Some(msg), None, StringBodyOption(e.getMessage))
+        }
       case Failure(e) =>
-        val msg = s"Failed to create new tag `$tag` in `$owner/$repo`"
-        logger.error(msg,e)
+        val msg = s"Failed to create tag object `$tag` on `$sha` in $apiUrl for `$owner/$repo`"
+        logger.error(msg, e)
         FunctionResponse(Status.Failure, Some(msg), None, StringBodyOption(e.getMessage))
     }
   }
 
-  private def createLightweightTag(token: String, repo: String, owner: String, ct: CreateTag, apiUrl: String) =
+  private def createTagObject(token: String, repo: String, owner: String, ct: CreateTag, apiUrl: String) =
     Http(s"$apiUrl/repos/$owner/$repo/git/tags").postData(toJson(ct))
       .headers(getHeaders(token))
       .execute(is => fromJson[CreateTagResponse](is))

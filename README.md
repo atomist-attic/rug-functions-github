@@ -17,7 +17,9 @@ If you find a problem, please create an [issue][].
 
 ## Developing
 
-To build and test this project:
+To build and test this project, set the value of the `GITHUB_TOKEN`
+environment variable to a GitHub.com personal access token with "repo"
+scope and run the following command:
 
 ```
 $ mvn test
