@@ -34,37 +34,38 @@ class CreateTagFunction
 
     logger.warn(s"Invoking createTag with tag '$tag', message '$message', sha '$sha', owner '$owner', repo '$repo', apiUrl '$apiUrl' and token '${safeToken(token)}'")
 
+    val apiUrlSlash = if (apiUrl.endsWith("/")) apiUrl else s"$apiUrl/"
     Try {
       val cto = CreateTag(tag, message, sha, "commit", Tagger("Atomist Bot", "bot@atomist.com", OffsetDateTime.now()))
-      createTagObject(token, repo, owner, cto, apiUrl)
+      createTagObject(token, repo, owner, cto, apiUrlSlash)
     } match {
       case Success(ctr) =>
         Try {
           val cr = CreateReference(s"refs/tags/${ctr.tag}", ctr.sha)
-          createReference(token, repo, owner, cr, apiUrl)
+          createReference(token, repo, owner, cr, apiUrlSlash)
         } match {
-          case Success(response) => FunctionResponse(Status.Success, Option(s"Successfully created new annotated tag `$tag` in `$owner/$repo`"), None, JsonBodyOption(response))
+          case Success(response) => FunctionResponse(Status.Success, Option(s"Successfully created annotated tag `$tag` in `$owner/$repo`"), None, JsonBodyOption(response))
           case Failure(e) =>
-            val msg = s"Failed to create tag ref `$tag` on `$sha` in $apiUrl for `$owner/$repo`"
-            logger.error(msg,e)
+            val msg = s"Failed to create tag ref `$tag` on `$sha` in '$apiUrlSlash' for `$owner/$repo`"
+            logger.error(msg, e)
             FunctionResponse(Status.Failure, Some(msg), None, StringBodyOption(e.getMessage))
         }
       case Failure(e) =>
-        val msg = s"Failed to create tag object `$tag` on `$sha` in $apiUrl for `$owner/$repo`"
+        val msg = s"Failed to create tag object `$tag` on `$sha` in '$apiUrlSlash' for `$owner/$repo`"
         logger.error(msg, e)
         FunctionResponse(Status.Failure, Some(msg), None, StringBodyOption(e.getMessage))
     }
   }
 
   private def createTagObject(token: String, repo: String, owner: String, ct: CreateTag, apiUrl: String) =
-    Http(s"$apiUrl/repos/$owner/$repo/git/tags").postData(toJson(ct))
+    Http(s"${apiUrl}repos/$owner/$repo/git/tags").postData(toJson(ct))
       .headers(getHeaders(token))
       .execute(is => fromJson[CreateTagResponse](is))
       .throwError
       .body
 
   private def createReference(token: String, repo: String, owner: String, cr: CreateReference, apiUrl: String) =
-    Http(s"$apiUrl/repos/$owner/$repo/git/refs").postData(toJson(cr))
+    Http(s"${apiUrl}repos/$owner/$repo/git/refs").postData(toJson(cr))
       .headers(getHeaders(token))
       .execute(is => fromJson[Reference](is))
       .throwError
