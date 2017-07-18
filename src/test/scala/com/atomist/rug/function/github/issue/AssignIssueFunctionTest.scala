@@ -11,7 +11,7 @@ class AssignIssueFunctionTest extends GitHubFunctionTest(Token, ApiUrl) {
     val issue = createIssue(tempRepo, "test issue", "Issue body")
 
     val f = new AssignIssueFunction
-    val response = f.invoke(issue.getNumber, tempRepo.getName, "alankstewart", tempRepo.getOwnerName, Token, ApiUrl)
+    val response = f.invoke(issue.getNumber, tempRepo.getName, "alankstewart", tempRepo.getOwnerName, ApiUrl, Token)
     response.status shouldBe Status.Success
   }
 
@@ -20,7 +20,7 @@ class AssignIssueFunctionTest extends GitHubFunctionTest(Token, ApiUrl) {
     val issue = createIssue(tempRepo, "test issue", "Issue body")
 
     val f = new AssignIssueFunction
-    val response = f.invoke(issue.getNumber, tempRepo.getName, "comfoobar", tempRepo.getOwnerName, Token, ApiUrl)
+    val response = f.invoke(issue.getNumber, tempRepo.getName, "comfoobar", tempRepo.getOwnerName, ApiUrl, Token)
     response.status shouldBe Status.Failure
   }
 }

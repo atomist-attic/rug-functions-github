@@ -19,7 +19,7 @@ class ReactPullRequestFunctionTest extends GitHubFunctionTest(Token) {
     val pullRequest = tempRepo.createPullRequest("test title", "test", "master", "test body")
 
     val f = new ReactPullRequestFunction
-    val response = f.invoke("+1", pullRequest.getNumber, tempRepo.getName, tempRepo.getOwnerName, Token, ApiUrl)
+    val response = f.invoke("+1", pullRequest.getNumber, tempRepo.getName, tempRepo.getOwnerName, ApiUrl, Token)
     response.status shouldBe Status.Success
     val result = JsonUtils.fromJson[Map[String, Any]](response.body.get.str.get)
     result("content") shouldBe "+1"

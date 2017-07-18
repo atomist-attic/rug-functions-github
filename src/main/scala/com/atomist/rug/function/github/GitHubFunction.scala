@@ -20,20 +20,18 @@ trait GitHubFunction
   /**
     * Sanitize a token.
     */
-  def safeToken(token: String): String = {
+  def safeToken(token: String): String =
     if (token != null) {
       token.charAt(0) + ("*" * (token.length() - 2)) + token.last
     } else {
       null
     }
-  }
 
-  def gitHubServices(token: String, apiUrl: String): GitHubServices = {
+  def gitHubServices(token: String, apiUrl: String): GitHubServices =
     apiUrl match {
       case url: String => GitHubServices(token, url)
       case _ => GitHubServices(token)
     }
-  }
 }
 
 object GitHubFunction {

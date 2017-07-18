@@ -13,7 +13,7 @@ class UnassignIssueFunctionTest extends GitHubFunctionTest(Token) {
     val issue = createIssue(tempRepo, "test issue", "Issue body")
 
     val f = new AssignIssueFunction
-    val response = f.invoke(issue.getNumber, tempRepo.getName, "alankstewart", tempRepo.getOwnerName, Token, ApiUrl)
+    val response = f.invoke(issue.getNumber, tempRepo.getName, "alankstewart", tempRepo.getOwnerName, ApiUrl, Token)
     response.status shouldBe Status.Success
     val body = response.body
     body shouldBe defined
@@ -22,7 +22,7 @@ class UnassignIssueFunctionTest extends GitHubFunctionTest(Token) {
     issue2.assignees shouldBe defined
 
     val f2 = new UnassignIssueFunction
-    val response2 = f2.invoke(issue.getNumber, tempRepo.getName, "alankstewart", tempRepo.getOwnerName, Token, ApiUrl)
+    val response2 = f2.invoke(issue.getNumber, tempRepo.getName, "alankstewart", tempRepo.getOwnerName, ApiUrl, Token)
     response2.status shouldBe Status.Success
     val body2 = response2.body
     body2 shouldBe defined

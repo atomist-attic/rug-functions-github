@@ -28,6 +28,7 @@ class SearchIssuesFunction
     logger.info(s"Invoking searchIssues with search '$search', owner '$owner', repo '$repo' and token '${safeToken(token)}'")
 
     try {
+      println("******* " + apiUrl)
       val ghs = gitHubServices(token, apiUrl)
       val response = ghs.gitHub.searchIssues()
         .q(s"repo:$owner/$repo")

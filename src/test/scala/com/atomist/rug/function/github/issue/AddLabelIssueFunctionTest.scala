@@ -13,7 +13,7 @@ class AddLabelIssueFunctionTest extends GitHubFunctionTest(Token, ApiUrl) {
     val gHIssue = createIssue(tempRepo, "test issue", "Issue body")
 
     val f = new AddLabelIssueFunction
-    val response = f.invoke(gHIssue.getNumber, tempRepo.getName, tempRepo.getOwnerName, "bug", Token, ApiUrl)
+    val response = f.invoke(gHIssue.getNumber, tempRepo.getName, tempRepo.getOwnerName, "bug", ApiUrl, Token)
     response.status shouldBe Status.Success
     val body = response.body
     body shouldBe defined

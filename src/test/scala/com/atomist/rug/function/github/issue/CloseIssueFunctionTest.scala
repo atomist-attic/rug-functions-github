@@ -14,11 +14,11 @@ class CloseIssueFunctionTest extends GitHubFunctionTest(Token) {
     issue.addAssignees(ghs.gitHub.getUser("alankstewart"))
 
     val f = new CloseIssueFunction
-    val response = f.invoke(issue.getNumber, tempRepo.getName, tempRepo.getOwnerName, Token, ApiUrl)
+    val response = f.invoke(issue.getNumber, tempRepo.getName, tempRepo.getOwnerName, ApiUrl, Token)
     response.status shouldBe Status.Success
 
     val f2 = new SearchIssuesFunction
-    val response2 = f2.invoke(null, tempRepo.getName, tempRepo.getOwnerName, Token, ApiUrl)
+    val response2 = f2.invoke(null, tempRepo.getName, tempRepo.getOwnerName, ApiUrl, Token)
     response2.status shouldBe Status.Success
     val body = response2.body
     body shouldBe defined

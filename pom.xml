@@ -14,7 +14,7 @@
         <java.version>1.8</java.version>
         <scala.version>2.11.8</scala.version>
         <scala.binary.version>2.11</scala.binary.version>
-        <rug.version>(0.25.0,1.0.0-m.2]</rug.version>
+        <rug.version>(0.25.0,1.0.0-m.5]</rug.version>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -37,7 +37,7 @@
         <dependency>
             <groupId>com.atomist</groupId>
             <artifactId>artifact-source</artifactId>
-            <version>1.0.0-m.5</version>
+            <version>1.0.0-m.13</version>
         </dependency>
         <dependency>
             <groupId>org.scalatest</groupId>

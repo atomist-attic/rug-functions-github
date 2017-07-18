@@ -19,7 +19,7 @@ class CreateReviewCommentFunctionTest extends GitHubFunctionTest(Token) {
     val pr = tempRepo.createPullRequest("test title", "test", "master", "test body")
 
     val f = new CreateReviewCommentFunction
-    val response = f.invoke(pr.getNumber, "comment body", pr.getHead.getSha, "README.md", 1, tempRepo.getName, tempRepo.getOwnerName, Token, ApiUrl)
+    val response = f.invoke(pr.getNumber, "comment body", pr.getHead.getSha, "README.md", 1, tempRepo.getName, tempRepo.getOwnerName, ApiUrl, Token)
     response.status shouldBe Status.Success
     val body = response.body
     body shouldBe defined

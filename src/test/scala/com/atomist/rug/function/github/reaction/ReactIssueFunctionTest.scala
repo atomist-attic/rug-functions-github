@@ -15,7 +15,7 @@ class ReactIssueFunctionTest extends GitHubFunctionTest(Token) {
     val issue = createIssue(tempRepo, "test issue", "Issue body")
 
     val f = new ReactIssueFunction
-    val response = f.invoke("+1", issue.getNumber, tempRepo.getName, tempRepo.getOwnerName, Token, ApiUrl)
+    val response = f.invoke("+1", issue.getNumber, tempRepo.getName, tempRepo.getOwnerName, ApiUrl, Token)
     response.status shouldBe Status.Success
     val result = JsonUtils.fromJson[Map[String, Any]](response.body.get.str.get)
     result("content") shouldBe "+1"

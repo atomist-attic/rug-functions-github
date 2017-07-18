@@ -15,7 +15,7 @@ class SearchIssuesFunctionTest extends GitHubFunctionTest(Token) {
     Thread.sleep(2000)
 
     val f = new SearchIssuesFunction
-    val response = f.invoke(null, tempRepo.getName, tempRepo.getOwnerName, Token, ApiUrl)
+    val response = f.invoke(null, tempRepo.getName, tempRepo.getOwnerName, ApiUrl, Token)
     response.status shouldBe Status.Success
     val body = response.body
     body shouldBe defined
@@ -29,7 +29,7 @@ class SearchIssuesFunctionTest extends GitHubFunctionTest(Token) {
 
   it should "fail to search issues in non-existent repo" in {
     val f = new SearchIssuesFunction
-    val response = f.invoke(null, "github-commands", "comfoobar", Token, ApiUrl)
+    val response = f.invoke(null, "github-commands", "comfoobar", ApiUrl, Token)
     response.status shouldBe Status.Failure
   }
 }
