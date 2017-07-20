@@ -14,6 +14,7 @@ com.atomist.rug.function.github.issue.ReopenIssueFunction
 com.atomist.rug.function.github.issue.SearchIssuesFunction
 com.atomist.rug.function.github.pullrequest.DeleteBranchFunction
 com.atomist.rug.function.github.pullrequest.MergePullRequestFunction
+com.atomist.rug.function.github.pullrequest.RaisePullRequestFunction
 com.atomist.rug.function.github.pullrequest.CreateReviewCommentFunction
 com.atomist.rug.function.github.reaction.ReactCommitCommentFunction
 com.atomist.rug.function.github.reaction.ReactIssueCommentFunction
