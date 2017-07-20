@@ -17,7 +17,7 @@ class RaisePullRequestFunction
   @RugFunction(name = "raise-github-pull-request", description = "Raise a pull request",
     tags = Array(new Tag(name = "github"), new Tag(name = "issues"), new Tag(name = "pr")))
   def invoke(@Parameter(name = "title") title: String,
-             @Parameter(name = "body") body: String,
+             @Parameter(name = "body", required = false) body: String,
              @Parameter(name = "base") base: String,
              @Parameter(name = "head") head: String,
              @Parameter(name = "repo") repo: String,
