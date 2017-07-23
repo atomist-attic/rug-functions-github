@@ -1,13 +1,10 @@
 package com.atomist.rug.function.github
 
-import com.atomist.rug.function.github.GitHubWebHooks.mapHook
 import com.atomist.rug.spi.Handlers.Status
 import com.atomist.rug.spi.annotation.{Parameter, RugFunction, Secret, Tag}
 import com.atomist.rug.spi.{AnnotatedRugFunction, FunctionResponse, JsonBodyOption, StringBodyOption}
+import com.atomist.source.git.github.domain.{Webhook, WebhookInfo}
 import com.typesafe.scalalogging.LazyLogging
-import org.kohsuke.github.GHEvent
-
-import scala.collection.JavaConverters._
 
 /**
   * Install webhooks for orgs.
@@ -15,6 +12,8 @@ import scala.collection.JavaConverters._
 class InstallOrgWebHookFunction extends AnnotatedRugFunction
   with LazyLogging
   with GitHubFunction {
+
+  import GitHubFunction._
 
   @RugFunction(name = "install-github-org-webhook", description = "Creates a new org webhook",
     tags = Array(new Tag(name = "github"), new Tag(name = "webhooks")))
@@ -27,10 +26,8 @@ class InstallOrgWebHookFunction extends AnnotatedRugFunction
 
     try {
       val ghs = gitHubServices(token, apiUrl)
-      val org = ghs.gitHub.getOrganization(owner)
-      val config = Map("url" -> url, "content_type" -> "json")
-      val gHHook = org.createHook("web", config.asJava, Seq(GHEvent.ALL).asJava, true)
-      val response = mapHook(gHHook)
+      val hook = ghs.createOrganizationWebhook(owner, Webhook("web", url, "json", Events))
+      val response = WebhookInfo(hook)
       FunctionResponse(Status.Success, Some(s"Successfully installed org-level webhook for `$owner`"), None, JsonBodyOption(response))
     } catch {
       case e: Exception =>
