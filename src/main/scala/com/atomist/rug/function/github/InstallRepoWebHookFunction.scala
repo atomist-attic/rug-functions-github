@@ -3,7 +3,6 @@ package com.atomist.rug.function.github
 import com.atomist.rug.spi.Handlers.Status
 import com.atomist.rug.spi.annotation.{Parameter, RugFunction, Secret, Tag}
 import com.atomist.rug.spi.{AnnotatedRugFunction, FunctionResponse, JsonBodyOption, StringBodyOption}
-import com.atomist.source.git.github.domain.{Webhook, WebhookInfo}
 import com.typesafe.scalalogging.LazyLogging
 
 /**
@@ -28,8 +27,8 @@ class InstallRepoWebHookFunction
 
     try {
       val ghs = gitHubServices(token, apiUrl)
-      val hook = ghs.createWebhook(repo, owner, Webhook("web", url, "json", Events))
-      val response = WebhookInfo(hook)
+      val wh = ghs.createWebhook(repo, owner, "web", url, "json", active = true, Events.toArray)
+      val response = Map("id" -> wh.id, "name" -> wh.name, "url" -> wh.config.url, "content_type" -> wh.config.contentType, "events" -> wh.events)
       FunctionResponse(Status.Success, Some(s"Successfully installed repo-level webhook for `$owner/$repo`"), None, JsonBodyOption(response))
     } catch {
       case e: Exception =>
