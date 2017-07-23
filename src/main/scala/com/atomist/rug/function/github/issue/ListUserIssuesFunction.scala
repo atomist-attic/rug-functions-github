@@ -3,17 +3,14 @@ package com.atomist.rug.function.github.issue
 import java.time.OffsetDateTime
 
 import com.atomist.rug.function.github.GitHubFunction
-import com.atomist.rug.function.github.GitHubFunction._
-import com.atomist.rug.function.github.issue.GitHubIssues.{GitHubIssue, Issue}
 import com.atomist.rug.spi.Handlers.Status
 import com.atomist.rug.spi.annotation.{Parameter, RugFunction, Secret, Tag}
 import com.atomist.rug.spi.{AnnotatedRugFunction, FunctionResponse, JsonBodyOption, StringBodyOption}
+import com.atomist.source.git.github.domain.Issue
 import com.typesafe.scalalogging.LazyLogging
 
 import scala.collection.mutable.ListBuffer
-import scala.reflect.Manifest
 import scala.util.{Failure, Success, Try}
-import scalaj.http.Http
 
 class ListUserIssuesFunction extends AnnotatedRugFunction
   with LazyLogging
@@ -28,6 +25,8 @@ class ListUserIssuesFunction extends AnnotatedRugFunction
     logger.info(s"Invoking listUserIssues with days '$days' and token '${safeToken(token)}'")
 
     Try {
+      val ghs = gitHubServices(token, "")
+
       val params = Map("per_page" -> "100",
         "state" -> "open",
         "sort" -> "updated",
@@ -35,10 +34,10 @@ class ListUserIssuesFunction extends AnnotatedRugFunction
         "filter" -> "assigned")
 
       var issues = new ListBuffer[Issue]
-      issues ++= getIssues(token, params)
+      issues ++= ghs listIssues (params)
 
       val params2 = params + ("state" -> "closed")
-      issues ++= getIssues(token, params2)
+      issues ++= ghs listIssues (params2)
 
       val time: OffsetDateTime = Try(days.toInt) match {
         case Success(d) => OffsetDateTime.now.minusDays(d)
@@ -57,7 +56,8 @@ class ListUserIssuesFunction extends AnnotatedRugFunction
           // atomisthq/bot-service
           val repo = i.url.replace("https://api.github.com/repos/", "").replace(s"/issues/${i.number}", "")
           val ts = i.updatedAt.toEpochSecond
-          GitHubIssue(id, title, url, issueUrl, repo, ts, i.state, i.assignee.orNull)
+          Map("number" -> id, "title" -> title, "url" -> url, "issueUrl" -> issueUrl,
+            "repo" -> repo, "ts" -> ts, "state" -> i.state, "assignee" -> i.assignee.orNull)
         })
     } match {
       case Success(response) => FunctionResponse(Status.Success, Some("Successfully listed issues"), None, JsonBodyOption(response))
@@ -66,44 +66,5 @@ class ListUserIssuesFunction extends AnnotatedRugFunction
         logger.warn(msg, e)
         FunctionResponse(Status.Failure, Some(msg), None, StringBodyOption(e.getMessage))
     }
-  }
-
-  private def getIssues(token: String, params: Map[String, String]): Seq[Issue] = {
-    val response = Http(s"$ApiUrl/issues").params(params)
-      .headers(getHeaders(token))
-      .execute(is => fromJson[Seq[Issue]](is))
-      .throwError
-
-    val body = response.body
-    val linkHeader = parseLinkHeader(response.header("Link"))
-    linkHeader.get("next") match {
-      case Some(url) => paginateResults(token, body, url, params)
-      case None => body
-    }
-  }
-
-  /**
-    * Paginates a search and returns an aggregated list of results.
-    */
-  private def paginateResults[T](token: String,
-                                 firstPage: Seq[T],
-                                 url: String,
-                                 params: Map[String, String] = Map.empty)
-                                (implicit m: Manifest[T]): Seq[T] = {
-    def nextPage(token: String, url: String, accumulator: Seq[T]): Seq[T] = {
-      val response = Http(url).params(params)
-        .headers(getHeaders(token))
-        .execute(is => fromJson[Seq[T]](is))
-        .throwError
-
-      val pages = accumulator ++ response.body
-      val linkHeader = parseLinkHeader(response.header("Link"))
-      linkHeader.get("next") match {
-        case Some(nextUrl) => nextPage(token, nextUrl, pages)
-        case None => pages
-      }
-    }
-
-    nextPage(token, url, firstPage)
   }
 }

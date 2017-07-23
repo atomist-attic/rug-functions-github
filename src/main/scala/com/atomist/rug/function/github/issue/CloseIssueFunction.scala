@@ -1,7 +1,6 @@
 package com.atomist.rug.function.github.issue
 
 import com.atomist.rug.function.github.GitHubFunction
-import com.atomist.rug.function.github.issue.GitHubIssues.mapIssue
 import com.atomist.rug.spi.Handlers.Status
 import com.atomist.rug.spi.annotation.{Parameter, RugFunction, Secret, Tag}
 import com.atomist.rug.spi.{AnnotatedRugFunction, FunctionResponse, JsonBodyOption, StringBodyOption}
@@ -26,14 +25,10 @@ class CloseIssueFunction extends AnnotatedRugFunction
 
     try {
       val ghs = gitHubServices(token, apiUrl)
-      ghs.getRepository(repo, owner)
-        .map(repository => {
-          val issue = repository.getIssue(number)
-          issue.close()
-          val response = mapIssue(repository.getIssue(number))
-          FunctionResponse(Status.Success, Some(s"Successfully closed issue `#$number` in `$owner/$repo`"), None, JsonBodyOption(response))
-        })
-        .getOrElse(FunctionResponse(Status.Failure, Some(s"Failed to find repository `$repo` for owner `$owner`"), None, None))
+      val issue = ghs.getIssue(repo, owner, number).get
+      val assignees = issue.assignees.toList.flatten.map(_.login)
+      val response = ghs.editIssue(repo, owner, issue.number, issue.title, issue.body, "closed", issue.labels.map(_.name), assignees)
+      FunctionResponse(Status.Success, Some(s"Successfully closed issue `#$number` in `$owner/$repo`"), None, JsonBodyOption(response))
     } catch {
       case e: Exception =>
         val msg = s"Failed to close issue `#$number` in `$owner/$repo`"

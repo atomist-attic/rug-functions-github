@@ -2,7 +2,7 @@ package com.atomist.rug.function.github.issue
 
 import com.atomist.rug.function.github.GitHubFunctionTest
 import com.atomist.rug.function.github.TestConstants.Token
-import com.atomist.rug.function.github.issue.GitHubIssues.GitHubIssue
+import .GitHubIssue
 import com.atomist.rug.spi.Handlers.Status
 import com.atomist.util.JsonUtils
 

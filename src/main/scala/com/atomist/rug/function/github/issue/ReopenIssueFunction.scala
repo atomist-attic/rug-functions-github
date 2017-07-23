@@ -14,8 +14,6 @@ class ReopenIssueFunction
     with LazyLogging
     with GitHubFunction {
 
-  import GitHubIssues._
-
   @RugFunction(name = "reopen-github-issue", description = "Reopens a closed GitHub issue",
     tags = Array(new Tag(name = "github"), new Tag(name = "issues")))
   def invoke(@Parameter(name = "issue") number: Int,
@@ -28,14 +26,9 @@ class ReopenIssueFunction
 
     try {
       val ghs = gitHubServices(token, apiUrl)
-      ghs.getRepository(repo, owner)
-        .map(repository => {
-          val issue = repository.getIssue(number)
-          issue.reopen()
-          val response = mapIssue(repository.getIssue(number))
-          FunctionResponse(Status.Success, Some(s"Successfully reopened issue `#$number` in `$owner/$repo`"), None, JsonBodyOption(response))
-        })
-        .getOrElse(FunctionResponse(Status.Failure, Some(s"Failed to find repository `$repo` for owner `$owner`"), None, None))
+      val issue = ghs.getIssue(repo, owner, number).get
+      val response = ghs.editIssue(repo, owner, issue.number, issue.title, issue.body, "open", issue.labels.map(_.name), issue.assignee.map(_.login).toList)
+      FunctionResponse(Status.Success, Some(s"Successfully reopened issue `#$number` in `$owner/$repo`"), None, JsonBodyOption(response))
     } catch {
       case e: Exception =>
         val msg = s"Failed to reopen issue `#$number` in `$owner/$repo`"
