@@ -36,8 +36,8 @@ class CreateTagFunction
       val ctr = CreateTagRequest(tag, message, sha, "commit", Tagger("Atomist Bot", "bot@atomist.com", OffsetDateTime.now()))
       ghs createTag(repo, owner, ctr)
     } match {
-      case Success(t) =>
-        Try (ghs createReference(repo, owner, s"refs/tags/${t.tag}", t.sha))
+      case Success(newTag) =>
+        Try (ghs createReference(repo, owner, s"refs/tags/${newTag.tag}", newTag.sha))
          match {
           case Success(response) => FunctionResponse(Status.Success, Option(s"Successfully created annotated tag `$tag` in `$owner/$repo`"), None, JsonBodyOption(response))
           case Failure(e) =>
