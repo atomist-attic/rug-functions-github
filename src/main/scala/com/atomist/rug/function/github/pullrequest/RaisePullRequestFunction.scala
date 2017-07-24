@@ -4,6 +4,7 @@ import com.atomist.rug.function.github.GitHubFunction
 import com.atomist.rug.spi.Handlers.Status
 import com.atomist.rug.spi.annotation.{Parameter, RugFunction, Secret, Tag}
 import com.atomist.rug.spi.{AnnotatedRugFunction, FunctionResponse, StringBodyOption}
+import com.atomist.source.git.github.domain.PullRequestRequest
 import com.typesafe.scalalogging.LazyLogging
 
 /**
@@ -29,12 +30,9 @@ class RaisePullRequestFunction
 
     try {
       val ghs = gitHubServices(token, apiUrl)
-      ghs.getRepository(repo, owner)
-        .map(repository => {
-          val pullRequest = repository.createPullRequest(title, head, base, body)
-          FunctionResponse(Status.Success, Some(s"Successfully raised pull request `${pullRequest.getNumber}`"), None)
-        })
-        .getOrElse(FunctionResponse(Status.Failure, Some(s"Failed to find repository `$repo` for owner `$owner`"), None, None))
+      val prr = PullRequestRequest(title, head, base, body)
+      val pr = ghs createPullRequest(repo, owner, prr)
+      FunctionResponse(Status.Success, Some(s"Successfully raised pull request `${pr.number}`"), None)
     } catch {
       case e: Exception =>
         val msg = s"Failed to raise pull request `$title`"

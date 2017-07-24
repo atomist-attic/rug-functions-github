@@ -28,7 +28,7 @@ class AssignIssueFunction
     try {
       val ghs = gitHubServices(token, apiUrl)
       val issue = ghs.getIssue(repo, owner, number).get
-      val assignees = issue.assignees.toList.flatten.map(_.login) :+ assignee
+      val assignees = issue.assignees.map(_.login) :+ assignee
       val response = ghs.editIssue(repo, owner, issue.number, issue.title, issue.body, issue.state, issue.labels.map(_.name), assignees)
       FunctionResponse(Status.Success, Some(s"Successfully assigned issue `#$number` in `$owner/$repo` to `$assignee`"), None, JsonBodyOption(response))
     } catch {

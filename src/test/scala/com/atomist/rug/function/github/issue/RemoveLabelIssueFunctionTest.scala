@@ -2,29 +2,32 @@ package com.atomist.rug.function.github.issue
 
 import com.atomist.rug.function.github.GitHubFunctionTest
 import com.atomist.rug.function.github.TestConstants.{ApiUrl, Token}
-import .Issue
 import com.atomist.rug.spi.Handlers.Status
+import com.atomist.source.git.github.domain.Issue
 import com.atomist.util.JsonUtils
 
 class RemoveLabelIssueFunctionTest extends GitHubFunctionTest(Token) {
 
   it should "remove label from issue" in {
     val tempRepo = newPopulatedTemporaryRepo()
-    val gHIssue = createIssue(tempRepo, "test issue", "Issue body")
+    val repo = tempRepo.name
+    val owner = tempRepo.ownerName
+
+    val issue = createIssue(repo, owner)
 
     val f = new AddLabelIssueFunction
-    val response = f.invoke(gHIssue.getNumber, tempRepo.getName, tempRepo.getOwnerName, "bug", ApiUrl, Token)
+    val response = f.invoke(issue.number, repo, owner, "bug", ApiUrl, Token)
     response.status shouldBe Status.Success
     val body = response.body
     body shouldBe defined
     body.get.str shouldBe defined
-    val issue = JsonUtils.fromJson[Issue](body.get.str.get)
-    val labels = issue.labels
+    val issue1 = JsonUtils.fromJson[Issue](body.get.str.get)
+    val labels = issue1.labels
     labels should have size 1
     labels(0).name shouldBe "bug"
 
     val f2 = new RemoveLabelIssueFunction
-    val response2 = f2.invoke(gHIssue.getNumber, tempRepo.getName, tempRepo.getOwnerName, "bug", ApiUrl, Token)
+    val response2 = f2.invoke(issue1.number, repo, owner, "bug", ApiUrl, Token)
     response2.status shouldBe Status.Success
     val body2 = response2.body
     body2 shouldBe defined

@@ -26,13 +26,10 @@ class MergePullRequestFunction
 
     try {
       val ghs = gitHubServices(token, apiUrl)
-      ghs.getRepository(repo, owner)
-        .map(repository => {
-          val pullRequest = repository.getPullRequest(number)
-          pullRequest.merge(null)
-          FunctionResponse(Status.Success, Some(s"Successfully merged pull request `$number`"), None)
-        })
-        .getOrElse(FunctionResponse(Status.Failure, Some(s"Failed to find repository `$repo` for owner `$owner`"), None, None))
+      ghs.getPullRequest(repo, owner, number).map(pr => {
+        ghs.mergePullRequest(repo, owner, pr.number, pr.title, "Merged pull request")
+        FunctionResponse(Status.Success, Some(s"Successfully merged pull request `$number`"), None)
+      }).getOrElse(FunctionResponse(Status.Failure, Some(s"Failed to find pull request `$number`"), None, None))
     } catch {
       case e: Exception =>
         val msg = s"Failed to merge pull request `$number`"

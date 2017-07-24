@@ -24,7 +24,7 @@ class ListUserIssuesFunction extends AnnotatedRugFunction
 
     logger.info(s"Invoking listUserIssues with days '$days' and token '${safeToken(token)}'")
 
-    Try {
+    try {
       val ghs = gitHubServices(token, "")
 
       val params = Map("per_page" -> "100",
@@ -33,18 +33,18 @@ class ListUserIssuesFunction extends AnnotatedRugFunction
         "direction" -> "desc",
         "filter" -> "assigned")
 
-      var issues = new ListBuffer[Issue]
-      issues ++= ghs listIssues (params)
+      var issueBuf = new ListBuffer[Issue]
+      issueBuf ++= ghs listIssues params
 
       val params2 = params + ("state" -> "closed")
-      issues ++= ghs listIssues (params2)
+      issueBuf ++= ghs listIssues params2
 
       val time: OffsetDateTime = Try(days.toInt) match {
         case Success(d) => OffsetDateTime.now.minusDays(d)
         case Failure(_) => OffsetDateTime.now.minusDays(1)
       }
 
-      issues.filter(i => i.updatedAt.isAfter(time))
+      val response = issueBuf.filter(i => i.updatedAt.isAfter(time))
         .sortWith((i1, i2) => i2.updatedAt.compareTo(i1.updatedAt) > 0)
         .map(i => {
           val id = i.number
@@ -56,15 +56,15 @@ class ListUserIssuesFunction extends AnnotatedRugFunction
           // atomisthq/bot-service
           val repo = i.url.replace("https://api.github.com/repos/", "").replace(s"/issues/${i.number}", "")
           val ts = i.updatedAt.toEpochSecond
-          Map("number" -> id, "title" -> title, "url" -> url, "issueUrl" -> issueUrl,
-            "repo" -> repo, "ts" -> ts, "state" -> i.state, "assignee" -> i.assignee.orNull)
+          GitHubIssue(id, title, url, issueUrl, repo, ts, i.state, i.assignee.orNull)
         })
-    } match {
-      case Success(response) => FunctionResponse(Status.Success, Some("Successfully listed issues"), None, JsonBodyOption(response))
-      case Failure(e) =>
+      FunctionResponse(Status.Success, Some("Successfully listed issues"), None, JsonBodyOption(response))
+    } catch {
+      // Need to catch Throwable as Exception lets through GitHub message errors
+      case t: Throwable =>
         val msg = "Failed to list issues"
-        logger.warn(msg, e)
-        FunctionResponse(Status.Failure, Some(msg), None, StringBodyOption(e.getMessage))
+        logger.warn(msg, t)
+        FunctionResponse(Status.Failure, Some(msg), None, StringBodyOption(t.getMessage))
     }
   }
 }

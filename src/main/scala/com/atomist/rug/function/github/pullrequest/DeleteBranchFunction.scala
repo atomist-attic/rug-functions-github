@@ -26,12 +26,8 @@ class DeleteBranchFunction
 
     try {
       val ghs = gitHubServices(token, apiUrl)
-      ghs.getRepository(repo, owner)
-        .map(repository => {
-          repository.getRef(branch).delete()
-          FunctionResponse(Status.Success, Some(s"Successfully delete branch `$branch"), None)
-        })
-        .getOrElse(FunctionResponse(Status.Failure, Some(s"Failed to find repository `$repo` for owner `$owner`"), None, None))
+      ghs deleteBranch(repo, owner, branch)
+      FunctionResponse(Status.Success, Some(s"Successfully deleted branch `$branch"), None)
     } catch {
       case e: Exception =>
         val msg = s"Failed to delete branch `$name`"

@@ -30,8 +30,8 @@ class CreateReviewCommentFunction
 
     try {
       val ghs = gitHubServices(token, apiUrl)
-      val response = ghs.createReviewComment(repo, owner, number, body, sha, path, position)
-      FunctionResponse(Status.Success, Some(s"Successfully created review comment for pull request `$number"), None, JsonBodyOption(response))
+      val response = ghs createPullRequestReviewComment(repo, owner, number, body, sha, path, position)
+      FunctionResponse(Status.Success, Some(s"Successfully created review comment for pull request `$number`"), None, JsonBodyOption(response))
     } catch {
       case e: Exception =>
         val msg = s"Failed to create review comment for pull request `$number"

@@ -8,19 +8,25 @@ class AssignIssueFunctionTest extends GitHubFunctionTest(Token, ApiUrl) {
 
   it should "assign issue to user" in {
     val tempRepo = newPopulatedTemporaryRepo()
-    val issue = createIssue(tempRepo, "test issue", "Issue body")
+    val repo = tempRepo.name
+    val owner = tempRepo.ownerName
+
+    val issue = createIssue(repo, owner)
 
     val f = new AssignIssueFunction
-    val response = f.invoke(issue.getNumber, tempRepo.getName, "alankstewart", tempRepo.getOwnerName, ApiUrl, Token)
+    val response = f.invoke(issue.number, repo, "alankstewart", owner, ApiUrl, Token)
     response.status shouldBe Status.Success
   }
 
   it should "fail to assign issue with unknown user" in {
     val tempRepo = newPopulatedTemporaryRepo()
-    val issue = createIssue(tempRepo, "test issue", "Issue body")
+    val repo = tempRepo.name
+    val owner = tempRepo.ownerName
+
+    val issue = ghs.createIssue(repo, owner, "test issue", "Issue body", Seq.empty)
 
     val f = new AssignIssueFunction
-    val response = f.invoke(issue.getNumber, tempRepo.getName, "comfoobar", tempRepo.getOwnerName, ApiUrl, Token)
+    val response = f.invoke(issue.number, repo, "comfoobar", owner, ApiUrl, Token)
     response.status shouldBe Status.Failure
   }
 }

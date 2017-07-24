@@ -1,20 +1,22 @@
 package com.atomist.rug.function.github.reaction
 
-import com.atomist.rug.function.github.reaction.CreateReactionFunction.CommentReactableKey
-import com.atomist.rug.function.github.reaction.ReactCommitCommentFunction.CommitCommentReactableKey
-import com.atomist.rug.spi.FunctionResponse
+import java.net.URL
+
+import com.atomist.rug.function.github.GitHubFunction
+import com.atomist.rug.function.github.reaction.GitHubReactions.Reaction
+import com.atomist.rug.spi.Handlers.Status
 import com.atomist.rug.spi.annotation.{Parameter, RugFunction, Secret, Tag}
-import org.kohsuke.github.GHRepository
+import com.atomist.rug.spi.{AnnotatedRugFunction, FunctionResponse, JsonBodyOption, StringBodyOption}
+import com.atomist.source.git.github.domain.ReactionContent
+import com.typesafe.scalalogging.LazyLogging
 
 /**
   * Reacts to a GitHub commit comment
   */
-class ReactCommitCommentFunction extends CreateReactionFunction[CommitCommentReactableKey] {
-
-  override def retrieveReactable(repository: GHRepository, reactableKey: CommitCommentReactableKey): Reactable = {
-    val comments = repository.getCommit(reactableKey.sha1).listComments()
-    retrieveComment(comments, reactableKey)
-  }
+class ReactCommitCommentFunction
+  extends AnnotatedRugFunction
+    with LazyLogging
+    with GitHubFunction {
 
   @RugFunction(name = "react-github-commit-comment", description = "Reacts to a GitHub commit comment",
     tags = Array(new Tag(name = "github"), new Tag(name = "commits"), new Tag(name = "comments"), new Tag(name = "reactions")))
@@ -25,13 +27,16 @@ class ReactCommitCommentFunction extends CreateReactionFunction[CommitCommentRea
              @Parameter(name = "owner") owner: String,
              @Parameter(name = "apiUrl") apiUrl: String,
              @Secret(name = "user_token", path = "github://user_token?scopes=repo") token: String): FunctionResponse = {
-    createReaction(reaction, CommitCommentReactableKey(sha1, commentId), repo, owner, token, apiUrl)
-  }
-
-}
-
-object ReactCommitCommentFunction {
-  case class CommitCommentReactableKey(sha1: String, commentId: Int) extends CommentReactableKey {
-    override def description: String = s"comment #$commentId of commit #$sha1"
+    try {
+      val ghs = gitHubServices(token, apiUrl)
+      val react = ghs.createCommitCommentReaction(repo, owner, commentId, ReactionContent.withName(reaction))
+      val response = Reaction(react.id,  new URL(react.user.url), react.content.toString)
+      FunctionResponse(Status.Success, Some(s"Successfully created commit comment reaction for `$commentId`"), None, JsonBodyOption(response))
+    } catch {
+      case e: Exception =>
+        val msg = s"Failed to add reaction to commit comment `$commentId`"
+        logger.error(msg, e)
+        FunctionResponse(Status.Failure, Some(msg), None, StringBodyOption(e.getMessage))
+    }
   }
 }

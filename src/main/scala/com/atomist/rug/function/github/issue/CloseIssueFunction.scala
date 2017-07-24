@@ -26,7 +26,7 @@ class CloseIssueFunction extends AnnotatedRugFunction
     try {
       val ghs = gitHubServices(token, apiUrl)
       val issue = ghs.getIssue(repo, owner, number).get
-      val assignees = issue.assignees.toList.flatten.map(_.login)
+      val assignees = issue.assignees.map(_.login)
       val response = ghs.editIssue(repo, owner, issue.number, issue.title, issue.body, "closed", issue.labels.map(_.name), assignees)
       FunctionResponse(Status.Success, Some(s"Successfully closed issue `#$number` in `$owner/$repo`"), None, JsonBodyOption(response))
     } catch {
