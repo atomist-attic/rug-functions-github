@@ -37,7 +37,7 @@
         <dependency>
             <groupId>com.atomist</groupId>
             <artifactId>artifact-source</artifactId>
-            <version>1.0.0-20170725072538</version>
+            <version>1.0.0-20170725080436</version>
         </dependency>
         <dependency>
             <groupId>org.scalatest</groupId>
