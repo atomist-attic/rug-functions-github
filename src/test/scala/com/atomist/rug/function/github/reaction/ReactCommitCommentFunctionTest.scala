@@ -14,7 +14,7 @@ class ReactCommitCommentFunctionTest extends GitHubFunctionTest(Token) {
     val repo = tempRepo.name
     val owner = tempRepo.ownerName
 
-    val commit = ghs.getCommits(repo, owner).head
+    val commit = ghs.listCommits(repo, owner).head
     val comment = ghs.createCommitComment(repo, owner, commit.sha, "test comment", "README.md", 1)
 
     val f = new ReactCommitCommentFunction
@@ -23,7 +23,7 @@ class ReactCommitCommentFunctionTest extends GitHubFunctionTest(Token) {
     val result = JsonUtils.fromJson[Reaction](response.body.get.str.get)
     result.content shouldBe "+1"
 
-    val actualReactions = ghs listCommitCommentReactions(repo, owner, comment.id, Some(ReactionContent.withName(result.content)))
+    val actualReactions = ghs.listCommitCommentReactions(repo, owner, comment.id, Some(ReactionContent.withName(result.content)))
     actualReactions.size shouldBe 1
     actualReactions.head.content shouldBe ReactionContent.PlusOne
   }

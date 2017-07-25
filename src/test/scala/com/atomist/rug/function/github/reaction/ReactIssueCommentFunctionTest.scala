@@ -15,7 +15,7 @@ class ReactIssueCommentFunctionTest extends GitHubFunctionTest(Token) {
     val owner = tempRepo.ownerName
 
     val issue = createIssue(repo, owner)
-    val comment = ghs createIssueComment(repo, owner, issue.number, "test comment")
+    val comment = ghs.createIssueComment(repo, owner, issue.number, "test comment")
 
     val f = new ReactIssueCommentFunction
     val response = f.invoke("+1", issue.id, comment.id, repo, owner, ApiUrl, Token)

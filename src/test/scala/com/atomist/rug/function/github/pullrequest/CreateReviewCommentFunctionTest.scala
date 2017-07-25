@@ -15,7 +15,7 @@ class CreateReviewCommentFunctionTest extends GitHubFunctionTest(Token) {
     val repo = tempRepo.name
     val owner = tempRepo.ownerName
 
-    val readme = ghs.getContents(repo, owner, "README.md")
+    val readme = ghs.getFileContents(repo, owner, "README.md").head
     val newBranchName = "add-multi-files-branch"
     ghs createBranch(repo, owner, newBranchName, MasterBranch)
 

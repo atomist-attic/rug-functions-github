@@ -16,7 +16,7 @@ class ReactPullRequestReviewCommentFunctionTest extends GitHubFunctionTest(Token
     val repo = tempRepo.name
     val owner = tempRepo.ownerName
 
-    val readme = ghs.getContents(repo, owner, "README.md")
+    val readme = ghs.getFileContents(repo, owner, "README.md").head
     val newBranchName = "add-multi-files-branch"
     ghs createBranch(repo, owner, newBranchName, MasterBranch)
 
@@ -25,7 +25,7 @@ class ReactPullRequestReviewCommentFunctionTest extends GitHubFunctionTest(Token
 
     val prr = PullRequestRequest("test title", newBranchName, MasterBranch, "test body")
     val pr = ghs.createPullRequest(repo, owner, prr)
-    val comment = ghs createPullRequestReviewComment(repo, owner, pr.number, "comment body", pr.head.sha, "README.md", 1)
+    val comment = ghs.createPullRequestReviewComment(repo, owner, pr.number, "comment body", pr.head.sha, "README.md", 1)
 
     val f = new ReactPullRequestReviewCommentFunction
     val response = f.invoke("+1", pr.id, comment.id, repo, owner, ApiUrl, Token)
@@ -33,7 +33,7 @@ class ReactPullRequestReviewCommentFunctionTest extends GitHubFunctionTest(Token
     val result = JsonUtils.fromJson[Reaction](response.body.get.str.get)
     result.content shouldBe "+1"
 
-    val actualReactions = ghs listPullRequestReviewCommentReactions(repo, owner, comment.id, Some(ReactionContent.withName(result.content)))
+    val actualReactions = ghs.listPullRequestReviewCommentReactions(repo, owner, comment.id, Some(ReactionContent.withName(result.content)))
     actualReactions.size shouldBe 1
     actualReactions.head.content shouldBe ReactionContent.PlusOne
   }

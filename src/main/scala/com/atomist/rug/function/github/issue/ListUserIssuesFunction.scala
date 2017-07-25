@@ -6,6 +6,7 @@ import com.atomist.rug.function.github.GitHubFunction
 import com.atomist.rug.spi.Handlers.Status
 import com.atomist.rug.spi.annotation.{Parameter, RugFunction, Secret, Tag}
 import com.atomist.rug.spi.{AnnotatedRugFunction, FunctionResponse, JsonBodyOption, StringBodyOption}
+import com.atomist.source.git.github.GitHubServices
 import com.atomist.source.git.github.domain.Issue
 import com.typesafe.scalalogging.LazyLogging
 
@@ -25,7 +26,7 @@ class ListUserIssuesFunction extends AnnotatedRugFunction
     logger.info(s"Invoking listUserIssues with days '$days' and token '${safeToken(token)}'")
 
     try {
-      val ghs = gitHubServices(token, "")
+      val ghs = GitHubServices(token)
 
       val params = Map("per_page" -> "100",
         "state" -> "open",

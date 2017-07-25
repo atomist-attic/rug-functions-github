@@ -22,7 +22,7 @@ class ReactIssueFunctionTest extends GitHubFunctionTest(Token) {
     val result = JsonUtils.fromJson[Reaction](response.body.get.str.get)
     result.content shouldBe "+1"
 
-    val actualReactions = ghs listIssueReactions(repo, owner, issue.number, Some(ReactionContent.withName(result.content)))
+    val actualReactions = ghs.listIssueReactions(repo, owner, issue.number, Some(ReactionContent.withName(result.content)))
     actualReactions.size shouldBe 1
     actualReactions.head.content shouldBe ReactionContent.PlusOne
   }

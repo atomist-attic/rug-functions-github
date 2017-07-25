@@ -3,6 +3,7 @@ package com.atomist.rug.function.github
 import com.atomist.rug.spi.Handlers.Status
 import com.atomist.rug.spi.annotation.{Parameter, RugFunction, Secret, Tag}
 import com.atomist.rug.spi.{AnnotatedRugFunction, FunctionResponse, JsonBodyOption, StringBodyOption}
+import com.atomist.source.git.github.GitHubServices
 import com.typesafe.scalalogging.LazyLogging
 
 /**
@@ -24,7 +25,7 @@ class InstallOrgWebHookFunction extends AnnotatedRugFunction
     logger.info(s"Invoking installOrgWebhook with url '$url', owner '$owner', apiUrl '$apiUrl' and token '${safeToken(token)}'")
 
     try {
-      val ghs = gitHubServices(token, apiUrl)
+      val ghs = GitHubServices(token, apiUrl)
       val wh = ghs.createOrganizationWebhook(owner, "web", url, "json", active = true, Events.toArray)
       val response = Map("id" -> wh.id, "name" -> wh.name, "url" -> wh.config.url, "content_type" -> wh.config.contentType, "events" -> wh.events)
       FunctionResponse(Status.Success, Some(s"Successfully installed org-level webhook for `$owner`"), None, JsonBodyOption(response))

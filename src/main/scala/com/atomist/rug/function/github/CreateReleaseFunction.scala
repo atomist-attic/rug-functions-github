@@ -3,6 +3,7 @@ package com.atomist.rug.function.github
 import com.atomist.rug.spi.Handlers.Status
 import com.atomist.rug.spi.annotation.{Parameter, RugFunction, Secret, Tag}
 import com.atomist.rug.spi.{AnnotatedRugFunction, FunctionResponse, JsonBodyOption, StringBodyOption}
+import com.atomist.source.git.github.GitHubServices
 import com.typesafe.scalalogging.LazyLogging
 
 class CreateReleaseFunction extends AnnotatedRugFunction
@@ -21,8 +22,8 @@ class CreateReleaseFunction extends AnnotatedRugFunction
     logger.info(s"Invoking createRelease with tag '$tagName', owner '$owner', repo '$repo' and token '${safeToken(token)}'")
 
     try {
-      val ghs = gitHubServices(token, apiUrl)
-      val response = ghs createRelease(repo, owner, tagName, "master", "", message)
+      val ghs = GitHubServices(token, Option(apiUrl))
+      val response = ghs.createRelease(repo, owner, tagName, "master", "", message)
       FunctionResponse(Status.Success, Some(s"Successfully created release `${response.tagName}` in `$owner/$repo#${response.targetCommitish}`"), None, JsonBodyOption(response))
     } catch {
       case e: Exception =>

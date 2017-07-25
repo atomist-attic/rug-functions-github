@@ -16,7 +16,7 @@ class ReactPullRequestFunctionTest extends GitHubFunctionTest(Token) {
     val repo = tempRepo.name
     val owner = tempRepo.ownerName
 
-    val readme = ghs.getContents(repo, owner, "README.md")
+    val readme = ghs.getFileContents(repo, owner, "README.md").head
     val newBranchName = "add-multi-files-branch"
     ghs createBranch(repo, owner, newBranchName, MasterBranch)
 
@@ -32,7 +32,7 @@ class ReactPullRequestFunctionTest extends GitHubFunctionTest(Token) {
     val result = JsonUtils.fromJson[Reaction](response.body.get.str.get)
     result.content shouldBe "+1"
 
-    val actualReactions = ghs listPullRequestReactions(repo, owner, pr.number, Some(ReactionContent.withName(result.content)))
+    val actualReactions = ghs.listPullRequestReactions(repo, owner, pr.number, Some(ReactionContent.withName(result.content)))
     actualReactions.size shouldBe 1
     actualReactions.head.content shouldBe ReactionContent.PlusOne
   }

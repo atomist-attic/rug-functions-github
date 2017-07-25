@@ -4,7 +4,6 @@ import java.time.{OffsetDateTime, ZoneId}
 import java.util.Date
 
 import com.atomist.rug.runtime.Rug
-import com.atomist.source.git.github.GitHubServices
 
 trait GitHubFunction extends Rug {
 
@@ -16,9 +15,6 @@ trait GitHubFunction extends Rug {
       token.charAt(0) + ("*" * (token.length() - 2)) + token.last
     else
       null
-
-  def gitHubServices(token: String, apiUrl: String): GitHubServices =
-    GitHubServices(token, Option(apiUrl))
 }
 
 object GitHubFunction {

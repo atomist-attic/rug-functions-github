@@ -5,5 +5,4 @@ import java.net.URL
 object GitHubReactions {
 
   case class Reaction(id: Int, url: URL, content: String)
-
 }

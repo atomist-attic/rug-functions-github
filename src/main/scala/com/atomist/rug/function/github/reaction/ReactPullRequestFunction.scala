@@ -7,6 +7,7 @@ import com.atomist.rug.function.github.reaction.GitHubReactions.Reaction
 import com.atomist.rug.spi.Handlers.Status
 import com.atomist.rug.spi.annotation.{Parameter, RugFunction, Secret, Tag}
 import com.atomist.rug.spi.{AnnotatedRugFunction, FunctionResponse, JsonBodyOption, StringBodyOption}
+import com.atomist.source.git.github.GitHubServices
 import com.atomist.source.git.github.domain.ReactionContent
 import com.typesafe.scalalogging.LazyLogging
 
@@ -27,7 +28,7 @@ class ReactPullRequestFunction
              @Parameter(name = "apiUrl") apiUrl: String,
              @Secret(name = "user_token", path = "github://user_token?scopes=repo") token: String): FunctionResponse = {
     try {
-      val ghs = gitHubServices(token, apiUrl)
+      val ghs = GitHubServices(token, apiUrl)
       val react = ghs.createIssueReaction(repo, owner, pullRequestId, ReactionContent.withName(reaction))
       val response = Reaction(react.id,  new URL(react.user.url), react.content.toString)
       FunctionResponse(Status.Success, Some(s"Successfully created pull request review comment reaction for `$pullRequestId`"), None, JsonBodyOption(response))

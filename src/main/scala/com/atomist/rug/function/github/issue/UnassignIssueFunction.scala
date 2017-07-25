@@ -4,6 +4,7 @@ import com.atomist.rug.function.github.GitHubFunction
 import com.atomist.rug.spi.Handlers.Status
 import com.atomist.rug.spi.annotation.{Parameter, RugFunction, Secret, Tag}
 import com.atomist.rug.spi.{AnnotatedRugFunction, FunctionResponse, JsonBodyOption, StringBodyOption}
+import com.atomist.source.git.github.GitHubServices
 import com.typesafe.scalalogging.LazyLogging
 
 /**
@@ -26,7 +27,7 @@ class UnassignIssueFunction
     logger.info(s"Invoking unassignIssue with number '$number', assignee '$assignee', owner '$owner', repo '$repo' and token '${safeToken(token)}'")
 
     try {
-      val ghs = gitHubServices(token, apiUrl)
+      val ghs = GitHubServices(token, apiUrl)
       val issue = ghs.getIssue(repo, owner, number).get
       val assignees = issue.assignees.map(_.login).filterNot(_ == assignee)
       val response = ghs.editIssue(repo, owner, issue.number, issue.title, issue.body, issue.state, issue.labels.map(_.name), assignees)

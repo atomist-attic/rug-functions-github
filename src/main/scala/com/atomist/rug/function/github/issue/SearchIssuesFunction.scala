@@ -4,6 +4,7 @@ import com.atomist.rug.function.github.GitHubFunction
 import com.atomist.rug.spi.Handlers.Status
 import com.atomist.rug.spi.annotation.{Parameter, RugFunction, Secret, Tag}
 import com.atomist.rug.spi.{AnnotatedRugFunction, FunctionResponse, JsonBodyOption, StringBodyOption}
+import com.atomist.source.git.github.GitHubServices
 import com.typesafe.scalalogging.LazyLogging
 
 class SearchIssuesFunction
@@ -22,7 +23,7 @@ class SearchIssuesFunction
     logger.info(s"Invoking searchIssues with search '$search', owner '$owner', repo '$repo' and token '${safeToken(token)}'")
 
     try {
-      val ghs = gitHubServices(token, apiUrl)
+      val ghs = GitHubServices(token, apiUrl)
 
       val params = Map("per_page" -> "100",
         "q" -> s"repo:$owner/$repo state:open",

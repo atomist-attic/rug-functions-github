@@ -4,6 +4,7 @@ import com.atomist.rug.function.github.GitHubFunction
 import com.atomist.rug.spi.Handlers.Status
 import com.atomist.rug.spi.annotation.{Parameter, RugFunction, Secret, Tag}
 import com.atomist.rug.spi.{AnnotatedRugFunction, FunctionResponse, JsonBodyOption, StringBodyOption}
+import com.atomist.source.git.github.GitHubServices
 import com.typesafe.scalalogging.LazyLogging
 
 /**
@@ -26,7 +27,7 @@ class CommentIssueFunction
     logger.info(s"Invoking commentIssue with number '$number', comment '$comment', owner '$owner', repo '$repo' and token '${safeToken(token)}'")
 
     try {
-      val ghs = gitHubServices(token, apiUrl)
+      val ghs = GitHubServices(token, apiUrl)
       val response = ghs.createIssueComment(repo, owner, number, comment)
       FunctionResponse(Status.Success, Some(s"Successfully added comment to issue `#$number` in `$owner/$repo`"), None, JsonBodyOption(response))
     } catch {

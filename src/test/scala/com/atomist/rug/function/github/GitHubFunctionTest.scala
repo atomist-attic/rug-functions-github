@@ -17,7 +17,7 @@ abstract class GitHubFunctionTest(val oAuthToken: String, val apiUrl: String = "
 
   import TestConstants._
 
-  protected val ghs = GitHubServices(oAuthToken, Option(apiUrl))
+  protected val ghs = GitHubServices(oAuthToken, apiUrl)
 
   override protected def afterAll(): Unit = cleanUp()
 
@@ -25,7 +25,7 @@ abstract class GitHubFunctionTest(val oAuthToken: String, val apiUrl: String = "
     * Return a temporary repository callers can use.
     */
   def newTemporaryRepo(autoInit: Boolean = false) =
-    ghs createRepository(getRepoName, TestOrg, "temporary test repository", privateFlag = true, autoInit = autoInit)
+    ghs.createRepository(getRepoName, TestOrg, "temporary test repository", privateFlag = true, autoInit = autoInit)
 
   /**
     * Most callers will want a repository with something in it. Otherwise there isn't even a default branch,

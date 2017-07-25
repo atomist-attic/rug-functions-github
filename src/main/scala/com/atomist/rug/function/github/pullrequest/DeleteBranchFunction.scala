@@ -4,6 +4,7 @@ import com.atomist.rug.function.github.GitHubFunction
 import com.atomist.rug.spi.Handlers.Status
 import com.atomist.rug.spi.annotation.{Parameter, RugFunction, Secret, Tag}
 import com.atomist.rug.spi.{AnnotatedRugFunction, FunctionResponse, StringBodyOption}
+import com.atomist.source.git.github.GitHubServices
 import com.typesafe.scalalogging.LazyLogging
 
 /**
@@ -22,11 +23,11 @@ class DeleteBranchFunction
              @Parameter(name = "apiUrl") apiUrl: String,
              @Secret(name = "user_token", path = "github://user_token?scopes=repo") token: String): FunctionResponse = {
 
-    logger.info(s"Invoking deleteBrach with branch '$branch', owner '$owner', repo '$repo' and token '${safeToken(token)}'")
+    logger.info(s"Invoking deleteBranch with branch '$branch', owner '$owner', repo '$repo' and token '${safeToken(token)}'")
 
     try {
-      val ghs = gitHubServices(token, apiUrl)
-      ghs deleteBranch(repo, owner, branch)
+      val ghs = GitHubServices(token, apiUrl)
+      ghs.deleteBranch(repo, owner, branch)
       FunctionResponse(Status.Success, Some(s"Successfully deleted branch `$branch"), None)
     } catch {
       case e: Exception =>
