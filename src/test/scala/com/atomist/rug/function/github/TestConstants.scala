@@ -2,7 +2,9 @@ package com.atomist.rug.function.github
 
 object TestConstants {
 
-  val Token = System.getenv("GITHUB_TOKEN")
+  val Token = System.getenv("GITHUB_TEST_TOKEN")
+
+  val TestUser = System.getenv("GITHUB_TEST_USER")
 
   val ApiUrl = "https://api.github.com"
 
