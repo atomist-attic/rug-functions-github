@@ -1,10 +1,10 @@
 package com.atomist.rug.function.github.issue
 
 import com.atomist.rug.function.github.GitHubFunction
-import com.atomist.rug.function.github.issue.GitHubIssues.mapIssue
 import com.atomist.rug.spi.Handlers.Status
 import com.atomist.rug.spi.annotation.{Parameter, RugFunction, Secret, Tag}
 import com.atomist.rug.spi.{AnnotatedRugFunction, FunctionResponse, JsonBodyOption, StringBodyOption}
+import com.atomist.source.git.github.GitHubServices
 import com.typesafe.scalalogging.LazyLogging
 
 /**
@@ -27,14 +27,9 @@ class CreateIssueFunction
     logger.info(s"Invoking createIssue with title '$title', body '$body', owner '$owner', repo '$repo' and token '${safeToken(token)}'")
 
     try {
-      val ghs = gitHubServices(token, apiUrl)
-      ghs.getRepository(repo, owner)
-        .map(repository => {
-          val gHIssue = repository.createIssue(title).body(body).create()
-          val response = mapIssue(gHIssue)
-          FunctionResponse(Status.Success, Some(s"Successfully created issue `#${response.number}` in `$owner/$repo`"), None, JsonBodyOption(response))
-        })
-        .getOrElse(FunctionResponse(Status.Failure, Some(s"Failed to find repository `$repo` for owner `$owner`"), None, None))
+      val ghs = GitHubServices(token, apiUrl)
+      val response = ghs.createIssue(repo, owner, title, body, Seq.empty)
+      FunctionResponse(Status.Success, Some(s"Successfully created issue `#${response.number}` in `$owner/$repo`"), None, JsonBodyOption(response))
     } catch {
       case e: Exception =>
         val msg = s"Failed to create issue in `$owner/$repo`"

@@ -1,12 +1,11 @@
 package com.atomist.rug.function.github
 
-import com.atomist.source.git.GitHubServices
-import com.atomist.source.{ArtifactSourceAccessException, ArtifactSourceUpdateException}
+import com.atomist.source.ArtifactSourceAccessException
+import com.atomist.source.git.github.GitHubServices
+import com.atomist.source.git.github.domain.Issue
 import com.typesafe.scalalogging.LazyLogging
-import org.kohsuke.github.{GHIssue, GHRepository}
 import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll, FlatSpec, Matchers}
 
-import scala.collection.JavaConverters._
 import scala.util.{Failure, Success, Try}
 
 abstract class GitHubFunctionTest(val oAuthToken: String, val apiUrl: String = "")
@@ -26,7 +25,7 @@ abstract class GitHubFunctionTest(val oAuthToken: String, val apiUrl: String = "
     * Return a temporary repository callers can use.
     */
   def newTemporaryRepo(autoInit: Boolean = false) =
-    ghs.createRepository(getRepoName, TestOrg, "temporary test repository", true, true, autoInit)
+    ghs.createRepository(getRepoName, TestOrg, "temporary test repository", privateFlag = true, autoInit = autoInit)
 
   /**
     * Most callers will want a repository with something in it. Otherwise there isn't even a default branch,
@@ -38,16 +37,13 @@ abstract class GitHubFunctionTest(val oAuthToken: String, val apiUrl: String = "
     * Clean up after the work of this class.
     */
   private def cleanUp() =
-    Try(ghs.gitHub.searchRepositories().q(s"user:$TestOrg in:name $TemporaryRepoPrefix").list) match {
-      case Success(repos) => repos.asScala.foreach(_.delete)
+    Try(ghs.searchRepositories(Map("q" -> s"user:$TestOrg in:name $TemporaryRepoPrefix", "per_page" -> "100"))) match {
+      case Success(repos) => repos.foreach(repo => ghs.deleteRepository(repo.name, repo.ownerName))
       case Failure(e) => throw ArtifactSourceAccessException(e.getMessage, e)
     }
 
   private def getRepoName = s"$TemporaryRepoPrefix${System.nanoTime}"
 
-  protected def createIssue(repository: GHRepository, title: String, body: String): GHIssue =
-    Try(repository.createIssue(title).body(body).create()) match {
-      case Success(issue) => issue
-      case Failure(e) => throw ArtifactSourceUpdateException(e.getMessage, e)
-    }
+  protected def createIssue(repo: String, owner: String): Issue =
+    ghs.createIssue(repo, owner, "test issue", "Issue body")
 }

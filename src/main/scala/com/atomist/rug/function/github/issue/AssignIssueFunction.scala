@@ -1,10 +1,10 @@
 package com.atomist.rug.function.github.issue
 
 import com.atomist.rug.function.github.GitHubFunction
-import com.atomist.rug.function.github.issue.GitHubIssues.mapIssue
 import com.atomist.rug.spi.Handlers.Status
 import com.atomist.rug.spi.annotation.{Parameter, RugFunction, Secret, Tag}
 import com.atomist.rug.spi.{AnnotatedRugFunction, FunctionResponse, JsonBodyOption, StringBodyOption}
+import com.atomist.source.git.github.GitHubServices
 import com.typesafe.scalalogging.LazyLogging
 
 /**
@@ -27,15 +27,11 @@ class AssignIssueFunction
     logger.info(s"Invoking assignIssue with number '$number', assignee '$assignee', owner '$owner', repo '$repo' and token '${safeToken(token)}'")
 
     try {
-      val ghs = gitHubServices(token, apiUrl)
-      ghs.getRepository(repo, owner)
-        .map(repository => {
-          val issue = repository.getIssue(number)
-          issue.addAssignees(ghs.gitHub.getUser(assignee))
-          val response = mapIssue(repository.getIssue(number))
-          FunctionResponse(Status.Success, Some(s"Successfully assigned issue `#$number` in `$owner/$repo` to `$assignee`"), None, JsonBodyOption(response))
-        })
-        .getOrElse(FunctionResponse(Status.Failure, Some(s"Failed to find repository `$repo` for owner `$owner`"), None, None))
+      val ghs = GitHubServices(token, apiUrl)
+      val issue = ghs.getIssue(repo, owner, number).get
+      val assignees = issue.assignees.map(_.login) :+ assignee
+      val response = ghs.editIssue(repo, owner, issue.number, issue.title, issue.body, issue.state, issue.labels.map(_.name), assignees)
+      FunctionResponse(Status.Success, Some(s"Successfully assigned issue `#$number` in `$owner/$repo` to `$assignee`"), None, JsonBodyOption(response))
     } catch {
       case e: Exception =>
         val msg = s"Failed to assign issue `#$number` in `$owner/$repo` to `$assignee`"

@@ -4,18 +4,13 @@ import com.atomist.rug.function.github.GitHubFunction
 import com.atomist.rug.spi.Handlers.Status
 import com.atomist.rug.spi.annotation.{Parameter, RugFunction, Secret, Tag}
 import com.atomist.rug.spi.{AnnotatedRugFunction, FunctionResponse, JsonBodyOption, StringBodyOption}
+import com.atomist.source.git.github.GitHubServices
 import com.typesafe.scalalogging.LazyLogging
-import org.kohsuke.github.GHDirection
-import org.kohsuke.github.GHIssueSearchBuilder.Sort
-
-import scala.collection.JavaConverters._
 
 class SearchIssuesFunction
   extends AnnotatedRugFunction
     with LazyLogging
     with GitHubFunction {
-
-  import GitHubIssues._
 
   @RugFunction(name = "search-github-issues", description = "Search for GitHub issues",
     tags = Array(new Tag(name = "github"), new Tag(name = "issues")))
@@ -28,39 +23,29 @@ class SearchIssuesFunction
     logger.info(s"Invoking searchIssues with search '$search', owner '$owner', repo '$repo' and token '${safeToken(token)}'")
 
     try {
-      println("******* " + apiUrl)
-      val ghs = gitHubServices(token, apiUrl)
-      val response = ghs.gitHub.searchIssues()
-        .q(s"repo:$owner/$repo")
-        .order(GHDirection.ASC)
-        .sort(Sort.UPDATED)
-        .isOpen
-        .list()
-        .withPageSize(100)
+      val ghs = GitHubServices(token, apiUrl)
 
-      val issues = response.asScala.toSeq
-        .filter(i => (search == null || search == "not-set") || ((i.getBody != null && i.getBody.contains(search)) || (i.getTitle != null && i.getTitle.contains(search))))
-        .sortWith((i1, i2) => i1.getUpdatedAt.compareTo(i2.getUpdatedAt) > 0)
+      val params = Map("per_page" -> "100",
+        "q" -> s"repo:$owner/$repo state:open",
+        "sort" -> "updated",
+        "order" -> "asc")
+
+      val issues = ghs.searchIssues(params)
+        .filter(i => (search == null || search == "not-set") || ((i.body != null && i.body.contains(search)) || (i.title != null && i.title.contains(search))))
+        .sortWith((i1, i2) => i1.updatedAt.compareTo(i2.updatedAt) > 0)
         .map(i => {
-          val id = i.getNumber
-          val title = i.getTitle
-          val urlStr = i.getUrl.toExternalForm
+          val id = i.number
+          val title = i.title
+          val urlStr = i.url
           // https://api.github.com/repos/octocat/Hello-World/issues/1347
           val url = urlStr.replace("https://api.github.com/repos/", "https://github.com/").replace(s"/issues/$id", "")
           // https://github.com/atomisthq/bot-service/issues/72
           val issueUrl = urlStr.replace("https://api.github.com/repos/", "https://github.com/")
           // atomisthq/bot-service
           val repo = urlStr.replace("https://api.github.com/repos/", "").replace(s"/issues/$id", "")
-          val ts = i.getUpdatedAt.toInstant.getEpochSecond
-          val assignee = i.getAssignee
-          val respUser =
-            if (assignee == null)
-              null
-            else ResponseUser(assignee.getLogin, assignee.getId, assignee.getUrl.toExternalForm, assignee.getAvatarUrl, assignee.getHtmlUrl.toExternalForm)
-
-          GitHubIssue(id, title, url, issueUrl, repo, ts, i.getState.name(), respUser)
+          val ts = i.updatedAt.toInstant.getEpochSecond
+          GitHubIssue(id, title, url, issueUrl, repo, ts, i.state, i.assignee.orNull)
         }).slice(0, 10)
-
       FunctionResponse(Status.Success, Some(s"Successfully listed issues for search `$search` on `$repo/$owner`"), None, JsonBodyOption(issues))
     } catch {
       // Need to catch Throwable as Exception lets through GitHub message errors
