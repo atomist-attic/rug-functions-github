@@ -35,10 +35,10 @@ class ListUserIssuesFunction extends AnnotatedRugFunction
         "filter" -> "assigned")
 
       var issueBuf = new ListBuffer[Issue]
-      issueBuf ++= ghs listIssues params
+      issueBuf ++= ghs.listIssues(params)
 
       val params2 = params + ("state" -> "closed")
-      issueBuf ++= ghs listIssues params2
+      issueBuf ++= ghs.listIssues(params2)
 
       val time: OffsetDateTime = Try(days.toInt) match {
         case Success(d) => OffsetDateTime.now.minusDays(d)
