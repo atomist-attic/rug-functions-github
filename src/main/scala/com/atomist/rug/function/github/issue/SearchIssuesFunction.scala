@@ -14,25 +14,26 @@ class SearchIssuesFunction
 
   @RugFunction(name = "search-github-issues", description = "Search for GitHub issues",
     tags = Array(new Tag(name = "github"), new Tag(name = "issues")))
-  def invoke(@Parameter(name = "search") search: String,
+  def invoke(@Parameter(name = "q") q: String,
+             @Parameter(name = "page") page: Int = 1,
+             @Parameter(name = "perPage") perPage: Int = 10,
              @Parameter(name = "repo") repo: String,
              @Parameter(name = "owner") owner: String,
              @Parameter(name = "apiUrl") apiUrl: String,
              @Secret(name = "user_token", path = "github://user_token?scopes=repo") token: String): FunctionResponse = {
 
-    logger.info(s"Invoking searchIssues with search '$search', owner '$owner', repo '$repo' and token '${safeToken(token)}'")
+    logger.info(s"Invoking searchIssues with q '$q', owner '$owner', repo '$repo', page '$page' and prePage '$perPage' and token '${safeToken(token)}'")
 
     try {
       val ghs = GitHubServices(token, apiUrl)
 
-      val params = Map("per_page" -> "100",
-        "q" -> s"repo:$owner/$repo state:open",
+      val params = Map("per_page" -> perPage.toString,
+        "page" -> page.toString,
+        "q" -> s"repo:$owner/$repo $q",
         "sort" -> "updated",
-        "order" -> "asc")
+        "order" -> "desc")
 
       val issues = ghs.searchIssues(params)
-        .filter(i => (search == null || search == "not-set") || ((i.body != null && i.body.contains(search)) || (i.title != null && i.title.contains(search))))
-        .sortWith((i1, i2) => i1.updatedAt.compareTo(i2.updatedAt) > 0)
         .map(i => {
           val id = i.number
           val title = i.title
@@ -45,8 +46,8 @@ class SearchIssuesFunction
           val repo = urlStr.replace("https://api.github.com/repos/", "").replace(s"/issues/$id", "")
           val ts = i.updatedAt.toInstant.getEpochSecond
           GitHubIssue(id, title, url, issueUrl, repo, ts, i.state, i.assignee.orNull)
-        }).slice(0, 10)
-      FunctionResponse(Status.Success, Some(s"Successfully listed issues for search `$search` on `$repo/$owner`"), None, JsonBodyOption(issues))
+        })
+      FunctionResponse(Status.Success, Some(s"Successfully listed issues for search `$q` on `$repo/$owner`"), None, JsonBodyOption(issues))
     } catch {
       // Need to catch Throwable as Exception lets through GitHub message errors
       case t: Throwable =>

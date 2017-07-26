@@ -20,7 +20,7 @@ class CloseIssueFunctionTest extends GitHubFunctionTest(Token) {
     Thread.sleep(3000)
 
     val f2 = new SearchIssuesFunction
-    val response2 = f2.invoke(null, repo, owner, ApiUrl, Token)
+    val response2 = f2.invoke(null, 1, 30, repo, owner, ApiUrl, Token)
     response2.status shouldBe Status.Success
     val body = response2.body
     body shouldBe defined
