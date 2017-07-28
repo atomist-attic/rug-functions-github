@@ -1,6 +1,6 @@
 package com.atomist.rug.function.github
 
-import com.atomist.source.ArtifactSourceAccessException
+import com.atomist.source.ArtifactSourceException
 import com.atomist.source.git.github.GitHubServices
 import com.atomist.source.git.github.domain.Issue
 import com.typesafe.scalalogging.LazyLogging
@@ -39,7 +39,7 @@ abstract class GitHubFunctionTest(val oAuthToken: String, val apiUrl: String = "
   private def cleanUp() =
     Try(ghs.searchRepositories(Map("q" -> s"user:$TestOrg in:name $TemporaryRepoPrefix", "per_page" -> "100"))) match {
       case Success(repos) => repos.foreach(repo => ghs.deleteRepository(repo.name, repo.ownerName))
-      case Failure(e) => throw ArtifactSourceAccessException(e.getMessage, e)
+      case Failure(e) => throw ArtifactSourceException(e.getMessage, e)
     }
 
   private def getRepoName = s"$TemporaryRepoPrefix${System.nanoTime}"
