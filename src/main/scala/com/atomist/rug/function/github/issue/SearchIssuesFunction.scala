@@ -33,7 +33,7 @@ class SearchIssuesFunction
         "sort" -> "updated",
         "order" -> "desc")
 
-      val issues = ghs.searchIssues(params)
+      val issues = ghs.searchIssues(params).items
         .map(i => {
           val id = i.number
           val title = i.title

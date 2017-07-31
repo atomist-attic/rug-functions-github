@@ -16,7 +16,7 @@ class SearchIssuesFunctionTest extends GitHubFunctionTest(Token) {
     Thread.sleep(2000)
 
     val f = new SearchIssuesFunction
-    val response = f.invoke(null, 1, 30, repo, owner, ApiUrl, Token)
+    val response = f.invoke("", 1, 30, repo, owner, ApiUrl, Token)
     response.status shouldBe Status.Success
     val body = response.body
     body shouldBe defined

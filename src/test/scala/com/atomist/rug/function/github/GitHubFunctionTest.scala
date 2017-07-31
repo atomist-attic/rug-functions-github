@@ -38,7 +38,7 @@ abstract class GitHubFunctionTest(val oAuthToken: String, val apiUrl: String = "
     */
   private def cleanUp() =
     Try(ghs.searchRepositories(Map("q" -> s"user:$TestOrg in:name $TemporaryRepoPrefix", "per_page" -> "100"))) match {
-      case Success(repos) => repos.foreach(repo => ghs.deleteRepository(repo.name, repo.ownerName))
+      case Success(repos) => repos.items.foreach(repo => ghs.deleteRepository(repo.name, repo.ownerName))
       case Failure(e) => throw ArtifactSourceException(e.getMessage, e)
     }
 
