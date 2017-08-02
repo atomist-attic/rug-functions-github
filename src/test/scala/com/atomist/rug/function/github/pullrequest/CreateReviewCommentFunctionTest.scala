@@ -4,7 +4,7 @@ import com.atomist.rug.function.github.GitHubFunctionTest
 import com.atomist.rug.function.github.TestConstants.{ApiUrl, Token}
 import com.atomist.rug.spi.Handlers.Status
 import com.atomist.source.git.GitArtifactSourceLocator.MasterBranch
-import com.atomist.source.git.github.domain.{PullRequestRequest, ReviewComment}
+import com.atomist.source.git.domain.{PullRequestRequest, ReviewComment}
 import com.atomist.source.{FileArtifact, StringFileArtifact}
 import com.atomist.util.JsonUtils
 

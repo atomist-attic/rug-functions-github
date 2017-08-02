@@ -3,7 +3,7 @@ package com.atomist.rug.function.github.issue
 import com.atomist.rug.function.github.GitHubFunctionTest
 import com.atomist.rug.function.github.TestConstants.{ApiUrl, Token}
 import com.atomist.rug.spi.Handlers.Status
-import com.atomist.source.git.github.domain.Issue
+import com.atomist.source.git.domain.Issue
 import com.atomist.util.JsonUtils
 
 class AddLabelIssueFunctionTest extends GitHubFunctionTest(Token, ApiUrl) {

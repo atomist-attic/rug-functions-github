@@ -5,8 +5,8 @@ import java.time.OffsetDateTime
 import com.atomist.rug.spi.Handlers.Status
 import com.atomist.rug.spi._
 import com.atomist.rug.spi.annotation.{Parameter, RugFunction, Secret, Tag}
-import com.atomist.source.git.github.GitHubServices
-import com.atomist.source.git.github.domain.{CreateTagRequest, Tagger}
+import com.atomist.source.git.GitHubServices
+import com.atomist.source.git.domain.{CreateTagRequest, Tagger}
 import com.typesafe.scalalogging.LazyLogging
 
 import scala.util.{Failure, Success, Try}

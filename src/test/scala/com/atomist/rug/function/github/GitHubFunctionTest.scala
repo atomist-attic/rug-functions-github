@@ -1,8 +1,8 @@
 package com.atomist.rug.function.github
 
 import com.atomist.source.ArtifactSourceException
-import com.atomist.source.git.github.GitHubServices
-import com.atomist.source.git.github.domain.Issue
+import com.atomist.source.git.GitHubServices
+import com.atomist.source.git.domain.Issue
 import com.typesafe.scalalogging.LazyLogging
 import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll, FlatSpec, Matchers}
 

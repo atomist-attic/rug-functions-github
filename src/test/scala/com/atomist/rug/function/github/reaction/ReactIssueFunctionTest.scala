@@ -4,7 +4,7 @@ import com.atomist.rug.function.github.GitHubFunctionTest
 import com.atomist.rug.function.github.TestConstants._
 import com.atomist.rug.function.github.reaction.GitHubReactions.Reaction
 import com.atomist.rug.spi.Handlers.Status
-import com.atomist.source.git.github.domain.ReactionContent
+import com.atomist.source.git.domain.ReactionContent
 import com.atomist.util.JsonUtils
 
 class ReactIssueFunctionTest extends GitHubFunctionTest(Token) {

@@ -2,7 +2,7 @@ package com.atomist.rug.function.github
 
 import com.atomist.rug.function.github.TestConstants.{ApiUrl, Token}
 import com.atomist.rug.spi.Handlers.Status
-import com.atomist.source.git.github.domain.Webhook
+import com.atomist.source.git.domain.Webhook
 import com.atomist.util.JsonUtils
 
 class InstallOrgWebhookFunctionTest extends GitHubFunctionTest(Token, ApiUrl) {
