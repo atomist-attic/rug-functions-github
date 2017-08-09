@@ -1,7 +1,6 @@
 # Atomist 'rug-functions-github'
 
 [![Build Status](https://travis-ci.org/atomist/rug-functions-github.svg?branch=master)](https://travis-ci.org/atomist/rug-functions-github)
-[![Slack Status](https://join.atomist.com/badge.svg)](https://join.atomist.com)
 
 Rug Functions for GitHub.
 
