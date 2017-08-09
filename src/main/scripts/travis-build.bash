@@ -17,7 +17,7 @@ function err() {
 function main() {
     msg "branch is ${TRAVIS_BRANCH}"
 
-    local mvn="mvn --settings .settings.xml -B -V -U -DskipTests"
+    local mvn="mvn --settings .settings.xml -B -V -U"
     local project_version
     if [[ $TRAVIS_TAG =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
         if ! $mvn build-helper:parse-version versions:set -DnewVersion="$TRAVIS_TAG" versions:commit; then
@@ -38,7 +38,7 @@ function main() {
         fi
     fi
 
-    if ! $mvn test $mvn_deploy_args; then
+    if ! $mvn test -Dmaven.javadoc.skip=true; then
         err "maven test failed"
         return 1
     fi
@@ -59,7 +59,7 @@ function main() {
             err "failed to import gpg key"
             return 1
         fi
-        if ! $mvn -e deploy -PsignedRelease -Dgpg.executable=gpg -Dgpg.keyname=DA85ED8F -Dgpg.passphrase="$GPG_PASSPHRASE" -DskipTests $mvn_deploy_args; then
+        if ! $mvn deploy -PsignedRelease -Dgpg.executable=gpg -Dgpg.keyname=DA85ED8F -Dgpg.passphrase="$GPG_PASSPHRASE" -DskipTests $mvn_deploy_args; then
             err "maven deploy failed"
             return 1
         fi

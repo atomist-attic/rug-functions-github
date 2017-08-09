@@ -17,9 +17,12 @@ If you find a problem, please create an [issue][].
 
 ## Developing
 
-To build and test this project, set the value of the `GITHUB_TOKEN`
-environment variable to a GitHub.com personal access token with "repo"
-scope and run the following command:
+To build and test this project, set the value of the
+`GITHUB_TEST_USER` environment variable to a GitHub.com user that is
+an Owner of the atomisthqtest organization and the value of the
+`GITHUB_TEST_TOKEN` environment variable to a GitHub.com personal
+access token of the same user with "repo" and "delete_repo" scopes,
+then run the following command:
 
 ```
 $ mvn test
