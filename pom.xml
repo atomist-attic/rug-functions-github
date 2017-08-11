@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.atomist.rug</groupId>
     <artifactId>rug-functions-github</artifactId>
-    <version>0.21.0-SNAPSHOT</version>
+    <version>0.21.1-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>rug-functions-github</name>
     <description>Rug Functions for GitHub</description>

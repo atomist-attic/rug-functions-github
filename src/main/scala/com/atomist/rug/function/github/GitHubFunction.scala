@@ -21,32 +21,7 @@ object GitHubFunction {
 
   val ApiUrl = "https://api.github.com"
 
-  val Events = Seq(
-    "commit_comment",
-    "create",
-    "delete",
-    "deployment",
-    "deployment_status",
-    "download",
-    "follow",
-    "fork",
-    "fork_apply",
-    "gist",
-    "gollum",
-    "issue_comment",
-    "issues",
-    "member",
-    "page_build",
-    "public",
-    "pull_request",
-    "pull_request_review_comment",
-    "push",
-    "release",
-    "repository",
-    "status",
-    "team_add",
-    "watch",
-    "ping")
+  val Events = Seq("*")
 
   def convertDate(date: Date): OffsetDateTime =
     if (date == null) null else OffsetDateTime.ofInstant(date.toInstant, ZoneId.systemDefault())
