@@ -25,5 +25,6 @@ class AddLabelIssueFunctionTest extends GitHubFunctionTest(Token, ApiUrl) {
     val labels = issue1.labels
     labels should have size 1
     labels(0).name shouldBe "bug"
+    ghs.deleteRepository(repo, owner)
   }
 }

@@ -27,5 +27,6 @@ class SearchIssuesFunctionTest extends GitHubFunctionTest(Token) {
     val issue1 = issues.head
     issue1.title shouldBe "test issue"
     issue1.state shouldBe "open"
+    ghs.deleteRepository(repo, owner)
   }
 }

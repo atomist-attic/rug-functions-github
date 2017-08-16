@@ -27,5 +27,6 @@ class CloseIssueFunctionTest extends GitHubFunctionTest(Token) {
     body.get.str shouldBe defined
     val issues = JsonUtils.fromJson[Seq[GitHubIssue]](body.get.str.get)
     issues shouldBe empty
+    ghs.deleteRepository(repo, owner)
   }
 }

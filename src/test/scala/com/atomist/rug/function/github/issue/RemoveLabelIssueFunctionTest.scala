@@ -35,5 +35,6 @@ class RemoveLabelIssueFunctionTest extends GitHubFunctionTest(Token) {
     val issue2 = JsonUtils.fromJson[Issue](body2.get.str.get)
     val labels2 = issue2.labels
     labels2 shouldBe empty
+    ghs.deleteRepository(repo, owner)
   }
 }

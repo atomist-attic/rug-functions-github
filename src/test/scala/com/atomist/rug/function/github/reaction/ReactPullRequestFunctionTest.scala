@@ -35,5 +35,6 @@ class ReactPullRequestFunctionTest extends GitHubFunctionTest(Token) {
     val actualReactions = ghs.listPullRequestReactions(repo, owner, pr.number, Some(ReactionContent.withName(result.content)))
     actualReactions.size shouldBe 1
     actualReactions.head.content shouldBe ReactionContent.PlusOne
+    ghs.deleteRepository(repo, owner)
   }
 }

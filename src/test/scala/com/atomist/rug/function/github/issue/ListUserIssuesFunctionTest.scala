@@ -27,5 +27,6 @@ class ListUserIssuesFunctionTest extends GitHubFunctionTest(Token) {
     val bodyStr = body.get.str.get
     val issues = JsonUtils.fromJson[Seq[GitHubIssue]](bodyStr)
     issues.size should be > 0
+    ghs.deleteRepository(repo, owner)
   }
 }

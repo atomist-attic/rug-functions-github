@@ -20,5 +20,6 @@ class DeleteBranchFunctionTest extends GitHubFunctionTest(Token) {
     val response = f.invoke(branchName, repo, owner, ApiUrl, Token)
     response.status shouldBe Status.Success
     ghs.getBranch(repo, owner, branchName) shouldBe empty
+    ghs.deleteRepository(repo, owner)
   }
 }

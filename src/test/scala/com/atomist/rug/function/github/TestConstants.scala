@@ -10,6 +10,8 @@ object TestConstants {
 
   val TemporaryRepoPrefix = "TEST_CAN_DELETE_"
 
+  val TestWebHookUrlBase = "http://rug-functions-github-test.atomist.com/webhook/"
+
   /**
     * We will create and delete repos here.
     */
