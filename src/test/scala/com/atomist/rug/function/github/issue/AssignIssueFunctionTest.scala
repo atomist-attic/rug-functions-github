@@ -16,6 +16,7 @@ class AssignIssueFunctionTest extends GitHubFunctionTest(Token, ApiUrl) {
     val f = new AssignIssueFunction
     val response = f.invoke(issue.number, repo, "alankstewart", owner, ApiUrl, Token)
     response.status shouldBe Status.Success
+    ghs.deleteRepository(repo, owner)
   }
 
   it should "fail to assign issue with unknown user" in {
@@ -28,5 +29,6 @@ class AssignIssueFunctionTest extends GitHubFunctionTest(Token, ApiUrl) {
     val f = new AssignIssueFunction
     val response = f.invoke(issue.number, repo, "comfoobar", owner, ApiUrl, Token)
     response.status shouldBe Status.Failure
+    ghs.deleteRepository(repo, owner)
   }
 }

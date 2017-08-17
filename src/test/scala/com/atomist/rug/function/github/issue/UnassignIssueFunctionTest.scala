@@ -33,5 +33,6 @@ class UnassignIssueFunctionTest extends GitHubFunctionTest(Token) {
     body2.get.str shouldBe defined
     val issue3 = fromJson[Issue](body2.get.str.get)
     issue3.assignees shouldBe empty
+    ghs.deleteRepository(repo, owner)
   }
 }

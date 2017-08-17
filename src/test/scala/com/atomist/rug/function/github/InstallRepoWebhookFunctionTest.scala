@@ -13,12 +13,33 @@ class InstallRepoWebhookFunctionTest extends GitHubFunctionTest(Token, ApiUrl) {
     val owner = tempRepo.ownerName
 
     val f = new InstallRepoWebHookFunction
-    val response = f.invoke("http://example.com/webhook", repo, owner, ApiUrl, Token)
+    val response = f.invoke(testWebHookUrl, repo, owner, ApiUrl, Token)
     response.status shouldBe Status.Success
     val body = response.body
     body shouldBe defined
     body.get.str shouldBe defined
     val wh = JsonUtils.fromJson[Webhook](body.get.str.get)
     wh.id should be > 0
+    ghs.deleteRepository(repo, owner)
   }
+
+  it should "fail to install duplicate webhook" in {
+    val tempRepo = newPopulatedTemporaryRepo()
+    val repo = tempRepo.name
+    val owner = tempRepo.ownerName
+
+    val f = new InstallRepoWebHookFunction
+    val webHookUrl = testWebHookUrl
+    val response = f.invoke(webHookUrl, repo, owner, ApiUrl, Token)
+    response.status shouldBe Status.Success
+    val body = response.body
+    body shouldBe defined
+    body.get.str shouldBe defined
+    val wh = JsonUtils.fromJson[Webhook](body.get.str.get)
+    wh.id should be > 0
+    val response2 = f.invoke(webHookUrl, repo, owner, ApiUrl, Token)
+    response2.status shouldBe Status.Failure
+    ghs.deleteRepository(repo, owner)
+  }
+
 }

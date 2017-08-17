@@ -31,13 +31,13 @@
         <dependency>
             <groupId>com.atomist</groupId>
             <artifactId>rug</artifactId>
-            <version>1.0.0-20170728102101</version>
+            <version>1.0.0-m.6</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.atomist</groupId>
             <artifactId>artifact-source</artifactId>
-            <version>1.0.0-m.16</version>
+            <version>1.0.0-m.17</version>
         </dependency>
         <dependency>
             <groupId>org.scalatest</groupId>

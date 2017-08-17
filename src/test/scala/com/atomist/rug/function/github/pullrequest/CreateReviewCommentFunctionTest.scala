@@ -32,5 +32,6 @@ class CreateReviewCommentFunctionTest extends GitHubFunctionTest(Token) {
     body.get.str shouldBe defined
     val reviewComment = JsonUtils.fromJson[ReviewComment](body.get.str.get)
     reviewComment.body should equal("comment body")
+    ghs.deleteRepository(repo, owner)
   }
 }
