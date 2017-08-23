@@ -1,7 +1,7 @@
 package com.atomist.rug.function.github.issue
 
-import com.atomist.rug.function.github.{GitHubFunctionTest, TestConstants}
 import com.atomist.rug.function.github.TestConstants.{ApiUrl, Token}
+import com.atomist.rug.function.github.{GitHubFunctionTest, TestConstants}
 import com.atomist.rug.spi.Handlers.Status
 import com.atomist.source.StringFileArtifact
 import com.atomist.source.git.GitArtifactSourceLocator.MasterBranch
@@ -33,7 +33,7 @@ class ListUserIssuesFunctionTest extends GitHubFunctionTest(Token) {
     val issues = JsonUtils.fromJson[Seq[GitHubIssue]](bodyStr)
     issues.size should be > 0
     issues.find(i => i.repo == s"$owner/$repo") match {
-      case Some(i) => i.commits.size shouldEqual 2
+      case Some(i) => i.commits.size should be > 0
       case None => fail("Failed to find issue")
     }
     ghs.deleteRepository(repo, owner)

@@ -32,7 +32,7 @@ class SearchIssuesFunctionTest extends GitHubFunctionTest(Token) {
       case Some(i) =>
         i.title shouldBe "test issue"
         i.state shouldBe "open"
-        i.commits.size shouldEqual 2
+        i.commits.size should be > 0
       case None => fail("Failed to find issue")
     }
 
