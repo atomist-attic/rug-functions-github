@@ -45,7 +45,7 @@ class ListUserIssuesFunction extends AnnotatedRugFunction
         case Failure(_) => OffsetDateTime.now.minusDays(1)
       }
 
-      val response = issueBuf.filter(i => i.updatedAt.isAfter(time))
+      val response = issueBuf.filter(_.updatedAt.isAfter(time))
         .sortWith((i1, i2) => i2.updatedAt.compareTo(i1.updatedAt) > 0)
         .map(i => {
           val id = i.number
@@ -55,10 +55,19 @@ class ListUserIssuesFunction extends AnnotatedRugFunction
           // https://github.com/atomisthq/bot-service/issues/72
           val issueUrl = i.url.replace("https://api.github.com/repos/", "https://github.com/")
           // atomisthq/bot-service
-          val repo = i.url.replace("https://api.github.com/repos/", "").replace(s"/issues/${i.number}", "")
+          val repository = i.url.replace("https://api.github.com/repos/", "").replace(s"/issues/${i.number}", "")
           val ts = i.updatedAt.toEpochSecond
-          GitHubIssue(id, title, url, issueUrl, repo, ts, i.state, i.assignee.orNull)
-        })
+          val commits = i.repository match {
+            case Some(r) =>
+              ghs.listIssueEvents(r.name, r.ownerName, i.number)
+                .flatMap(_.commitId)
+                .distinct
+                .flatMap(ghs.getCommit(r.name, r.ownerName, _))
+                .map(c => IssueCommit(c.sha, c.url, c.commit.message))
+            case None => Nil
+          }
+          GitHubIssue(id, title, url, issueUrl, repository, ts, i.state, i.assignee.orNull, commits)
+        }).distinct
       FunctionResponse(Status.Success, Some("Successfully listed issues"), None, JsonBodyOption(response))
     } catch {
       // Need to catch Throwable as Exception lets through GitHub message errors

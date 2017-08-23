@@ -3,6 +3,8 @@ package com.atomist.rug.function.github.issue
 import com.atomist.rug.function.github.GitHubFunctionTest
 import com.atomist.rug.function.github.TestConstants.{ApiUrl, Token}
 import com.atomist.rug.spi.Handlers.Status
+import com.atomist.source.StringFileArtifact
+import com.atomist.source.git.GitArtifactSourceLocator.MasterBranch
 import com.atomist.util.JsonUtils
 
 class SearchIssuesFunctionTest extends GitHubFunctionTest(Token) {
@@ -12,8 +14,10 @@ class SearchIssuesFunctionTest extends GitHubFunctionTest(Token) {
     val repo = tempRepo.name
     val owner = tempRepo.ownerName
 
-    createIssue(repo, owner)
-    Thread.sleep(2000)
+    val issue = createIssue(repo, owner)
+
+    ghs.addOrUpdateFile(repo, owner, MasterBranch, s"new file 1 #${issue.number}", StringFileArtifact("src/test.txt", "some text"))
+    ghs.addOrUpdateFile(repo, owner, MasterBranch, s"new file 2 #${issue.number}", StringFileArtifact("src/test2.txt", "some other text"))
 
     val f = new SearchIssuesFunction
     val response = f.invoke("", 1, 30, repo, owner, ApiUrl, Token)
@@ -23,10 +27,15 @@ class SearchIssuesFunctionTest extends GitHubFunctionTest(Token) {
     body.get.str shouldBe defined
     val bodyStr = body.get.str.get
     val issues = JsonUtils.fromJson[Seq[GitHubIssue]](bodyStr)
-    issues should have size 1
-    val issue1 = issues.head
-    issue1.title shouldBe "test issue"
-    issue1.state shouldBe "open"
+    issues.size should be > 0
+    issues.find(i => i.repo == s"$owner/$repo") match {
+      case Some(i) =>
+        i.title shouldBe "test issue"
+        i.state shouldBe "open"
+        i.commits.size shouldEqual 2
+      case None => fail("Failed to find issue")
+    }
+
     ghs.deleteRepository(repo, owner)
   }
 }
