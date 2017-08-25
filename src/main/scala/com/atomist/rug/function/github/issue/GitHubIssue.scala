@@ -9,4 +9,7 @@ case class GitHubIssue(number: Int,
                        repo: String,
                        ts: Long,
                        state: String,
-                       assignee: User)
+                       assignee: User,
+                       commits: Seq[IssueCommit] = Nil)
+
+case class IssueCommit(sha: String, url: String, message: String)
