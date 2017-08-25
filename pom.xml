@@ -14,7 +14,7 @@
         <java.version>1.8</java.version>
         <scala.version>2.11.8</scala.version>
         <scala.binary.version>2.11</scala.binary.version>
-        <rug.version>[1.0.0-m.6,2.0.0)</rug.version>
+        <rug.version>[1.0.0-m.7,2.0.0)</rug.version>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -31,7 +31,7 @@
         <dependency>
             <groupId>com.atomist</groupId>
             <artifactId>rug</artifactId>
-            <version>1.0.0-m.6</version>
+            <version>1.0.0-m.7</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
