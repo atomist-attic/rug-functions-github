@@ -10,7 +10,7 @@ import org.apache.commons.codec.binary.Base64
 import scala.util.{Failure, Success, Try}
 
 /**
-  * Create new tag on a commit.
+  * Display the content of a file
   */
 class GetFileContentsFunction
   extends AnnotatedRugFunction
@@ -26,7 +26,7 @@ class GetFileContentsFunction
              @Parameter(name = "path") path: String,
              @Secret(name = "user_token", path = "github://user_token?scopes=repo") token: String): FunctionResponse = {
 
-    logger.warn(s"Get File Contents invoked with owner '$owner', repo '$repo', apiUrl '$apiUrl' and token '${safeToken(token)}'")
+    logger.info(s"Get File Contents invoked with owner '$owner', repo '$repo', apiUrl '$apiUrl' and token '${safeToken(token)}'")
 
     val ghs = GitHubServices(token, apiUrl)
     Try {
