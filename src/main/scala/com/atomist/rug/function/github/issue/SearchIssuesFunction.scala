@@ -37,21 +37,17 @@ class SearchIssuesFunction
         .map(i => {
           val id = i.number
           val title = i.title
-          val urlStr = i.url
-          // https://api.github.com/repos/octocat/Hello-World/issues/1347
-          val url = urlStr.replace("https://api.github.com/repos/", "https://github.com/").replace(s"/issues/$id", "")
-          // https://github.com/atomisthq/bot-service/issues/72
-          val issueUrl = urlStr.replace("https://api.github.com/repos/", "https://github.com/")
-          // atomisthq/bot-service
-          val repository = urlStr.replace("https://api.github.com/repos/", "").replace(s"/issues/$id", "")
+          val issueUrl = i.htmlUrl
+          val repoUrl = issueUrl.replace(s"/issues/$id", "")
+          val repoSlug = repoUrl.replaceAll("""^.*/([-\w.]+/[-\w.]+)$""", "$1")
           val ts = i.updatedAt.toInstant.getEpochSecond
           val commits = ghs.listIssueEvents(repo, owner, i.number)
             .flatMap(_.commitId)
             .distinct
             .flatMap(ghs.getCommit(repo, owner, _))
-            .map(c => IssueCommit(c.sha, c.url, c.commit.message))
+            .map(c => IssueCommit(c.sha, c.htmlUrl, c.commit.message))
 
-          GitHubIssue(id, title, url, issueUrl, repository, ts, i.state, i.assignee.orNull, commits)
+          GitHubIssue(id, title, repoUrl, issueUrl, repoSlug, ts, i.state, i.assignee.orNull, commits)
         })
       FunctionResponse(Status.Success, Some(s"Successfully listed issues for search `$q` on `$repo/$owner`"), None, JsonBodyOption(issues))
     } catch {

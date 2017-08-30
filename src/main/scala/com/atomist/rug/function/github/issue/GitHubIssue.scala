@@ -12,4 +12,4 @@ case class GitHubIssue(number: Int,
                        assignee: User,
                        commits: Seq[IssueCommit] = Nil)
 
-case class IssueCommit(sha: String, url: String, message: String)
+case class IssueCommit(sha: String, htmlUrl: String, message: String)

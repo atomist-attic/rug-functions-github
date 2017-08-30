@@ -50,23 +50,20 @@ class ListUserIssuesFunction extends AnnotatedRugFunction
         .map(i => {
           val id = i.number
           val title = i.title
-          // https://api.github.com/repos/octocat/Hello-World/issues/1347
-          val url = i.url.replace("https://api.github.com/repos/", "https://github.com/").replace(s"/issues/${i.number}", "")
-          // https://github.com/atomisthq/bot-service/issues/72
-          val issueUrl = i.url.replace("https://api.github.com/repos/", "https://github.com/")
-          // atomisthq/bot-service
-          val repository = i.url.replace("https://api.github.com/repos/", "").replace(s"/issues/${i.number}", "")
           val ts = i.updatedAt.toEpochSecond
+          val repoUrl = i.repository.map(_.htmlUrl).getOrElse("")
+          val repository = i.repository.map(r => s"${r.ownerName}/${r.name}").getOrElse("")
           val commits = i.repository match {
             case Some(r) =>
               ghs.listIssueEvents(r.name, r.ownerName, i.number)
                 .flatMap(_.commitId)
                 .distinct
                 .flatMap(ghs.getCommit(r.name, r.ownerName, _))
-                .map(c => IssueCommit(c.sha, c.url, c.commit.message))
+                .map(c => IssueCommit(c.sha, c.htmlUrl, c.commit.message))
             case None => Nil
           }
-          GitHubIssue(id, title, url, issueUrl, repository, ts, i.state, i.assignee.orNull, commits)
+
+          GitHubIssue(id, title, repoUrl, i.htmlUrl, repository, ts, i.state, i.assignee.orNull, commits)
         }).distinct
       FunctionResponse(Status.Success, Some("Successfully listed issues"), None, JsonBodyOption(response))
     } catch {
