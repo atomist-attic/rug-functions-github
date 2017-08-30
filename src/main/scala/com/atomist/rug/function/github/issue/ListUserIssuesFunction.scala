@@ -52,7 +52,7 @@ class ListUserIssuesFunction extends AnnotatedRugFunction
           val title = i.title
           val ts = i.updatedAt.toEpochSecond
           val repoUrl = i.repository.map(_.htmlUrl).getOrElse("")
-          val repository = i.repository.map(r => s"${r.ownerName}/${r.name}").getOrElse("")
+          val repo = i.repository.map(r => s"${r.ownerName}/${r.name}").getOrElse("")
           val commits = i.repository match {
             case Some(r) =>
               ghs.listIssueEvents(r.name, r.ownerName, i.number)
@@ -63,7 +63,7 @@ class ListUserIssuesFunction extends AnnotatedRugFunction
             case None => Nil
           }
 
-          GitHubIssue(id, title, repoUrl, i.htmlUrl, repository, ts, i.state, i.assignee.orNull, commits)
+          GitHubIssue(id, title, repoUrl, i.htmlUrl, repo, ts, i.state, i.assignee.orNull, commits)
         }).distinct
       FunctionResponse(Status.Success, Some("Successfully listed issues"), None, JsonBodyOption(response))
     } catch {
