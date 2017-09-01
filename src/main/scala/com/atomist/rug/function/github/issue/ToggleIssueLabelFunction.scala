@@ -10,7 +10,7 @@ import com.typesafe.scalalogging.LazyLogging
 /**
   * Add label or remove label from an issue.
   */
-class LabelIssueFunction extends AnnotatedRugFunction
+class ToggleIssueLabelFunction extends AnnotatedRugFunction
   with LazyLogging
   with GitHubFunction {
 

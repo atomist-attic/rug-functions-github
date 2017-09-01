@@ -8,7 +8,7 @@ com.atomist.rug.function.github.issue.UnassignIssueFunction
 com.atomist.rug.function.github.issue.CloseIssueFunction
 com.atomist.rug.function.github.issue.CommentIssueFunction
 com.atomist.rug.function.github.issue.CreateIssueFunction
-com.atomist.rug.function.github.issue.LabelIssueFunction
+com.atomist.rug.function.github.issue.ToggleIssueLabelFunction
 com.atomist.rug.function.github.issue.ListUserIssuesFunction
 com.atomist.rug.function.github.issue.ReopenIssueFunction
 com.atomist.rug.function.github.issue.SearchIssuesFunction

@@ -6,16 +6,16 @@ import com.atomist.rug.spi.Handlers.Status
 import com.atomist.source.git.domain.Issue
 import com.atomist.util.JsonUtils
 
-class LabelIssueFunctionTest extends GitHubFunctionTest(Token, ApiUrl) {
+class ToggleIssueLabelFunctionTest extends GitHubFunctionTest(Token, ApiUrl) {
 
-  "LabelIssueFunction" should "add label to and remove label from an issue" in {
+  "ToggleIssueLabelFunction" should "add label to and remove label from an issue" in {
     val tempRepo = newPopulatedTemporaryRepo()
     val repo = tempRepo.name
     val owner = tempRepo.ownerName
 
     val issue = createIssue(repo, owner)
 
-    val f = new LabelIssueFunction
+    val f = new ToggleIssueLabelFunction
     val response = f.invoke(issue.number, repo, owner, "bug", ApiUrl, Token)
     response.status shouldBe Status.Success
     val body = response.body
@@ -45,7 +45,7 @@ class LabelIssueFunctionTest extends GitHubFunctionTest(Token, ApiUrl) {
 
     val issue = createIssue(repo, owner)
 
-    val f = new LabelIssueFunction
+    val f = new ToggleIssueLabelFunction
     val response = f.invoke(issue.number, repo, owner, "bug", ApiUrl, Token)
     response.status shouldBe Status.Success
     val body = response.body
