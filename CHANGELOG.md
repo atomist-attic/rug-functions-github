@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][]
 
-[Unreleased]: https://github.com/atomist/rug-functions-github/compare/0.23.0...HEAD
+[Unreleased]: https://github.com/atomist/rug-functions-github/compare/0.24.0...HEAD
 
 ## [0.24.0][] - 2017-09-01
 
