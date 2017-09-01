@@ -14,7 +14,7 @@ class ToggleIssueLabelFunction extends AnnotatedRugFunction
   with LazyLogging
   with GitHubFunction {
 
-  @RugFunction(name = "label-github-issue", description = "Adds a label to an existing issue or removes the label if already there",
+  @RugFunction(name = "toggle-issue-label", description = "Adds a label to an existing issue or removes the label if already there",
     tags = Array(new Tag(name = "github"), new Tag(name = "issues")))
   def invoke(@Parameter(name = "issue") number: Int,
              @Parameter(name = "repo") repo: String,
