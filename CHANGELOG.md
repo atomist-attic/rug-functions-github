@@ -9,7 +9,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 [Unreleased]: https://github.com/atomist/rug-functions-github/compare/0.23.0...HEAD
 
-## [0.23.0][] - 2016-08-31
+## [0.24.0][] - 2017-09-01
+
+[0.24.0]: https://github.com/atomist/rug-functions-github/compare/0.23.0...0.24.0
+
+Toggle release
+
+### Added
+
+-   Add Rug function to toggle issue labels
+
+## [0.23.0][] - 2017-08-31
 
 [0.23.0]: https://github.com/atomist/rug-functions-github/compare/0.22.0...0.23.0
 
@@ -21,7 +31,7 @@ Merge release
 
 [25]: https://github.com/atomist/rug-functions-github/issues/25
 
-## [0.22.0][] - 2016-08-28
+## [0.22.0][] - 2017-08-28
 
 [0.22.0]: https://github.com/atomist/rug-functions-github/compare/0.21.1...0.22.0
 
