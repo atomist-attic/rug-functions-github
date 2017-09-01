@@ -8,7 +8,7 @@ import com.atomist.source.git.GitHubServices
 import com.typesafe.scalalogging.LazyLogging
 
 /**
-  * Add label or remove label from an issue.
+  * Add label to or remove label from an issue.
   */
 class ToggleIssueLabelFunction extends AnnotatedRugFunction
   with LazyLogging
@@ -23,7 +23,7 @@ class ToggleIssueLabelFunction extends AnnotatedRugFunction
              @Parameter(name = "apiUrl") apiUrl: String,
              @Secret(name = "user_token", path = "github://user_token?scopes=repo") token: String): FunctionResponse = {
 
-    logger.info(s"Invoking labelIssue with number '$number', label '$label', owner '$owner', repo '$repo' and token '${safeToken(token)}'")
+    logger.info(s"Invoking toggleIssueLabel with number '$number', label '$label', owner '$owner', repo '$repo' and token '${safeToken(token)}'")
 
     try {
       val ghs = GitHubServices(token, apiUrl)
