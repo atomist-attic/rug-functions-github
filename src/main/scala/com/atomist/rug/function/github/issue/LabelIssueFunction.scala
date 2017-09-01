@@ -8,13 +8,13 @@ import com.atomist.source.git.GitHubServices
 import com.typesafe.scalalogging.LazyLogging
 
 /**
-  * Label an issue with a known label.
+  * Add label or remove label from an issue.
   */
-class AddLabelIssueFunction extends AnnotatedRugFunction
+class LabelIssueFunction extends AnnotatedRugFunction
   with LazyLogging
   with GitHubFunction {
 
-  @RugFunction(name = "add-label-github-issue", description = "Adds a label to an already existing issue",
+  @RugFunction(name = "label-github-issue", description = "Adds a label to an existing issue or removes the label if already there",
     tags = Array(new Tag(name = "github"), new Tag(name = "issues")))
   def invoke(@Parameter(name = "issue") number: Int,
              @Parameter(name = "repo") repo: String,
@@ -23,17 +23,24 @@ class AddLabelIssueFunction extends AnnotatedRugFunction
              @Parameter(name = "apiUrl") apiUrl: String,
              @Secret(name = "user_token", path = "github://user_token?scopes=repo") token: String): FunctionResponse = {
 
-    logger.info(s"Invoking addLabelIssue with number '$number', label '$label', owner '$owner', repo '$repo' and token '${safeToken(token)}'")
+    logger.info(s"Invoking labelIssue with number '$number', label '$label', owner '$owner', repo '$repo' and token '${safeToken(token)}'")
 
     try {
       val ghs = GitHubServices(token, apiUrl)
       val issue = ghs.getIssue(repo, owner, number).get
-      val labels = issue.labels.map(_.name) :+ label
+      val existingLabels = issue.labels.map(_.name)
+      val labels =
+        if (existingLabels.exists(_ == label))
+          existingLabels.filterNot(_ == label).toSeq
+        else
+          (existingLabels :+ label).toSeq
+
+      val msg = if (labels.size > existingLabels.size) "added label to" else "removed label from"
       val response = ghs.editIssue(repo, owner, issue.number, issue.title, issue.body, issue.state, labels, issue.assignee.map(_.login).toList)
-      FunctionResponse(Status.Success, Some(s"Successfully labelled issue `#$number` in `$owner/$repo`"), None, JsonBodyOption(response))
+      FunctionResponse(Status.Success, Some(s"Successfully $msg issue `#$number` in `$owner/$repo`"), None, JsonBodyOption(response))
     } catch {
       case e: Exception =>
-        val msg = s"Failed to label issue `#$number` in `$owner/$repo`"
+        val msg = s"Failed to add label or remove label from issue `#$number` in `$owner/$repo`"
         logger.warn(msg, e)
         FunctionResponse(Status.Failure, Some(msg), None, StringBodyOption(e.getMessage))
     }
