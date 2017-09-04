@@ -78,4 +78,21 @@ class ToggleIssueLabelFunctionTest extends GitHubFunctionTest(Token, ApiUrl) {
 
     ghs.deleteRepository(repo, owner)
   }
+
+  it should "fail to add label to unknown issue" in {
+    val tempRepo = newPopulatedTemporaryRepo()
+    val repo = tempRepo.name
+    val owner = tempRepo.ownerName
+
+    val f = new ToggleIssueLabelFunction
+    val issueNumber = 999
+    val response = f.invoke(issueNumber, repo, owner, "bug", ApiUrl, Token)
+    response.status shouldBe Status.Failure
+    val body = response.body
+    body shouldBe defined
+    body.get.str shouldBe defined
+    body.get.str.get shouldEqual s"Failed to find issue `#$issueNumber` in `$owner/$repo`"
+
+    ghs.deleteRepository(repo, owner)
+  }
 }

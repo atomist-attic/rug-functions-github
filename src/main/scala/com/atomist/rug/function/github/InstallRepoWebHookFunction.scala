@@ -35,7 +35,7 @@ class InstallRepoWebHookFunction
       case e: Exception =>
         val msg = s"Failed to create repo-level webhook for `$owner/$repo`"
         logger.error(msg, e)
-        FunctionResponse(Status.Failure, Some(msg), None, StringBodyOption(e.getMessage))
+        FunctionResponse(Status.Failure, Some(msg), None, StringBodyOption(ErrorMessage.jsonToString(e.getMessage)))
     }
   }
 }

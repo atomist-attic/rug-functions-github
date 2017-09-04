@@ -43,12 +43,12 @@ class CreateTagFunction
           case Failure(e) =>
             val msg = s"Failed to create tag ref `$tag` on `$sha` in '$apiUrl' for `$owner/$repo`"
             logger.error(msg, e)
-            FunctionResponse(Status.Failure, Some(msg), None, StringBodyOption(e.getMessage))
+            FunctionResponse(Status.Failure, Some(msg), None, StringBodyOption(ErrorMessage.jsonToString(e.getMessage)))
         }
       case Failure(e) =>
         val msg = s"Failed to create tag object `$tag` on `$sha` in '$apiUrl' for `$owner/$repo`"
         logger.error(msg, e)
-        FunctionResponse(Status.Failure, Some(msg), None, StringBodyOption(e.getMessage))
+        FunctionResponse(Status.Failure, Some(msg), None, StringBodyOption(ErrorMessage.jsonToString(e.getMessage)))
     }
   }
 }

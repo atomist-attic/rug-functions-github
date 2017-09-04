@@ -7,7 +7,7 @@ import com.atomist.util.JsonUtils
 
 class CloseIssueFunctionTest extends GitHubFunctionTest(Token) {
 
-  it should "close issue" in {
+  "CloseIssueFunction" should "close issue" in {
     val tempRepo = newPopulatedTemporaryRepo()
     val repo = tempRepo.name
     val owner = tempRepo.ownerName

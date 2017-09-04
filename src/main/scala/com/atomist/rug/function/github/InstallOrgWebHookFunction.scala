@@ -33,7 +33,7 @@ class InstallOrgWebHookFunction extends AnnotatedRugFunction
       case e: Exception =>
         val msg = s"Failed to create org-level webhook for `$owner`"
         logger.error(msg, e)
-        FunctionResponse(Status.Failure, Some(msg), None, StringBodyOption(e.getMessage))
+        FunctionResponse(Status.Failure, Some(msg), None, StringBodyOption(ErrorMessage.jsonToString(e.getMessage)))
     }
   }
 }

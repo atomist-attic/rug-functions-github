@@ -1,6 +1,6 @@
 package com.atomist.rug.function.github.issue
 
-import com.atomist.rug.function.github.GitHubFunction
+import com.atomist.rug.function.github.{ErrorMessage, GitHubFunction}
 import com.atomist.rug.spi.Handlers.Status
 import com.atomist.rug.spi.annotation.{Parameter, RugFunction, Secret, Tag}
 import com.atomist.rug.spi.{AnnotatedRugFunction, FunctionResponse, JsonBodyOption, StringBodyOption}
@@ -27,22 +27,27 @@ class ToggleIssueLabelFunction extends AnnotatedRugFunction
 
     try {
       val ghs = GitHubServices(token, apiUrl)
-      val issue = ghs.getIssue(repo, owner, number).get
-      val existingLabels = issue.labels.map(_.name)
-      val labels =
-        if (existingLabels.exists(_ == label))
-          existingLabels.filterNot(_ == label).toSeq
-        else
-          (existingLabels :+ label).toSeq
+      ghs.getIssue(repo, owner, number) match {
+        case Some(issue) =>
+          val existingLabels = issue.labels.map(_.name)
+          val labels =
+            if (existingLabels.exists(_ == label))
+              existingLabels.filterNot(_ == label).toSeq
+            else
+              (existingLabels :+ label).toSeq
 
-      val msg = if (labels.size > existingLabels.size) "added label to" else "removed label from"
-      val response = ghs.editIssue(repo, owner, issue.number, issue.title, issue.body, issue.state, labels, issue.assignee.map(_.login).toList)
-      FunctionResponse(Status.Success, Some(s"Successfully $msg issue `#$number` in `$owner/$repo`"), None, JsonBodyOption(response))
+          val msg = if (labels.size > existingLabels.size) "added label to" else "removed label from"
+          val response = ghs.editIssue(repo, owner, issue.number, issue.title, issue.body, issue.state, labels, issue.assignee.map(_.login).toList)
+          FunctionResponse(Status.Success, Some(s"Successfully $msg issue `#$number` in `$owner/$repo`"), None, JsonBodyOption(response))
+        case None =>
+          val msg = s"Failed to find issue `#$number` in `$owner/$repo`"
+          FunctionResponse(Status.Failure, Some(msg), None, StringBodyOption(msg))
+      }
     } catch {
       case e: Exception =>
         val msg = s"Failed to add label or remove label from issue `#$number` in `$owner/$repo`"
         logger.warn(msg, e)
-        FunctionResponse(Status.Failure, Some(msg), None, StringBodyOption(e.getMessage))
+        FunctionResponse(Status.Failure, Some(msg), None, StringBodyOption(ErrorMessage.jsonToString(e.getMessage)))
     }
   }
 }

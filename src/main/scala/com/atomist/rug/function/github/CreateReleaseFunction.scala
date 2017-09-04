@@ -29,7 +29,7 @@ class CreateReleaseFunction extends AnnotatedRugFunction
       case e: Exception =>
         val msg = s"Failed to create release from tag `$tagName` in `$owner/$repo`"
         logger.error(msg, e)
-        FunctionResponse(Status.Failure, Some(msg), None, StringBodyOption(e.getMessage))
+        FunctionResponse(Status.Failure, Some(msg), None, StringBodyOption(ErrorMessage.jsonToString(e.getMessage)))
     }
   }
 }

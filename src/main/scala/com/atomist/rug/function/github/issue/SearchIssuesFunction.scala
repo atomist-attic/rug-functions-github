@@ -1,6 +1,6 @@
 package com.atomist.rug.function.github.issue
 
-import com.atomist.rug.function.github.GitHubFunction
+import com.atomist.rug.function.github.{ErrorMessage, GitHubFunction}
 import com.atomist.rug.spi.Handlers.Status
 import com.atomist.rug.spi.annotation.{Parameter, RugFunction, Secret, Tag}
 import com.atomist.rug.spi.{AnnotatedRugFunction, FunctionResponse, JsonBodyOption, StringBodyOption}
@@ -55,7 +55,7 @@ class SearchIssuesFunction
       case t: Throwable =>
         val msg = "Failed to search issues"
         logger.warn(msg, t)
-        FunctionResponse(Status.Failure, Some(msg), None, StringBodyOption(t.getMessage))
+        FunctionResponse(Status.Failure, Some(msg), None, StringBodyOption(ErrorMessage.jsonToString(t.getMessage)))
     }
   }
 }

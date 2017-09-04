@@ -1,6 +1,6 @@
 package com.atomist.rug.function.github.pullrequest
 
-import com.atomist.rug.function.github.GitHubFunction
+import com.atomist.rug.function.github.{ErrorMessage, GitHubFunction}
 import com.atomist.rug.spi.Handlers.Status
 import com.atomist.rug.spi.annotation.{Parameter, RugFunction, Secret, Tag}
 import com.atomist.rug.spi.{AnnotatedRugFunction, FunctionResponse, StringBodyOption}
@@ -35,7 +35,7 @@ class MergePullRequestFunction
       case e: Exception =>
         val msg = s"Failed to merge pull request `$number`"
         logger.error(msg, e)
-        FunctionResponse(Status.Failure, Some(msg), None, StringBodyOption(e.getMessage))
+        FunctionResponse(Status.Failure, Some(msg), None, StringBodyOption(ErrorMessage.jsonToString(e.getMessage)))
     }
   }
 }

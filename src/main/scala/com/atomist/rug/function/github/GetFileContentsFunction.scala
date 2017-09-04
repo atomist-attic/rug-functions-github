@@ -43,7 +43,7 @@ class GetFileContentsFunction
       case Failure(e) =>
         val msg = s"Failed to fetch path ${path} in '$apiUrl' for `$owner/$repo`"
         logger.error(msg, e)
-        FunctionResponse(Status.Failure, Some(msg), None, StringBodyOption(e.getMessage))
+        FunctionResponse(Status.Failure, Some(msg), None, StringBodyOption(ErrorMessage.jsonToString(e.getMessage)))
     }
   }
 }

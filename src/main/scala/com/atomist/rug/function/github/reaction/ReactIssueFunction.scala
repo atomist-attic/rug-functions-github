@@ -2,7 +2,7 @@ package com.atomist.rug.function.github.reaction
 
 import java.net.URL
 
-import com.atomist.rug.function.github.GitHubFunction
+import com.atomist.rug.function.github.{ErrorMessage, GitHubFunction}
 import com.atomist.rug.function.github.reaction.GitHubReactions.Reaction
 import com.atomist.rug.spi.Handlers.Status
 import com.atomist.rug.spi.annotation.{Parameter, RugFunction, Secret, Tag}
@@ -36,7 +36,7 @@ class ReactIssueFunction
       case e: Exception =>
         val msg = s"Failed to add reaction to issue reaction`$issueId`"
         logger.error(msg, e)
-        FunctionResponse(Status.Failure, Some(msg), None, StringBodyOption(e.getMessage))
+        FunctionResponse(Status.Failure, Some(msg), None, StringBodyOption(ErrorMessage.jsonToString(e.getMessage)))
     }
   }
 }

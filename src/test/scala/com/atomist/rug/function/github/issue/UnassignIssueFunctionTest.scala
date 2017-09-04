@@ -8,7 +8,7 @@ import com.atomist.util.JsonUtils.fromJson
 
 class UnassignIssueFunctionTest extends GitHubFunctionTest(Token) {
 
-  it should "unassign issue to user" in {
+  "UnassignIssueFunction" should "unassign issue to user" in {
     val tempRepo = newPopulatedTemporaryRepo()
     val repo = tempRepo.name
     val owner = tempRepo.ownerName

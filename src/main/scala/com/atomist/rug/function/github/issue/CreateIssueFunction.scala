@@ -1,6 +1,6 @@
 package com.atomist.rug.function.github.issue
 
-import com.atomist.rug.function.github.GitHubFunction
+import com.atomist.rug.function.github.{ErrorMessage, GitHubFunction}
 import com.atomist.rug.spi.Handlers.Status
 import com.atomist.rug.spi.annotation.{Parameter, RugFunction, Secret, Tag}
 import com.atomist.rug.spi.{AnnotatedRugFunction, FunctionResponse, JsonBodyOption, StringBodyOption}
@@ -34,7 +34,7 @@ class CreateIssueFunction
       case e: Exception =>
         val msg = s"Failed to create issue in `$owner/$repo`"
         logger.warn(msg, e)
-        FunctionResponse(Status.Failure, Some(msg), None, StringBodyOption(e.getMessage))
+        FunctionResponse(Status.Failure, Some(msg), None, StringBodyOption(ErrorMessage.jsonToString(e.getMessage)))
     }
   }
 }
