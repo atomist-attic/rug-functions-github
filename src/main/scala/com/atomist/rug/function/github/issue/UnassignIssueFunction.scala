@@ -35,7 +35,7 @@ class UnassignIssueFunction
           FunctionResponse(Status.Success, Some(s"Successfully unassigned `$assignee` from issue `#$number` in `$owner/$repo`"), None, JsonBodyOption(response))
         case None =>
           val msg = s"Failed to find issue `#$number` in `$owner/$repo`"
-          FunctionResponse(Status.Failure, Some(msg), None, StringBodyOption(msg))
+          FunctionResponse(Status.Failure, Some(msg), None, None)
       }
     } catch {
       case e: Exception =>
