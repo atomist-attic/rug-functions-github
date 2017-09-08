@@ -29,7 +29,6 @@ class RemoveLabelIssueFunction extends AnnotatedRugFunction
       val ghs = GitHubServices(token, apiUrl)
       ghs.getIssue(repo, owner, number) match {
         case Some(issue) =>
-          val issue = ghs.getIssue(repo, owner, number).get
           val labels = issue.labels.map(_.name).filterNot(_ == label).toSeq
           val response = ghs.editIssue(repo, owner, issue.number, issue.title, issue.body, issue.state, labels, issue.assignee.map(_.login).toList)
           FunctionResponse(Status.Success, Some(s"Successfully removed label from issue `#$number` in `$owner/$repo`"), None, JsonBodyOption(response))

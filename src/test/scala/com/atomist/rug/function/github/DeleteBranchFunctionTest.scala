@@ -1,6 +1,5 @@
-package com.atomist.rug.function.github.pullrequest
+package com.atomist.rug.function.github
 
-import com.atomist.rug.function.github.GitHubFunctionTest
 import com.atomist.rug.function.github.TestConstants._
 import com.atomist.rug.spi.Handlers.Status
 import com.atomist.source.git.GitArtifactSourceLocator.MasterBranch
