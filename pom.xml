@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.atomist.rug</groupId>
     <artifactId>rug-functions-github</artifactId>
-    <version>0.25.2-SNAPSHOT</version>
+    <version>0.25.3-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>rug-functions-github</name>
     <description>Rug Functions for GitHub</description>
@@ -37,7 +37,7 @@
         <dependency>
             <groupId>com.atomist</groupId>
             <artifactId>artifact-source</artifactId>
-            <version>1.0.0-m.20</version>
+            <version>1.0.0-m.21</version>
         </dependency>
         <dependency>
             <groupId>org.scalatest</groupId>
