@@ -7,7 +7,35 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][]
 
-[Unreleased]: https://github.com/atomist/rug-functions-github/compare/0.25.0...HEAD
+[Unreleased]: https://github.com/atomist/rug-functions-github/compare/0.25.3...HEAD
+
+## [0.25.3][] - 2017-09-08
+
+[0.25.3]: https://github.com/atomist/rug-functions-github/compare/0.25.2...0.25.3
+
+### Changed
+
+-   Added default value for merge-github-pull-request parameter mergeMethod
+
+## [0.25.2][] - 2017-09-07
+
+[0.25.2]: https://github.com/atomist/rug-functions-github/compare/0.25.1...0.25.2
+
+### Fixed
+
+-   Remove duplication of getIssue calls
+
+### Added
+
+-   Added mergeMethod as parameter to merge-github-pull-request
+
+## [0.25.1][] - 2017-09-07
+
+[0.25.1]: https://github.com/atomist/rug-functions-github/compare/0.25.0...0.25.1
+
+### Changed
+
+-   Tweak error messages
 
 ## [0.25.0][] - 2017-09-06
 
