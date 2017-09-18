@@ -14,7 +14,7 @@ class AssignIssueFunctionTest extends GitHubFunctionTest(Token, ApiUrl) {
     val issue = createIssue(repo, owner)
 
     val f = new AssignIssueFunction
-    val response = f.invoke(issue.number, repo, "alankstewart", owner, ApiUrl, Token)
+    val response = f.invoke(issue.number, repo, "atomist-travisorg", owner, ApiUrl, Token)
     response.status shouldBe Status.Success
     ghs.deleteRepository(repo, owner)
   }
